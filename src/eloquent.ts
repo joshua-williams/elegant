@@ -9,6 +9,18 @@ abstract class Eloquent {
 
   public abstract connect(config:ConnectionConfig):Promise<Eloquent>
 
+  public abstract select<T>(query:string, params?:Scalar[]):Promise<T[]>
+
+  public abstract insert(query:string, params?:Scalar[]):Promise<Record<string,Scalar>>
+
+  public abstract update(query:string, params?:Scalar[]):Promise<any>
+
+  public abstract delete(query:string, params?:Scalar[]):Promise<any>
+
+  public abstract statement(query:string, params?:Scalar[][]):Promise<any>
+
+  public abstract close():Promise<void>
+
   static connection(name?:string):Promise<Eloquent>{
     // todo check if connection is already open
     // todo check if connection is already in pool
@@ -38,6 +50,66 @@ class MySql extends Eloquent {
     delete config.driver
     this.connection = await createConnection(config)
     return this;
+  }
+  async select<T>(query: string, params?: any[]): Promise<T[]> {
+    return this.connection.query(query, params)
+      .then( results => results[0] as T[])
+  }
+
+  async insert(query: string, params?: any[]): Promise<Record<string,Scalar>> {
+    return this.connection.query(query, params)
+      .then(results => {
+        const keys = Object.keys(results[0])
+        const reducer = (acc:Record<string,Scalar>, key:any, i:number) => {
+          acc[key] = results[0][key]
+          return acc
+        }
+        return keys.reduce(reducer, {})
+      })
+
+  }
+  async update(query: string, params?:Scalar[]): Promise<any> {
+    return this.connection.query(query, params)
+      .then(results => {
+        const keys = Object.keys(results[0])
+        const reducer = (acc:Record<string,Scalar>, key:any, i:number) => {
+          acc[key] = results[0][key]
+          return acc
+        }
+        return keys.reduce(reducer, {})
+      })
+  }
+  async delete(query: string, params?: any[]): Promise<any> {
+    return this.connection.query(query, params)
+      .then(results => {
+        const keys = Object.keys(results[0])
+        const reducer = (acc:Record<string,Scalar>, key:any, i:number) => {
+          acc[key] = results[0][key]
+          return acc
+        }
+        return keys.reduce(reducer, {})
+      })
+  }
+  async statement(query: string, params?: Scalar[][]): Promise<any> {
+    const statement = await this.connection.prepare(query)
+    const promises:Promise<any>[] = []
+    for (const param of params) {
+      const promise = statement.execute(param)
+        .then(results => {
+          const keys = Object.keys(results[0])
+          const reducer = (acc:Record<string,Scalar>, key:any, i:number) => {
+            acc[key] = results[0][key]
+            return acc
+          }
+          return keys.reduce(reducer, {})
+        })
+      promises.push(promise)
+    }
+    return Promise.all(promises)
+  }
+
+  async close(): Promise<void> {
+    return this.connection.end();
   }
 }
 
