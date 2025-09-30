@@ -1,0 +1,24 @@
+{
+  "name": "eloquent",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "Joshua D. Williams",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "mysql2": "^3.15.1",
+    "typescript": "^5.9.2"
+  },
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/mysql": "^2.15.27",
+    "@types/node": "^24.6.0",
+    "jest": "^30.2.0",
+    "ts-jest": "^29.4.4",
+    "tsx": "^4.20.6"
+  }
+}
