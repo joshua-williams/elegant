@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE rules SYSTEM "https://resources.jetbrains.com/writerside/1.0/redirection-rules.dtd">
+<rules>
+    <!-- format is as follows
+    <rule id="<unique id>">
+        <accepts>page.html</accepts>
+    </rule>
+    -->
+    <rule id="7f71b1cc">
+        <description>Created after removal of "About Elegant" from Elegant</description>
+        <accepts>starter-topic.html</accepts>
+    </rule>
+    <rule id="593f7f0d">
+        <description>Created after removal of "Database" from Elegant</description>
+        <accepts>Database.html</accepts>
+    </rule>
+    <rule id="5b8b2f17">
+        <description>Created after removal of "How to" from Elegant</description>
+        <accepts>How-to.html</accepts>
+    </rule>
+    <rule id="7b8ed31f">
+        <description><![CDATA[Created after removal of "<Running-SQL-Queries.md>" from Elegant]]></description>
+        <accepts>Running-SQL-Queries.html</accepts>
+    </rule>
+</rules>
