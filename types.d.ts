@@ -1,4 +1,4 @@
-type EloquentConfig = {
+type ElegantConfig = {
   default: string,
   migrations?: {
     table: string,
