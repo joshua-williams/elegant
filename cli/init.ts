@@ -7,41 +7,75 @@ export default new Command('init')
   .description('Initialize a new Elegant project')
   .option('-m, --migration', 'Configure database migration')
   .option('-p, --migration-path <migrationPath>', 'Path to migration directory', 'resources/database/migrations')
+  .option('-s, --seed', 'Configure database seed')
+  .option('-e, --seed-path <seedPath>', 'Path to seed directory')
   .option('-f, --force', 'Overwrite existing files')
   .action(async (options) => {
-    const {migration, migrationPath, force} = options
     const config = getConfig()
-    if (migration || migrationPath) {
-      const configPath = migrationPath ? migrationPath : appPath(config.migrations.directory)
-      if (fs.existsSync(configPath)) {
-        if (options.force) {
-          fs.rmSync(configPath, {recursive: true})
-          fs.mkdirSync(configPath)
-          console.log(`Created migration directory at ${configPath}`)
-        } else {
-          console.error(`Migration directory already exists at ${configPath}`)
-        }
+    initializeMigration(options, config)
+    initializeSeed(options, config)
+    initializeConfig(options, config)
+  })
+
+const initializeSeed = (options, config) => {
+  const {seed, seedPath, force } = options
+  const defaultSeedPath = 'resources/database/seeds'
+  let seedDir:string;
+  if (seed || seedPath) {
+    seedDir = seedPath ? seedPath : appPath(defaultSeedPath)
+    if (fs.existsSync(seedDir)) {
+      if (force) {
+        fs.rmSync(seedDir, {recursive: true})
+        fs.mkdirSync(seedDir)
+        console.log(`Created seed directory at ${seedDir}`)
       } else {
-        fs.mkdirSync(configPath, {recursive: true})
-        console.info(`Created migration directory at ${configPath}`)
+        console.error(`Seed directory already exists at ${seedDir}`)
       }
     } else {
-      delete config.migrations
+      fs.mkdirSync(seedDir, {recursive: true})
+      console.info(`Created migration directory at ${seedDir}`)
+
     }
+  } else {
+    delete config.seeds
+  }
+}
 
-    const configString = getConfigString()
-    const configPath = appPath('elegant.config.js')
+const initializeConfig = (options, config) => {
+  const configString = getConfigString()
+  const configPath = appPath('elegant.config.js')
 
+  if (fs.existsSync(configPath)) {
+    if (options.force) {
+      fs.rmSync(configPath)
+      fs.writeFileSync(configPath, configString, 'utf8')
+    } else {
+      console.error('Elegant configuration file already exists')
+    }
+  } else {
+    fs.writeFileSync(configPath, configString, 'utf8')
+    console.info(`Created Elegant configuration file at ${configPath}`)
+  }
+}
+
+const initializeMigration = (options, config) => {
+  const {migration, migrationPath} = options
+
+  if (migration || migrationPath) {
+    const configPath = migrationPath ? migrationPath : appPath(migrationPath)
     if (fs.existsSync(configPath)) {
       if (options.force) {
-        fs.rmSync(configPath)
-        fs.writeFileSync(configPath, configString, 'utf8')
+        fs.rmSync(configPath, {recursive: true})
+        fs.mkdirSync(configPath)
+        console.log(`Created migration directory at ${configPath}`)
       } else {
-        console.error('Elegant configuration file already exists')
+        console.error(`Migration directory already exists at ${configPath}`)
       }
     } else {
-      fs.writeFileSync(configPath, configString, 'utf8')
-      console.info(`Created Elegant configuration file at ${configPath}`)
+      fs.mkdirSync(configPath, {recursive: true})
+      console.info(`Created migration directory at ${configPath}`)
     }
-
-  })
+  } else {
+    delete config.migrations
+  }
+}
