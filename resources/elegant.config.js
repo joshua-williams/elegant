@@ -1,12 +1,12 @@
 module.exports = {
-  default: 'forecastcrm',
+  default: 'mysql',
   connections: {
     mysql: {
       driver: 'mysql2',
       host: 'localhost',
       port: 3306,
-      database: 'demo',
-      user: 'demo_user',
+      database: 'forecastcrm',
+      user: 'forecastcrm',
       password: 'password',
     }
   },

@@ -2,6 +2,9 @@
   "name": "elegant",
   "version": "1.0.0",
   "main": "index.js",
+  "bin": {
+    "elegant": "./cli/elegant-cli.ts"
+  },
   "scripts": {
     "test": "jest"
   },
@@ -9,6 +12,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "commander": "^14.0.1",
     "dotenv": "^17.2.3",
     "mysql2": "^3.15.1",
     "typescript": "^5.9.2"
