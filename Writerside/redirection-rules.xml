@@ -22,4 +22,8 @@
         <description><![CDATA[Created after removal of "<Running-SQL-Queries.md>" from Elegant]]></description>
         <accepts>Running-SQL-Queries.html</accepts>
     </rule>
+    <rule id="7435d1a4">
+        <description>Created after removal of "Query Builder" from Elegant</description>
+        <accepts>Query-Builder.html</accepts>
+    </rule>
 </rules>

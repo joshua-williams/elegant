@@ -1,12 +1,13 @@
 # Installation
+<show-structure for="chapter,procedure" depth="2"/>
 
-### Meet Elegant
+## Meet Elegant
 Elegant is a web application framework with expressive, elegant syntax.
 
 Elegant strives to provide an amazing developer experience while providing powerful features such as fluent query builder,
 Object Relational Mapping, multiple database support, and more.
 
-### Why Elegant?
+### Why Elegant? 
 There are a variety of database tools and frameworks available to you when building a web application. 
 However, we believe Elegant is the best choice for interfacing with your database.
 
@@ -26,20 +27,21 @@ You can then setup npm scripts to run Elegant commands.
 {
   "scripts": {
     "migrate:rollback": "elegant migrate rollback",
-    "migrate:latest": "elegant migrate:latest",
+    "migrate:latest": "elegant migrate latest",
   }
 }
 ```
 
-### Installing Elegant Globally
+#### Installing Elegant Globally
 If you want to install Elegant globally, you can use NPM or Yarn.
 
 ```bash
 npm install elegant -g
 ```
 
-## Initializing Elegant
-To initialize Elegant, you can use the `elegant init` command.
+### Initializing Configuration
+To initialize Elegant, you can use the `elegant init` command to generate a configuration file, 
+migrations directory, and seeders directory.
 
 ```bash
 # initialize Elegant with migrations
