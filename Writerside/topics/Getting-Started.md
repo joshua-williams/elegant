@@ -39,7 +39,8 @@ To run a basic SELECT query, you may use the select method on the Elegant instan
 import Elegant from '@elegant/core';
 
 const db = await Elegant.connection();
-const users = await db.select('select * from users where id = ?'),[1])
+const users = await db.select('select * from users where id = ?',[1])
+
 ```
 
 The first argument passed to the `select` method is the SQL query, while the second argument is any parameter bindings that need to be bound to the query. Typically, these are the values of the `where` clause constraints. Parameter binding provides protection against SQL injection.
@@ -74,12 +75,17 @@ The `delete` method should be used to delete records from the database. Like `up
 const affected = await db.delete('delete from users where name = ?', ['John'])
 ```
 
-### Running a General Statement
-
-Some database statements do not return any value. For these types of operations, you may use the `statement` method on the Elegant instance:
+### Insert/Update Multiple Records
+When you need to insert or update multiple records at once, you may use the `statement` method. The `statement` method accepts a SQL statement and an array of parameter bindings. The `statement` method will return the number of rows affected by the statement:
 
 ```typescript
-await db.statement('delete from users where name = ?', ['John'])
+const users = [
+  ["John", "Doe"],
+  ["Jane", "Doe"],
+  ["John", "Doe"]
+]
+
+const affected = await db.statement('insert into users (name, email) values (?, ?)', users)
 ```
 
 ### Running an Unprepared Statement

@@ -4,10 +4,13 @@ import Eloquent from '../src/eloquent'
 describe('connection', () => {
   let db: Eloquent;
   beforeEach(async () => {
-
-  })
-  it('should get Eloquent instance', async () => {
     db = await Eloquent.connection();
+  })
+  afterEach(async () => {
+    await db.close()
+  })
+
+  it('should get Eloquent instance', async () => {
     expect(db).toBeInstanceOf(Eloquent);
   })
   it('should get default connection', async () => {
@@ -18,13 +21,23 @@ describe('connection', () => {
   it('should select', async () => {
     db = await Eloquent.connection('forecastcrm')
     return db.select('select * from migrations')
+      .then(res => {
+        expect(res).toBeInstanceOf(Array)
+      })
   })
 
   it('should insert', async () => {
     db = await Eloquent.connection('forecastcrm')
     return db.insert('insert into migrations (migration, batch) values (?,?)', ['test',5])
       .then(res => {
-        console.log(res)
+        expect(res).toBeInstanceOf(Number)
+      })
+  })
+  it('should scalar', async () => {
+    db = await Eloquent.connection('forecastcrm')
+    return db.scalar('select count(*) from migrations')
+      .then(res => {
+        expect(res).toBeInstanceOf(Number)
       })
   })
 

@@ -11,13 +11,15 @@ abstract class Eloquent {
 
   public abstract select<T>(query:string, params?:Scalar[]):Promise<T[]>
 
-  public abstract insert(query:string, params?:Scalar[]):Promise<Record<string,Scalar>>
+  public abstract insert(query:string, params?:Scalar[]):Promise<number>
 
-  public abstract update(query:string, params?:Scalar[]):Promise<any>
+  public abstract update(query:string, params?:Scalar[]):Promise<number>
 
   public abstract delete(query:string, params?:Scalar[]):Promise<any>
 
   public abstract statement(query:string, params?:Scalar[][]):Promise<any>
+
+  public abstract scalar(query:string, params?:Scalar[]):Promise<Scalar>
 
   public abstract close():Promise<void>
 
@@ -51,44 +53,29 @@ class MySql extends Eloquent {
     this.connection = await createConnection(config)
     return this;
   }
+
   async select<T>(query: string, params?: any[]): Promise<T[]> {
     return this.connection.query(query, params)
       .then( results => results[0] as T[])
   }
 
-  async insert(query: string, params?: any[]): Promise<Record<string,Scalar>> {
+  async insert(query: string, params?: any[]): Promise<number> {
     return this.connection.query(query, params)
-      .then(results => {
-        const keys = Object.keys(results[0])
-        const reducer = (acc:Record<string,Scalar>, key:any, i:number) => {
-          acc[key] = results[0][key]
-          return acc
-        }
-        return keys.reduce(reducer, {})
-      })
+      // @ts-ignore
+      .then(results => results[0].affectedRows)
 
   }
-  async update(query: string, params?:Scalar[]): Promise<any> {
+
+  async update(query: string, params?:Scalar[]): Promise<number> {
     return this.connection.query(query, params)
-      .then(results => {
-        const keys = Object.keys(results[0])
-        const reducer = (acc:Record<string,Scalar>, key:any, i:number) => {
-          acc[key] = results[0][key]
-          return acc
-        }
-        return keys.reduce(reducer, {})
-      })
+      // @ts-ignore
+      .then(results => results[0].affectedRows)
   }
-  async delete(query: string, params?: any[]): Promise<any> {
+
+  async delete(query: string, params?: any[]): Promise<number> {
     return this.connection.query(query, params)
-      .then(results => {
-        const keys = Object.keys(results[0])
-        const reducer = (acc:Record<string,Scalar>, key:any, i:number) => {
-          acc[key] = results[0][key]
-          return acc
-        }
-        return keys.reduce(reducer, {})
-      })
+      // @ts-ignore
+      .then(results => results[0].affectedRows)
   }
   async statement(query: string, params?: Scalar[][]): Promise<any> {
     const statement = await this.connection.prepare(query)
@@ -105,7 +92,11 @@ class MySql extends Eloquent {
         })
       promises.push(promise)
     }
-    return Promise.all(promises)
+  }
+
+  async scalar(query: string, params?: any[]): Promise<Scalar> {
+    return this.connection.query(query, params)
+      .then(results => results[0][0])
   }
 
   async close(): Promise<void> {
