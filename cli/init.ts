@@ -6,12 +6,13 @@ import * as fs from 'node:fs';
 export default new Command('init')
   .description('Initialize a new Elegant project')
   .option('-m, --migration', 'Configure database migration')
+  .option('-p, --migration-path <migrationPath>', 'Path to migration directory', 'resources/database/migrations')
   .option('-f, --force', 'Overwrite existing files')
   .action(async (options) => {
-    console.log('Initializing a new elegant project...')
+    const {migration, migrationPath, force} = options
     const config = getConfig()
-    if (options.migration) {
-      const configPath = appPath(config.migrations.directory)
+    if (migration || migrationPath) {
+      const configPath = migrationPath ? migrationPath : appPath(config.migrations.directory)
       if (fs.existsSync(configPath)) {
         if (options.force) {
           fs.rmSync(configPath, {recursive: true})
