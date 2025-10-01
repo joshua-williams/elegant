@@ -1,4 +1,7 @@
 # Database: Getting Started
+<show-structure depth="3"/>
+
+## Introduction
 
 Almost every modern web application interacts with a database. Elegant makes interacting with databases extremely simple across a variety of supported databases using raw SQL, a [fluent query builder](Query-Builder.md), and the [Elegant ORM](Elegant-Getting-Started.md). Currently, Elegant provides first-party support for five databases:
 
@@ -8,11 +11,11 @@ Almost every modern web application interacts with a database. Elegant makes int
 * SQLite3
 * SQL Server
 
-## Configuration
+### Configuration
 
 The configuration for Elegant's database services is located in your application's `elegant.config.js` configuration file. In this file, you may define all of your database connections, as well as specify which connection should be used by default. Most of the configuration options within this file are driven by the values of your application's environment variables. Examples for most of Laravel's supported database systems are provided in this file.
 
-### SQLite Configuration
+#### SQLite Configuration
 
 SQLite databases are contained within a single file on your filesystem. You can create a new SQLite database using the touch command in your terminal: `touch database/database.sqlite`. After the database has been created, you may easily configure your environment variables to point to this database by placing the absolute path to the database in the DB_DATABASE environment variable:
 
@@ -110,7 +113,7 @@ await db.statement('create table users (id int, name varchar(255))')
 ```
 Please refer to the MySQL manual for [a list of all statements](https://dev.mysql.com/doc/refman/8.0/en/implicit-commit.html) that trigger implicit commits.
 
-### Using Multiple Database Connections
+## Using Multiple Database Connections
 
 If your application defines multiple connections in your `elegant.config.js` configuration file, you may access each connection via the `connection` method provided by the Elegant instance. The connection name passed to the connection method should correspond to one of the connections listed in your `elegant.config.js` configuration file or configured at runtime using the config helper:
 
