@@ -1,4 +1,5 @@
 import Elegant from '../src/elegant'
+import QueryBuilder from '../src/query-builder';
 
 
 describe('connection', () => {
@@ -30,14 +31,14 @@ describe('connection', () => {
     db = await Elegant.connection('forecastcrm')
     return db.insert('insert into migrations (migration, batch) values (?,?)', ['test',5])
       .then(res => {
-        expect(res).toBeInstanceOf(Number)
+        expect(typeof res).toBe('number')
       })
   })
   it('should scalar', async () => {
     db = await Elegant.connection('forecastcrm')
     return db.scalar('select count(*) from migrations')
       .then(res => {
-        expect(res).toBeInstanceOf(Number)
+        expect(typeof res).toBe('number')
       })
   })
 
@@ -45,14 +46,14 @@ describe('connection', () => {
     db = await Elegant.connection('forecastcrm')
     return db.update('update migrations set migration = ? where migration = ?', ['contact','contacts'])
       .then(res => {
-        console.log(res)
+        expect(typeof res).toBe('number')
       })
   })
   it('should delete', async () => {
     db = await Elegant.connection('forecastcrm')
     return db.delete('delete from migrations where migration = ?', ['contact'])
       .then(res => {
-        console.log(res)
+        expect(typeof res).toBe('number')
       })
   })
   it('should statement', async () => {
@@ -63,8 +64,14 @@ describe('connection', () => {
       ['test3',7],
     ]
     return db.statement('insert into migrations (migration, batch) values (?,?)', params)
-      .then(res => {
-        console.log(res)
+      .then(response => {
+        expect(response).toBeInstanceOf(Array)
+        expect(response.length).toBe(3)
       })
+  })
+
+  it('should get query builder', async () => {
+    const qb = db.table('migrations')
+    expect(qb).toBeInstanceOf(QueryBuilder)
   })
 });

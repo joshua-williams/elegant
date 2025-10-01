@@ -11,6 +11,7 @@ type ElegantConfig = {
     [key: string]: ConnectionConfig,
   },
 }
+type Operator = '='|'!='|'<'|'<='|'>'|'>='|'like'|'in'|'between'|'is'|'is not'
 
 type ConnectionConfig = {
   driver: 'sqlite3' | 'mysql2' | 'pg',
