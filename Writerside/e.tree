@@ -4,7 +4,7 @@
 
 <instance-profile id="e"
                  name="Elegant"
->
+ start-page="Getting-Started.md">
 
     <toc-element toc-title="Getting Started">
         <toc-element topic="Installation.md"/>
@@ -12,6 +12,7 @@
     <toc-element toc-title="Database">
         <toc-element topic="Getting-Started.md" toc-title="Getting Started"/>
         <toc-element topic="Query-Builder.md" toc-title="Query Builder"/>
+        <toc-element topic="Migrations.md" toc-title="Migrations"/>
     </toc-element>
     <toc-element toc-title="Elegant ORM">
         <toc-element toc-title="Getting Started" topic="Elegant-Getting-Started.md"/>
