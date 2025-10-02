@@ -1,4 +1,4 @@
-import {resourcePath} from '../lib/util';
+import {resourcePath} from './util';
 import * as fs from 'node:fs';
 
 export const getConfig = ():ElegantConfig => {

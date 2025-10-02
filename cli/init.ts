@@ -1,5 +1,5 @@
 import {Command} from 'commander'
-import {getConfig, getConfigString} from '../src/config';
+import {getConfig, getConfigString} from '../lib/config';
 import {appPath, exit} from '../lib/util';
 import * as fs from 'node:fs';
 
