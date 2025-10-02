@@ -1,5 +1,5 @@
 import {Command} from 'commander'
-import {appPath, getTemplate, isTypescript, resourcePath} from '../../lib/util';
+import {appPath, getTemplate, isTypescript} from '../../lib/util';
 import * as fs from 'node:fs';
 import {getAppConfig} from '../../lib/config';
 import path from 'node:path';
