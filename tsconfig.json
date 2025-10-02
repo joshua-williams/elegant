@@ -5,19 +5,18 @@
     "module": "nodenext",
     "target": "esnext",
     "types": ["node", "jest"],
-    // For nodejs:
      "lib": ["esnext"],
+    "esModuleInterop": true,
     "isolatedModules": true,
-    // Other Outputs
     "sourceMap": true,
     "declaration": true,
-    "declarationMap": true,
+    "declarationMap": true
   },
   "include": [
     "types.d.ts",
+    "index.ts",
     "src/**/*",
     "cli/**/*",
-    "lib/**/*"
   ],
   "exclude": [
     "node_modules",

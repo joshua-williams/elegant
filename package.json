@@ -1,14 +1,16 @@
 {
   "name": "elegant",
   "version": "1.0.0",
-  "main": "dist/src/elegant.js",
-  "types": "dist/src/elegant.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "files": ["/dist"],
   "bin": {
     "elegant": "./cli/elegant-cli.ts"
   },
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build": "tsc",
+    "build:watch": "tsc --watch"
   },
   "author": "Joshua D. Williams",
   "license": "ISC",
