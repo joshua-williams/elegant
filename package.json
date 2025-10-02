@@ -1,7 +1,9 @@
 {
   "name": "elegant",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/src/elegant.js",
+  "types": "dist/src/elegant.d.ts",
+  "files": ["/dist"],
   "bin": {
     "elegant": "./cli/elegant-cli.ts"
   },
