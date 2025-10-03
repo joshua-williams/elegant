@@ -9,7 +9,7 @@ type SchemaTableMeta = {
   temporary:boolean,
   comment:string
 }
-export class SchemaTable {
+export default class SchemaTable {
   $:SchemaTableMeta ={
     charset:undefined,
     collation:undefined,

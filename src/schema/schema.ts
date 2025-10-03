@@ -1,5 +1,4 @@
-import {SchemaTable} from './schema-table';
-import {getAppConfig} from '../../lib/config';
+import SchemaTable from './schema-table';
 
 type SchemaMeta = {
   connection:string,

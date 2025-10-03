@@ -1,5 +1,5 @@
 import Schema from './schema/schema';
-import {SchemaTable} from './schema/schema-table';
+import SchemaTable from './schema/schema-table';
 
 export default abstract class Migration {
   protected schema:Schema = new Schema()
