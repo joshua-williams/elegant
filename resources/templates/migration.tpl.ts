@@ -1,4 +1,4 @@
-import Elegant,{ Migration } from 'elegant'
+import Elegant,{ Migration, Schema } from 'elegant'
 
 class MigrationClass extends Migration {
 
@@ -8,7 +8,7 @@ class MigrationClass extends Migration {
    * @param {Elegant} db - The database instance to apply the migration or update to.
    * @return {void} This method does not return a value.
    */
-  up(db:Elegant) {
+  up(schema:Schema) {
 
   }
 
@@ -18,7 +18,7 @@ class MigrationClass extends Migration {
    * @param {Elegant} db - The database instance to revert the migration or update to.
    * @return {void} This method does not return a value.
    */
-  down(db:Elegant) {
+  down(schema:Schema) {
 
   }
 }

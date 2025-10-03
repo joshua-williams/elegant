@@ -2,10 +2,10 @@ import * as fs from 'node:fs';
 import {Connection, createConnection} from 'mysql2/promise'
 import QueryBuilder from './query-builder';
 
-abstract class Elegant {
+export default abstract class Elegant {
   public connection:Connection;
 
-  protected static pool:ConnectionConfig[] = [];
+  protected static pool:Record<string,Elegant>;
   protected config:ElegantConfig;
 
   public abstract connect(config:ConnectionConfig):Promise<Elegant>
@@ -30,11 +30,15 @@ abstract class Elegant {
   }
 
   static async connection(name?:string):Promise<Elegant>{
-    // todo check if connection is already open
-    // todo check if connection is already in pool
-    // todo check if connection is in config
+    // check if the connection pool is initialized
+    if (this.pool[name]) return this.pool[name]
+    // get elegant configuration
     const config = JSON.parse(JSON.stringify(this.getConfiguration()))
+    // check if config has connections configured
+    if (!config.connections) throw new Error('No database connections configured')
+    // if no connection name is provided, use default connection
     name = name ? name : config.default;
+    // check if the connection name is valid
     if (!name) throw new Error('No database connection name provided')
     const driver = config.connections[name].driver
     let elegant:Elegant;
@@ -46,6 +50,7 @@ abstract class Elegant {
       default:
         throw new Error(`Unsupported database driver: ${driver}`)
     }
+    this.pool[name] = elegant;
     return elegant.connect(config.connections[name])
   }
 
@@ -56,5 +61,3 @@ abstract class Elegant {
   }
 
 }
-
-export default Elegant

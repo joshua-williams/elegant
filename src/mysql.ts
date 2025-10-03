@@ -3,7 +3,7 @@ import Elegant from './elegant';
 
 class MySql extends Elegant {
   async connect(config: ConnectionConfig): Promise<MySql> {
-    delete config.driver
+    delete config.dialect
     this.connection = await createConnection(config)
     return this;
   }

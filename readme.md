@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Almost every modern web application interacts with a database. Elegant makes interacting with databases extremely simple across a variety of supported databases using raw SQL, a [fluent query builder](Query-Builder.md), and the [Elegant ORM](Elegant-Getting-Started.md). Currently, Elegant provides first-party support for five databases:
+Almost every modern web application interacts with a database. Elegant makes interacting with databases extremely simple across a variety of supported databases using raw SQL, a [fluent query builder](./Writerside/Topics/Query-Builder.md), and the [Elegant ORM](./Writerside/Topics/Elegant-Getting-Started.md). Currently, Elegant provides first-party support for five databases:
 
 * MySQL
 * MariaDB

@@ -1,8 +1,16 @@
 module.exports = {
-  default: 'forecastcrm',
+  default: 'mysql',
   connections: {
     mysql: {
-      driver: 'mysql2',
+      dialect: 'mysql',
+      host: 'localhost',
+      port: 3306,
+      database: 'demo',
+      user: 'demo_user',
+      password: 'password',
+    },
+    postgres: {
+      dialect: 'mysql',
       host: 'localhost',
       port: 3306,
       database: 'demo',

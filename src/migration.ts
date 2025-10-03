@@ -1,4 +1,7 @@
+import Schema from './schema/schema';
+
 export default abstract class Migration {
+  private schema:typeof Schema = Schema
   /**
    * Represents the connection identifier as a string.
    * This variable points to a connection configured elegant.config.js

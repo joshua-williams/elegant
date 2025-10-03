@@ -2,7 +2,7 @@ module.exports = {
   default: 'mysql',
   connections: {
     mysql: {
-      driver: 'mysql2',
+      dialect: 'mysql',
       host: 'localhost',
       port: 3306,
       database: 'forecastcrm',
