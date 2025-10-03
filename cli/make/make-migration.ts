@@ -7,15 +7,16 @@ import path from 'node:path';
 export default new Command('make:migration')
   .description('create database migrations')
   .argument('<name>', 'migration name')
+  .option('-d, --migrationDir <migrationDir>', 'miration directory')
   .action(async (name:string, options) => {
     const config = getAppConfig()
     const targetName = `${Date.now()}_${name}` + (isTypescript() ? '.ts' : '.js')
-    const targetPath = path.resolve(appPath(config.migrations.directory), targetName)
-    const migrationDir = path.dirname(targetPath)
+    const migrationDir = appPath(options.migrationDir ? options.migrationDir : config.migrations.directory)
+    const migrationPath = path.resolve(migrationDir, targetName)
     if (!fs.existsSync(migrationDir)) fs.mkdirSync(migrationDir, {recursive: true})
     const template = getTemplate('migration')
       .replace('MigrationClass', name)
-    fs.writeFileSync(targetPath, template)
+    fs.writeFileSync(migrationPath, template)
   })
 
 
