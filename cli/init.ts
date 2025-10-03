@@ -2,6 +2,7 @@ import {Command} from 'commander'
 import {getConfig, getConfigString} from '../lib/config';
 import {appPath, exit} from '../lib/util';
 import * as fs from 'node:fs';
+import path from 'node:path';
 
 export default new Command('init')
   .description('Initialize a new Elegant project')
@@ -62,18 +63,21 @@ const initializeMigration = (options, config) => {
   const {migration, migrationPath} = options
 
   if (migration || migrationPath) {
-    const configPath = migrationPath ? migrationPath : appPath(migrationPath)
-    if (fs.existsSync(configPath)) {
+    const migrationDirectory = migrationPath ? migrationPath : appPath(config.migrations.directory)
+
+    if (fs.existsSync(migrationDirectory)) {
       if (options.force) {
-        fs.rmSync(configPath, {recursive: true})
-        fs.mkdirSync(configPath)
-        console.log(`Created migration directory at ${configPath}`)
+        fs.rmSync(migrationDirectory, {recursive: true})
+        fs.mkdirSync(migrationDirectory)
+        fs.writeFileSync(path.join(migrationDirectory, '.state'), '', 'utf8')
+        console.log(`Created migration directory at ${migrationDirectory}`)
       } else {
-        console.error(`Migration directory already exists at ${configPath}`)
+        console.error(`Migration directory already exists at ${migrationDirectory}`)
       }
     } else {
-      fs.mkdirSync(configPath, {recursive: true})
-      console.info(`Created migration directory at ${configPath}`)
+      fs.mkdirSync(migrationDirectory, {recursive: true})
+      fs.writeFileSync(path.join(migrationDirectory, '.state'), '', 'utf8')
+      console.info(`Created migration directory at ${migrationDirectory}`)
     }
   } else {
     delete config.migrations

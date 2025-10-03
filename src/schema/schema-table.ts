@@ -22,7 +22,12 @@ export class SchemaTable {
 
   constructor(private name:string, connection:string = 'default') {
     const config = getAppConfig()
-    this.dialect = config.connections[connection].dialect
+    if (connection === 'default') {
+      this.dialect = config.connections[config.default].dialect
+    } else {
+      this.dialect = config.connections[connection].dialect
+    }
+
   }
 
   string(columnName:string, length:number = 255):ColumnDefinition {

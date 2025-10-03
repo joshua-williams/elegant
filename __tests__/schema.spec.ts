@@ -1,8 +1,13 @@
 import Schema from '../src/schema/schema';
 
+let schema = new Schema()
+
 describe('schema', () => {
+  beforeEach(() => {
+    schema = new Schema()
+  })
   it('should create table on specfic connection', () => {
-    Schema.connection('postgres')
+    schema.connection('postgres')
       .create('users', (table) => {
         table.temporary()
           .engine('InnoDB')
@@ -18,7 +23,7 @@ describe('schema', () => {
 
     describe('numeric columns', () => {
       it('should create tinyint', () => {
-        Schema.create('users', (table) => {
+        schema.create('users', (table) => {
           table.tinyInteger('id')
           const sql = table.toSql()
           const expected = 'CREATE TABLE `users` (\n  `id` TINYINT NOT NULL\n)'
@@ -26,13 +31,13 @@ describe('schema', () => {
         })
       })
       it('should create smallint', () => {
-        Schema.create('users', (table) => {
+        schema.create('users', (table) => {
           table.smallInteger('id')
         })
       })
     })
     it('should create table', () => {
-      Schema.create('users', (table) => {
+      schema.create('users', (table) => {
         table.integer('id', 255).autoIncrement().unique().primary()
         table.string('name').unique()
         console.log(table.toSql())

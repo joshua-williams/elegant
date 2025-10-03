@@ -1,7 +1,9 @@
 import Schema from './schema/schema';
+import {SchemaTable} from './schema/schema-table';
 
 export default abstract class Migration {
-  private schema:typeof Schema = Schema
+  protected schema:Schema = new Schema()
+  private tables:SchemaTable[] = []
   /**
    * Represents the connection identifier as a string.
    * This variable points to a connection configured elegant.config.js
@@ -22,4 +24,12 @@ export default abstract class Migration {
    * @return {Promise<void>} A promise that resolves when the operation is completed.
    */
   public abstract down():Promise<void>
+
+  public runUp() {
+    return this.up()
+    // const sql = this.schema.toSql()
+  }
+  public runDown() {
+    return this.down()
+  }
 }

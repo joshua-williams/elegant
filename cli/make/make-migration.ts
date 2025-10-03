@@ -10,7 +10,7 @@ export default new Command('make:migration')
   .option('-d, --migrationDir <migrationDir>', 'miration directory')
   .action(async (name:string, options) => {
     const config = getAppConfig()
-    const targetName = `${Date.now()}_${name}` + (isTypescript() ? '.ts' : '.js')
+    const targetName = `${Date.now()}.${name}.migration` + (isTypescript() ? '.ts' : '.js')
     const migrationDir = appPath(options.migrationDir ? options.migrationDir : config.migrations.directory)
     const migrationPath = path.resolve(migrationDir, targetName)
     if (!fs.existsSync(migrationDir)) fs.mkdirSync(migrationDir, {recursive: true})

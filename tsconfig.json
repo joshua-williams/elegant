@@ -1,21 +1,23 @@
 {
   "compilerOptions": {
-    "outDir": "./dist",
-    "declaration": true,
-    "isolatedModules": true,
+    "baseUrl": "./",
     "module": "nodenext",
     "target": "esnext",
+    "outDir": "./dist",
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
     "types": ["node", "jest"],
      "lib": ["esnext"],
-    "esModuleInterop": true,
-    "sourceMap": true,
-    "declarationMap": true
   },
   "include": [
     "types.d.ts",
     "index.ts",
-    "src/**/*",
-    "cli/**/*",
+    "src/**/*.ts",
+    "lib/**/*.ts",
+    "cli/**/*.ts",
   ],
   "exclude": [
     "node_modules",

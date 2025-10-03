@@ -81,5 +81,7 @@ export const getTemplate = (name:string) => {
   } else {
     return fs.readFileSync(basePath(`resources/templates/${name}.tpl.js`), 'utf8')
   }
+
+
 }
 
