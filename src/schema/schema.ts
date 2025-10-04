@@ -22,4 +22,8 @@ export default class Schema {
     this.$.connection = name
     return this
   }
+
+  get tables():SchemaTable[] {
+    return this.$.tables
+  }
 }

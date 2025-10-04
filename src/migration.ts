@@ -25,11 +25,4 @@ export default abstract class Migration {
    */
   public abstract down():Promise<void>
 
-  public runUp() {
-    return this.up()
-    // const sql = this.schema.toSql()
-  }
-  public runDown() {
-    return this.down()
-  }
 }

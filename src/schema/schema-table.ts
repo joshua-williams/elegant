@@ -65,8 +65,7 @@ export default class SchemaTable {
   }
 
   id(columnName:string = 'id'):ColumnDefinition {
-    const column = new NumberColumnDefinition(columnName, 'INT', 11, undefined, false)
-    column.primary()
+    const column = new NumberColumnDefinition(columnName, 'BIGINT', 11, undefined, false)
     this.columns.push(column)
     return column
   }
@@ -251,6 +250,7 @@ export default class SchemaTable {
       default:   return value
     }
   }
+
   toSql():string {
     let sql = 'CREATE '
     if (this.$.temporary) sql += 'TEMPORARY '
