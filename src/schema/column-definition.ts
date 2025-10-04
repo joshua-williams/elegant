@@ -11,7 +11,8 @@ export default abstract class ColumnDefinition {
     unsigned: false,
     autoIncrement: false,
     comment: '',
-    collate: ''
+    collate: '',
+    onUpdate: undefined,
   }
 
   constructor(public name:string) {}
@@ -38,6 +39,11 @@ export default abstract class ColumnDefinition {
   }
   unsigned():ColumnDefinition {
     this.$.unsigned = true
+    return this
+  }
+
+  default(defaultValue:Scalar) {
+    this.$.default = defaultValue
     return this
   }
 

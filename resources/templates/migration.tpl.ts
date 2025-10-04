@@ -3,7 +3,7 @@ import Elegant,{ Migration, SchemaTable } from 'elegant'
 export default class MigrationClass extends Migration {
 
   /**
-   * Performs the migration or schema update using the given database instance.
+   * Performs the migration or schema update using tgiven database instance.
    *
    * @return {void} This method does not return a value.
    */

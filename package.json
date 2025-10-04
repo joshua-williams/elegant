@@ -10,7 +10,11 @@
   "scripts": {
     "test": "jest",
     "build": "tsc",
-    "build:watch": "tsc --watch"
+    "build:watch": "tsc --watch",
+    "local:start": "npm start --prefix ./__tests__/app",
+    "local:stop": "npm run stop --prefix ./__tests__/app",
+    "local:stop:clean": "npm run stop:clean --prefix ./__tests__/app",
+    "local:migrate": "npm run migrate --prefix ./__tests__/app"
   },
   "author": "Joshua D. Williams",
   "license": "ISC",
