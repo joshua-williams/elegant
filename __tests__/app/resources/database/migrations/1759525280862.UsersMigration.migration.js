@@ -9,8 +9,18 @@ export default class UsersMigration extends Migration {
    */
   up() {
     this.schema.create('users', (table) => {
-      table.id()
+      table.id().autoIncrement().primary()
       table.char('first_name', 90)
+      table.char('last_name', 90)
+      table.string('email', 90)
+      table.char('password', 90)
+      table.string('phone', 90)
+      table.string('address', 90)
+      table.char('city', 45)
+      table.char('state', 2)
+      table.char('zip', 5)
+      table.char('country', 3)
+      table.tinyInteger('gender', 1)
     })
   }
 
