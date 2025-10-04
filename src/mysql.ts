@@ -31,7 +31,19 @@ class MySql extends Elegant {
       // @ts-ignore
       .then(results => results[0].affectedRows)
   }
-  async statement(query: string, params?: Scalar[][]): Promise<any> {
+
+  /**
+   *
+   * Executes a prepared SQL statement with the given query and parameters.
+   * Processes each parameter set and returns the results as a list of objects
+   * where each object's keys correspond to the columns returned by the query.
+   *
+   * @param {string} query - The SQL query to be executed.
+   * @param {Scalar[][]} [params=[]] - A list of parameter sets to be bound to the SQL query.
+   * Each parameter set corresponds to a single execution of the query.
+   * @return {Promise<any>} A Promise that resolves to an array of objects containing the results of the query execution.
+   */
+  async statement(query: string, params: Scalar[][] = []): Promise<any> {
     const statement = await this.connection.prepare(query)
     const promises:Promise<any>[] = []
     for (const param of params) {
@@ -49,9 +61,31 @@ class MySql extends Elegant {
     return Promise.all(promises)
   }
 
+  /**
+   * Executes a raw SQL query with the given parameters.
+   * @param {string} query - The SQL query to be executed.
+   * @param {any[]} [params=[]] - An array of parameters to be bound to the query.
+   * @return {Promise<any>} A Promise that resolves to the result of the query execution.
+   * @throws {Error} If the query execution fails.
+   */
+  async query(query: string, params?: any[]): Promise<any> {
+    return this.connection.query(query, params)
+  }
+
   async scalar(query: string, params?: any[]): Promise<Scalar> {
     return this.connection.query(query, params)
       .then(results => Object.values(results[0][0])[0] as Scalar)
+  }
+
+  async transaction(callback: (connection: Elegant) => void): Promise<void> {
+    await this.connection.beginTransaction()
+    try {
+      await callback(this)
+      await this.connection.commit()
+    } catch (error) {
+      await this.connection.rollback()
+      throw error
+    }
   }
 
   async close(): Promise<void> {
