@@ -1,0 +1,17 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "main": "elegant.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "docker compose up -d",
+    "stop": "docker compose stop mysql",
+    "clean": "docker compose rm -f",
+    "stop:clean": "docker compose stop mysql && docker compose rm -f",
+    "migrate": "elegant migrate",
+    "postinstall": "echo 'linking elegant...'&& npm link elegant"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}

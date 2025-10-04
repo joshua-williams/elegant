@@ -1,0 +1,17 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: elegant-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password # Replace with a strong password
+      MYSQL_DATABASE: elegant    # Optional: Initial database to create
+      MYSQL_USER: elegant                 # Optional: Initial user to create
+      MYSQL_PASSWORD: password    # Optional: Password for the initial user
+    ports:
+      - "3333:3306"
+    volumes:
+      - elegant-mysql:/var/lib/mysql # Named volume for persistent data
+    restart: always
+
+volumes:
+  elegant-mysql: # Define the named volume

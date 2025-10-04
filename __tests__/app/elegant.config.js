@@ -4,17 +4,9 @@ module.exports = {
     mysql: {
       dialect: 'mysql',
       host: 'localhost',
-      port: 3306,
-      database: 'demo',
-      user: 'demo_user',
-      password: 'password',
-    },
-    postgres: {
-      dialect: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      database: 'demo',
-      user: 'demo_user',
+      port: 3333,
+      database: 'elegant',
+      user: 'elegant',
       password: 'password',
     }
   },
@@ -22,7 +14,10 @@ module.exports = {
     table: 'migrations',
     directory: 'resources/database/migrations',
   },
+  seeds: {
+    directory: 'resources/database/seeds',
+  },
   models: {
-    directory: './models',
+    directory: 'resources/database/models',
   },
 }
