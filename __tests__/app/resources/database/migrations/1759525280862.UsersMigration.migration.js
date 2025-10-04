@@ -1,9 +1,8 @@
-import Elegant,{ Migration, SchemaTable } from 'elegant'
+import Elegant,{ Migration, Schema, SchemaTable } from 'elegant'
 
 export default class UsersMigration extends Migration {
-
   /**
-   * Performs the migration or schema update using tgiven database instance.
+   * Performs the migration or schema update using the given database instance.
    *
    * @return {void} This method does not return a value.
    */

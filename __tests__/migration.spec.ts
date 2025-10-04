@@ -4,6 +4,6 @@ import {getAppConfig} from '../lib/config';
 describe('migration', () => {
   it('should fun migration', async () => {
     console.log('mic check')
-    expect(run('up')).toBeDefined()
+    await run('up')
   })
 });

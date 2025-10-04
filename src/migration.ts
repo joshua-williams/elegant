@@ -1,14 +1,31 @@
 import Schema from './schema/schema';
 import SchemaTable from './schema/schema-table';
 
+type MigrationMeta = {
+  config:ElegantConfig,
+  tables:SchemaTable[],
+  schema:Schema,
+}
+
 export default abstract class Migration {
-  protected schema:Schema = new Schema()
-  private tables:SchemaTable[] = []
+  protected connection:string;
+
+  $:MigrationMeta = {
+      schema:undefined,
+      config: undefined,
+      tables: []
+    }
+
   /**
-   * Represents the connection identifier as a string.
-   * This variable points to a connection configured elegant.config.js
+   * Initializes the migration with a reference to the provided schema.
+   * @param {Schema} schema - The schema instance associated with the migration.
+   * @returns {void}
    */
-  protected connection:string = 'default'
+  public constructor(schema:Schema) {
+    this.$.schema = schema;
+    this.connection = this.connection ||  schema.config.default;
+  }
+
   /**
    * Abstract method to handle an upward operation or transition.
    * The specific behavior of this method should be defined in the subclass.
@@ -25,4 +42,17 @@ export default abstract class Migration {
    */
   public abstract down():Promise<void>
 
+  getConnection():string {
+    return this.connection
+  }
+
+  get schema():Schema {
+    return this.$.schema
+  }
+  get config():ElegantConfig {
+    return this.$.config
+  }
+  get tables():SchemaTable[] {
+    return this.$.tables
+  }
 }

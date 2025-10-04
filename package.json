@@ -14,9 +14,8 @@
     "test": "jest",
     "build": "tsc",
     "build:watch": "tsc --watch",
-    "local:start": "npm start --prefix ./__tests__/app",
-    "local:stop": "npm run stop --prefix ./__tests__/app",
-    "local:stop:clean": "npm run stop:clean --prefix ./__tests__/app",
+    "local:start": "cd ./__tests__/app && docker compose up -d",
+    "local:stop": "cd ./__tests__/app && docker compose down",
     "local:migrate": "npm run migrate --prefix ./__tests__/app"
   },
   "author": "Joshua D. Williams",

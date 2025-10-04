@@ -5,7 +5,6 @@ import {
   StringColumnDefinition, TimeColumnDefinition,
   TimestampColumnDefinition, YearColumnDefinition
 } from './schema-definitions';
-import {getAppConfig} from '../../lib/config';
 
 type SchemaTableMeta = {
   charset:Charset,
@@ -25,13 +24,8 @@ export default class SchemaTable {
   columns:ColumnDefinition[] = []
   dialect:SchemaDialect;
 
-  constructor(private tableName:string, connection:string = 'default', config?:ElegantConfig) {
-    config = config ? config : getAppConfig()
-    if (connection === 'default') {
-      this.dialect = config.connections[config.default].dialect
-    } else {
-      this.dialect = config.connections[connection].dialect
-    }
+  constructor(private tableName:string, dialect:SchemaDialect = 'mysql') {
+    this.dialect = dialect
   }
 
   char(columnName:string, length:number = 255):ColumnDefinition {
