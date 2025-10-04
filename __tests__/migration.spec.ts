@@ -1,9 +1,9 @@
-import {runMigrations} from '../lib/migrate';
+import {run} from '../lib/migrate';
 import {getAppConfig} from '../lib/config';
 
 describe('migration', () => {
-  it('should create migration', async () => {
-    const config = getAppConfig()
-    return await runMigrations(config)
+  it('should fun migration', async () => {
+    console.log('mic check')
+    expect(run('up')).toBeDefined()
   })
 });

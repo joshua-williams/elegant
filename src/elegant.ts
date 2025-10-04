@@ -1,6 +1,7 @@
 import * as fs from 'node:fs';
 import {Connection, createConnection} from 'mysql2/promise'
 import QueryBuilder from './query-builder';
+import path from 'node:path';
 
 export default abstract class Elegant {
   public connection:Connection;
@@ -44,7 +45,7 @@ export default abstract class Elegant {
     let elegant:Elegant;
     switch (driver) {
       case 'mysql2':
-        const MySql = ( require('./mysql')).default;
+        const MySql = ( await import(path.resolve(__filename, '../mysql'))).default;
         elegant = new MySql();
         break;
       default:
@@ -54,10 +55,10 @@ export default abstract class Elegant {
     return elegant.connect(config.connections[name])
   }
 
-  private static getConfiguration():ElegantConfig {
+  private static async getConfiguration():Promise<ElegantConfig> {
     const configPath = process.cwd() + '/elegant.config.js'
     if (!fs.existsSync(configPath)) throw new Error(`Elegant Configuration file not found at ${configPath}`)
-    return require(configPath)
+    return await import(configPath)
   }
 
 }

@@ -1,3 +1,4 @@
+import 'dotenv/config'
 export {default} from './src/elegant';
 export {default as Migration} from './src/migration';
 export {default as Schema} from './src/schema/schema';

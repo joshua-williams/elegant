@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
     "baseUrl": "./",
-    "module": "nodenext",
+    "module": "esnext",
     "target": "esnext",
+    "moduleResolution": "bundler",
     "outDir": "./dist",
     "sourceMap": true,
     "declaration": true,

@@ -8,7 +8,7 @@ describe('schema-table', () => {
 
     beforeEach(async () => {
       const configPath = basePath('__tests__/app/elegant.config.js')
-      const config = require(configPath)
+      const config = await import(configPath)
       table = new SchemaTable('users', 'default', config)
     })
 

@@ -28,8 +28,10 @@ export const resourcePath = (subPath?:string) =>
  * @param {string} [subPath] - An optional subpath to append to the current working directory.
  * @returns {string} The constructed path. If no subPath is provided, returns the current working directory.
  **/
-export const appPath = (subPath?:string) =>
-  subPath ? path.join(process.cwd(), subPath) : process.cwd()
+export const appPath = (subPath?:string) => {
+  const appPath = process.env.ELEGANT_BASE_PATH || process.cwd()
+  return subPath ? path.join(appPath, subPath) : appPath
+}
 
 /**
  * Terminates the process with the specified exit code and optionally logs a message.

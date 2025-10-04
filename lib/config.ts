@@ -1,15 +1,17 @@
+import { pathToFileURL } from 'url';
 import {appPath, resourcePath} from './util';
 import * as fs from 'node:fs';
 
-export const getConfig = ():ElegantConfig => {
+export const getConfig = async ():Promise<ElegantConfig> => {
   const configPath = resourcePath('elegant.config.js')
-  return require(configPath)
+  return await import(configPath)
 }
 
-export const getAppConfig = ():ElegantConfig => {
-  const configPath = appPath('elegant.config.js')
+export const getAppConfig = async ():Promise<ElegantConfig> => {
+  let configPath = appPath('elegant.config.js')
   if (! fs.existsSync(configPath)) throw new Error(`Elegant Configuration file not found at ${configPath}`)
-  return require(configPath)
+  let {default:config} = await import(pathToFileURL(configPath).href)
+  return config
 }
 
 export const getConfigString = ():string => {

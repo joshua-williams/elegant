@@ -1,12 +1,16 @@
-const { createDefaultPreset } = require("ts-jest");
-
-const tsJestTransformCfg = createDefaultPreset().transform;
-
-/** @type {import("jest").Config} **/
-module.exports = {
-  preset: "ts-jest",
+export default {
+  preset: 'ts-jest',
   testEnvironment: "node",
+  extensionsToTreatAsEsm: ['.ts'],
   transform: {
-    ...tsJestTransformCfg,
+    "\\.js$":['ts-jest', { useESM: true } ],
+    '^.+\\.tsx?$': [
+      'ts-jest', { useESM: true },
+    ]
   },
+  moduleNameMapper: {
+    '^(\\.{1,2}/.*)\\.js$': '$1', // Corrects path issues with transpiled imports
+  },
+
+
 };
