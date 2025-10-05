@@ -1,5 +1,6 @@
 import {createConnection} from 'mysql2/promise';
 import Elegant from './elegant';
+import {Scalar, ConnectionConfig} from '../types';
 
 class MySql extends Elegant {
   async connect(config: ConnectionConfig): Promise<MySql> {

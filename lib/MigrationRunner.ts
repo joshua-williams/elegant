@@ -1,7 +1,7 @@
-import {getAppConfig} from './config';
-import {appPath} from './util';
+import Elegant from '../index';
+import {BaseMigration} from './BaseMigration';
 import fs from 'node:fs';
-import Elegant, {Migration, Schema} from '../index';
+import {MigrationFileMap} from '../types';
 
 
 class MigrationResult {
@@ -36,35 +36,42 @@ class MigrationError extends Error {
   }
 }
 
-export default class MigrationRunner {
-  private config:ElegantConfig;
-  private migrationPath:string;
+export default class MigrationRunner extends BaseMigration {
 
-  async run(direction:'up'|'down' = 'up'):Promise<MigrationResult[]> {
-    this.config = await getAppConfig()
-    this.migrationPath = appPath(this.config.migrations.directory)
+  public async run(direction:'up'|'down' = 'up'):Promise<MigrationResult[]> {
     const migrations = await this.getMigrations()
+    let results:MigrationResult[] = []
     try {
-      return await this.runMigrations(migrations, direction)
+      results = await this.runMigrations(migrations, direction)
     } catch (error) {
       console.error(error.toString())
     }
+    return results
   }
 
-  async runMigrations(migrations:Migration[], direction:'up'|'down'):Promise<MigrationResult[]> {
+  private async runMigrations(maps:MigrationFileMap[], direction:'up'|'down'):Promise<MigrationResult[]> {
     const results:MigrationResult[] = []
-    for (const migration of migrations) {
-      const result = await this.runMigration(migration,direction)
+    const lastRanMigration = this.getLastRanMigration()
+
+    maps = maps.filter(map => map.constructor.shouldRun())
+      .filter(map => {
+        if (direction === 'up' && this.getMigrationStatus(lastRanMigration, map.file) === 'outstanding') return true
+      })
+
+    for (const migrationMap of maps) {
+      const result = await this.runMigration(migrationMap,direction)
       if (result.status === 'error') {
         let job = direction === 'up' ? 'migration' : 'rollback'
-        throw new MigrationError(`Error running ${job}: ${migration.constructor.name}:\n${result.error}`, result)
+        throw new MigrationError(`Error running ${job}: ${migrationMap.constructor.constructor.name}:\n${result.error}`, result)
       }
       results.push(result)
     }
+    if (results.length) this.saveState(maps[maps.length - 1])
     return results;
   }
 
-  async runMigration(migration:Migration, direction:'up'|'down'):Promise<MigrationResult> {
+  private async runMigration(map:MigrationFileMap, direction:'up'|'down'):Promise<MigrationResult> {
+    const migration = map.constructor
     const action = direction === 'up' ? 'migration' : 'rollback'
     const result:MigrationResult = new MigrationResult(migration.constructor.name, action)
     if (!migration.shouldRun()) {
@@ -97,24 +104,21 @@ export default class MigrationRunner {
     }
 
     await db.close()
+
+    if (direction === 'down') {
+      this.clearState()
+    }
     return result
   }
 
-  async getMigrations():Promise<Migration[]> {
-    const migrationFiles = this.getMigrationFiles()
-    const migrations:Migration[] = []
-    for (const file of migrationFiles) {
-      const {default:MigrationClass} = await import(`${this.migrationPath}/${file}`)
-      const schema = new Schema(this.config)
-      const migration:Migration = new MigrationClass(schema)
-      migrations.push(migration)
-    }
-    return migrations
-  }
 
-  private getMigrationFiles():string[] {
-    return fs.readdirSync(this.migrationPath)
-      .filter(file => file.endsWith('.migration.js') || file.endsWith('.migration.ts'))
+
+  private clearState() {
+    fs.writeFileSync(`${this.migrationPath}/.state`, '')
+  }
+  private saveState(map:MigrationFileMap) {
+    const statePath = `${this.migrationPath}/.state`
+    fs.writeFileSync(statePath, map.file.path)
   }
 
 }

@@ -3,7 +3,7 @@ import 'dotenv/config'
 import {program} from 'commander';
 import InitCommand from './init'
 import {MakeCommand} from './make';
-import {MigrateCommand, RollbackCommand} from './migrate';
+import {MigrateCommand, RollbackCommand, StatusCommand} from './migrate';
 
 program
   .description('Elegant Command Line Utility')
@@ -12,4 +12,5 @@ program
   .addCommand(MakeCommand)
   .addCommand(MigrateCommand)
   .addCommand(RollbackCommand)
+  .addCommand(StatusCommand)
   .parse();

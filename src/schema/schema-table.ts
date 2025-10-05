@@ -5,6 +5,7 @@ import {
   StringColumnDefinition, TimeColumnDefinition,
   TimestampColumnDefinition, YearColumnDefinition
 } from './schema-definitions';
+import {Charset, Collation, SchemaDialect} from '../../types';
 
 type SchemaTableMeta = {
   charset:Charset,

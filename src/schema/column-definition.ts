@@ -1,3 +1,5 @@
+import {ColumnDefinitionProperties, Scalar, SchemaDialect} from '../../types';
+
 export default abstract class ColumnDefinition {
   type:string
   dialect:SchemaDialect

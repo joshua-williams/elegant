@@ -1,3 +1,4 @@
+import {Operator, Scalar} from '../types';
 
 class QueryCondition {
   column:string

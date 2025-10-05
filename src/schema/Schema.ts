@@ -1,14 +1,13 @@
 import SchemaTable from './schema-table';
 import Elegant from '../../index';
 import {DropSchemaTable} from './drop-schema-table';
+import {DropSchemaClosure, ElegantConfig, SchemaClosure} from '../../types';
 
 type SchemaMeta = {
   config:ElegantConfig,
   connection:string,
   tables:SchemaTable[]
 }
-type SchemaClosure = (table:SchemaTable) => void;
-type DropSchemaClosure = (table:DropSchemaTable) => void;
 
 export default class Schema {
   private $:SchemaMeta = {

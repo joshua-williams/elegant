@@ -1,4 +1,5 @@
 import ColumnDefinition from './column-definition';
+import {NumericDataType, Scalar} from '../../types';
 
 export class NumberColumnDefinition extends ColumnDefinition {
   type:NumericDataType = 'INT'

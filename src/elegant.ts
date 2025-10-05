@@ -3,6 +3,7 @@ import {Connection} from 'mysql2/promise'
 import QueryBuilder from './query-builder';
 import path from 'node:path';
 import {pathToFileURL} from 'url';
+import {ElegantConfig, Scalar, ConnectionConfig} from '../types';
 
 export default abstract class Elegant {
   public connection:Connection;
@@ -43,7 +44,7 @@ export default abstract class Elegant {
     config = JSON.parse(JSON.stringify(config))
     // check if config has connections configured
     if (!config.connections) throw new Error('No database connections configured')
-    // if no connection name is provided, use default connection
+    // if no connection name is provided, use the default connection
     name = name ? name : config.default;
     // check if the connection name is valid
     if (!name) throw new Error('No database connection name provided')

@@ -1,11 +1,7 @@
 import Schema from './schema/Schema';
 import SchemaTable from './schema/schema-table';
+import {ElegantConfig, MigrationMeta} from '../types';
 
-type MigrationMeta = {
-  config:ElegantConfig,
-  tables:SchemaTable[],
-  schema:Schema,
-}
 
 export default abstract class Migration {
   protected connection:string;
@@ -22,7 +18,7 @@ export default abstract class Migration {
    * @param {Schema} schema - The schema instance associated with the migration.
    * @returns {void}
    */
-  public constructor(schema:Schema) {
+  constructor(schema:Schema) {
     this.schema = schema;
     this.connection = this.connection ||  schema.config.default;
   }
