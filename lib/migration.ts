@@ -12,7 +12,7 @@ export const run = async (direction:'up'|'down' = 'up') => {
       await up(migrations)
       break;
     case 'down':
-      // run migrations down
+      await down(migrations)
       break;
   }
 }
@@ -24,29 +24,38 @@ export const up = async (migrations:Migration[]) => {
     const db = await Elegant.connection(connection)
     for (const table of migration.schema.tables) {
       const sql = table.toSql()
-      const results = await db.query(sql)
-      console.log(results, sql)
+      await db.query(sql)
     }
   }
 }
 
-export const down = (config:ElegantConfig) => {
-
+export const down = async (migrations:Migration[]) => {
+  for(const migration of migrations) {
+    await migration.down()
+    const connection = migration.getConnection()
+    const db = await Elegant.connection(connection)
+    for (const table of migration.schema.tables) {
+      const sql = table.toSql()
+      await db.query(sql)
+    }
+  }
 }
 
-const migrationPath = (config:ElegantConfig) => appPath(config.migrations.directory)
+export const migrationPath = (config:ElegantConfig) => appPath(config.migrations.directory)
 
-const getMigrations = async ( config:ElegantConfig ) => {
+export const getMigrations = async ( config:ElegantConfig ) => {
   const migrationFiles = getMigrationFiles(config)
   const migrations:Migration[] = []
   for (const file of migrationFiles) {
     const {default:Migration} = await import(`${migrationPath(config)}/${file}`)
-    migrations.push(new Migration(new Schema(config)))
+    const schema = new Schema(config)
+    const migration = new Migration(schema)
+    migrations.push(migration)
   }
   return migrations
 }
 
-const getMigrationFiles = (config:ElegantConfig) =>
+export const getMigrationFiles = (config:ElegantConfig) =>
   fs.readdirSync(migrationPath(config))
     .filter(file => file.endsWith('.migration.js') || file.endsWith('.migration.ts'))
 

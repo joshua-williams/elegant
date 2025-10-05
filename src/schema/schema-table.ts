@@ -24,7 +24,7 @@ export default class SchemaTable {
   columns:ColumnDefinition[] = []
   dialect:SchemaDialect;
 
-  constructor(private tableName:string, dialect:SchemaDialect = 'mysql') {
+  constructor(protected tableName:string, dialect:SchemaDialect = 'mysql') {
     this.dialect = dialect
   }
 
@@ -235,7 +235,7 @@ export default class SchemaTable {
     return sql
   }
 
-  private encapsulate(value:string):string {
+  protected encapsulate(value:string):string {
     switch(this.dialect) {
       case 'mysql':    return `\`${value}\``
       case 'postgres': return `"${value}"`

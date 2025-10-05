@@ -29,6 +29,8 @@ export default class UsersMigration extends Migration {
    * @return {void} This method does not return a value.
    */
   down() {
-
+    this.schema.drop('users', (table) => {
+      table.ifExists()
+    })
   }
 }

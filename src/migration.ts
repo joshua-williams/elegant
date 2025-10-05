@@ -9,6 +9,7 @@ type MigrationMeta = {
 
 export default abstract class Migration {
   protected connection:string;
+  public schema:Schema;
 
   $:MigrationMeta = {
       schema:undefined,
@@ -22,7 +23,7 @@ export default abstract class Migration {
    * @returns {void}
    */
   public constructor(schema:Schema) {
-    this.$.schema = schema;
+    this.schema = schema;
     this.connection = this.connection ||  schema.config.default;
   }
 
@@ -44,10 +45,6 @@ export default abstract class Migration {
 
   getConnection():string {
     return this.connection
-  }
-
-  get schema():Schema {
-    return this.$.schema
   }
   get config():ElegantConfig {
     return this.$.config

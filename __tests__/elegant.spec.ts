@@ -15,12 +15,12 @@ describe('connection', () => {
     expect(db).toBeInstanceOf(Elegant);
   })
   it('should get default connection', async () => {
-    db = await Elegant.connection('forecastcrm')
+    db = await Elegant.connection('mysql')
     expect(db).toBeInstanceOf(Elegant);
   })
 
   it('should select', async () => {
-    db = await Elegant.connection('forecastcrm')
+    db = await Elegant.connection('mysl')
     return db.select('select * from migrations')
       .then(res => {
         expect(res).toBeInstanceOf(Array)

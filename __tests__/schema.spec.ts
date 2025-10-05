@@ -1,10 +1,12 @@
 import Schema from '../src/schema/schema';
+import {getAppConfig} from '../lib/config';
 
-let schema = new Schema()
+let schema:Schema;
 
 describe('schema', () => {
-  beforeEach(() => {
-    schema = new Schema()
+  beforeEach(async () => {
+    const config = getAppConfig()
+    schema = new Schema(config)
   })
   it('should create table on specfic connection', () => {
     schema.connection('postgres')
@@ -42,6 +44,22 @@ describe('schema', () => {
         table.string('name').unique()
         console.log(table.toSql())
       })
+    })
+  })
+
+  describe('drop table', () => {
+    it('should drop table', () => {
+      schema.drop('users', table => {
+        table.ifExists()
+        expect(table.toSql()).toEqual('DROP TABLE IF EXISTS `users`')
+      })
+    })
+  })
+
+  describe('inspect database', ()=> {
+    it('should get tables', async () => {
+      const tables = await schema.getTables()
+      console.log(tables)
     })
   })
 });
