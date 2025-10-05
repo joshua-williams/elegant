@@ -9,7 +9,7 @@
       <env name="ELEGANT_BASE_PATH" value="$PROJECT_DIR$/__tests__/app" />
     </envs>
     <scope-kind value="TEST" />
-    <test-file value="$PROJECT_DIR$/__tests__/migration.spec.ts" />
+    <test-file value="$PROJECT_DIR$/__tests__/MigrationRunner.spec.ts" />
     <test-names>
       <test-name value="migration" />
       <test-name value="should fun migration" />

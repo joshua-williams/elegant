@@ -1,17 +1,19 @@
 import {Command} from 'commander'
-import migrate from '../lib/migration';
+import MigrationRunner from '../lib/MigrationRunner';
+
+const runner = new MigrationRunner();
 
 export const MigrateCommand = new Command('migrate')
   .description('Database migrations')
   .action(async (options) => {
-    console.log('Migrating database...')
-    await migrate()
+    await runner.run('up')
+    console.log('Database migration completed')
   })
 
 export const RollbackCommand = new Command('migrate:rollback')
   .description('Rollback database migrations')
   .action(async (options) => {
-    console.log('Rolling back database migration...')
-    await migrate()
+    await runner.run('down')
+    console.log('Database rollback completed')
   })
 

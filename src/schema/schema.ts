@@ -32,9 +32,9 @@ export default class Schema {
     closure(table)
   }
 
-  public drop(tableName:string, closure:DropSchemaClosure):void {
+  public drop(tableName:string, closure?:DropSchemaClosure):void {
     const dropTable:DropSchemaTable = new DropSchemaTable(tableName)
-    closure(dropTable)
+    if (closure) closure(dropTable)
     this.$.tables.push(dropTable)
   }
 
