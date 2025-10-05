@@ -5,15 +5,17 @@ const runner = new MigrationRunner();
 
 export const MigrateCommand = new Command('migrate')
   .description('Database migrations')
-  .action(async (options) => {
+  .action(async () => {
     await runner.run('up')
     console.log('Database migration completed')
   })
 
 export const RollbackCommand = new Command('migrate:rollback')
   .description('Rollback database migrations')
-  .action(async (options) => {
-    await runner.run('down')
-    console.log('Database rollback completed')
+  .action(async () => {
+    runner.run('down')
+      .then(results => {
+        console.log(JSON.stringify(results, null, 2))
+      })
   })
 
