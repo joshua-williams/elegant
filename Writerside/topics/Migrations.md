@@ -10,7 +10,7 @@ The Elegant Schema instance provides database agnostic support for creating and 
 You may use the `make:migration` Elegant command to generate a database migration. The new migration will be placed in your `resources/database/migrations` directory. Each migration filename contains a timestamp that allows Elegant to determine the order of the migrations:
 
 ```bash
-elegant make:migration create_users_table
+elegant make:migration CreateUsersTable
 ```
 If you would like to specify a custom path for the generated migration, you may use the --path option when executing the make:migration command. The given path should be relative to your application's base path.
 
@@ -112,3 +112,23 @@ this.schema.create('users', (table) => {
 ```
 
 The `temporary` method may be used to indicate that the table should be "temporary". Temporary tables are only visible to the current connection's database session and are dropped automatically when the connection is closed:
+
+
+## Running Migrations
+To run all of your outstanding migrations, execute the migrate Elegant command:
+
+```bash
+elegant migrate
+```
+
+If you would like to see which migrations have run thus far, you may use the migrate:status Elegant command:
+```bash
+elegant migrate:status
+```
+
+## Rolling Back Migrations
+To roll back the latest migration operation, you may use the rollback Elegant command. This command rolls back the last "batch" of migrations
+
+```bash
+elegant migrate:rollback
+```

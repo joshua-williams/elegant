@@ -25,7 +25,7 @@ DB_DATABASE=/absolute/path/to/database.sqlite
 
 > **elegant init**
 >
-> If you use the `elegant init` commandto create your Elegant configuration and select SQLite as your database, Elegant will automatically create a resources/database/database.sqlite file and run the default database migrations for you.
+> If you use the `elegant init` command to create your Elegant configuration and select SQLite as your database, Elegant will automatically create a resources/database/database.sqlite file and run the default database migrations for you.
 >
 {style="note"}
 
