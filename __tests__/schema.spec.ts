@@ -47,6 +47,13 @@ describe('schema', () => {
     })
   })
 
+  describe('inspect database', ()=> {
+    it('should get tables', async () => {
+      const tables = await schema.getTables()
+      console.log(tables)
+    })
+  })
+
   describe('drop table', () => {
     it('should drop table', () => {
       schema.drop('users', table => {
@@ -56,10 +63,5 @@ describe('schema', () => {
     })
   })
 
-  describe('inspect database', ()=> {
-    it('should get tables', async () => {
-      const tables = await schema.getTables()
-      console.log(tables)
-    })
-  })
+
 });

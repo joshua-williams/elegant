@@ -1,5 +1,5 @@
 import * as fs from 'node:fs';
-import {Connection, createConnection} from 'mysql2/promise'
+import {Connection} from 'mysql2/promise'
 import QueryBuilder from './query-builder';
 import path from 'node:path';
 import {pathToFileURL} from 'url';

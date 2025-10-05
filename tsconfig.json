@@ -1,16 +1,16 @@
 {
   "compilerOptions": {
     "baseUrl": "./",
-    "module": "esnext",
+    "module": "preserve",
     "target": "esnext",
-    "moduleResolution": "bundler",
     "outDir": "./dist",
     "sourceMap": true,
+    "moduleResolution": "bundler",
     "declaration": true,
     "declarationMap": true,
     "isolatedModules": true,
     "esModuleInterop": true,
-    "types": ["node", "jest"],
+    "types": ["node", "vitest/globals"],
      "lib": ["esnext"],
   },
   "include": [

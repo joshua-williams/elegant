@@ -9,7 +9,7 @@ describe('schema-table', () => {
     beforeEach(async () => {
       const configPath = basePath('__tests__/app/elegant.config.js')
       const config = await import(configPath)
-      table = new SchemaTable('users', 'default')
+      table = new SchemaTable('users', 'mysql')
     })
 
     describe('string columns', () => {
