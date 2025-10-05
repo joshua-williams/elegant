@@ -1,5 +1,4 @@
 import MigrationRunner from '../lib/MigrationRunner';
-import {getAppConfig} from '../lib/config';
 
 describe('migration', () => {
   let runner:MigrationRunner = new MigrationRunner();
