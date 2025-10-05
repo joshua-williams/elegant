@@ -1,4 +1,4 @@
-import Schema from '../src/schema/schema';
+import Schema from '../src/schema/Schema';
 import {getAppConfig} from '../lib/config';
 
 let schema:Schema;
@@ -62,6 +62,4 @@ describe('schema', () => {
       })
     })
   })
-
-
 });

@@ -43,7 +43,19 @@ If your migration will be interacting with a database connection other than your
 
 ```typescript
 export class CreateUsersTable extends Migration {
-  $connection = 'pgsql';
+  connection = 'pgsql';
+}
+```
+### Skipping Migrations
+
+Sometimes a migration might be meant to support a feature that is not yet active and you do not want it to run yet. In this case you may define a `shouldRun` method on the migration. If the `shouldRun` method returns `false`, the migration will be skipped:
+
+```typescript
+
+export class CreateUsersTable extends Migration {
+  shouldRun() {
+    return false;
+  }
 }
 ```
 

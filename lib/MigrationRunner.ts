@@ -3,9 +3,17 @@ import {appPath} from './util';
 import fs from 'node:fs';
 import Elegant, {Migration, Schema} from '../index';
 
+type MigrationResult = {
+  migration:string,
+  result:string,
+  error?:string,
+  timestamp:number,
+  duration:number,
+}
 export default class MigrationRunner {
   private config:ElegantConfig;
-  migrationPath:string;
+  private results:MigrationResult[] = [];
+  private migrationPath:string;
 
   async run(direction:'up'|'down' = 'up'):Promise<void> {
     this.config = await getAppConfig()
@@ -19,10 +27,22 @@ export default class MigrationRunner {
       await this.down(migrations)
       break;
     }
+    console.log(JSON.stringify(this.results, null, 2))
   }
 
   async up(migrations: Migration[]):Promise<void> {
     for (const migration of migrations) {
+      const result:MigrationResult = {
+        migration: migration.constructor.name,
+        result: 'success',
+        timestamp: Date.now(),
+        duration: 0,
+      }
+      if (!migration.shouldRun()) {
+        result.result = 'skip'
+        this.results.push(result)
+        continue
+      }
       await migration.up()
       const connection = migration.getConnection()
       const db = await Elegant.connection(connection)
@@ -30,10 +50,14 @@ export default class MigrationRunner {
         for (const table of migration.schema.tables) {
           const sql = table.toSql()
           await db.query(sql)
+          result.duration = Date.now() - result.timestamp
+          this.results.push(result)
         }
       } catch (error) {
         await db.close()
-        console.log(`Migrating ${migration.constructor.name} failed. ${error.message}`)
+        result.result = 'error'
+        result.error = error.message
+        this.results.push(result)
       }
       await db.close()
     }
@@ -41,6 +65,17 @@ export default class MigrationRunner {
 
   async down (migrations:Migration[]):Promise<void> {
     for(const migration of migrations) {
+      const result:MigrationResult = {
+        migration: migration.constructor.name,
+        result: 'success',
+        timestamp: Date.now(),
+        duration: 0,
+      }
+      if (!migration.shouldRun()) {
+        result.result = 'skip'
+        this.results.push(result)
+        continue
+      }
       await migration.down()
       const connection = migration.getConnection()
       const db = await Elegant.connection(connection)
@@ -48,10 +83,14 @@ export default class MigrationRunner {
         for (const table of migration.schema.tables) {
           const sql = table.toSql()
           await db.query(sql)
+          result.duration = Date.now() - result.timestamp
+          this.results.push(result)
         }
       } catch (error) {
         await db.close()
-        console.log(`Rolling back ${migration.constructor.name} failed. ${error.message}`)
+        result.result = 'error'
+        result.error = error.message
+        this.results.push(result)
       }
       await db.close()
     }
@@ -61,9 +100,9 @@ export default class MigrationRunner {
     const migrationFiles = this.getMigrationFiles()
     const migrations:Migration[] = []
     for (const file of migrationFiles) {
-      const {default:Migration} = await import(`${this.migrationPath}/${file}`)
+      const {default:MigrationClass} = await import(`${this.migrationPath}/${file}`)
       const schema = new Schema(this.config)
-      const migration = new Migration(schema)
+      const migration:Migration = new MigrationClass(schema)
       migrations.push(migration)
     }
     return migrations

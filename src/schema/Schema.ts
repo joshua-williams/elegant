@@ -1,5 +1,5 @@
 import SchemaTable from './schema-table';
-import Elegant, {Migration} from '../../index';
+import Elegant from '../../index';
 import {DropSchemaTable} from './drop-schema-table';
 
 type SchemaMeta = {

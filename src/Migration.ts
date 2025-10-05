@@ -1,4 +1,4 @@
-import Schema from './schema/schema';
+import Schema from './schema/Schema';
 import SchemaTable from './schema/schema-table';
 
 type MigrationMeta = {
@@ -42,6 +42,10 @@ export default abstract class Migration {
    * @return {Promise<void>} A promise that resolves when the operation is completed.
    */
   public abstract down():Promise<void>
+
+  public shouldRun():boolean {
+    return true
+  }
 
   getConnection():string {
     return this.connection
