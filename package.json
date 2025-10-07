@@ -1,5 +1,5 @@
 {
-  "name": "elegant",
+  "name": "@pristine/elegant",
   "version": "1.0.0-rc1",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
