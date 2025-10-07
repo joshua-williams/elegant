@@ -51,8 +51,9 @@ export default abstract class Elegant {
     const dialect = config.connections[name].dialect
     let elegant:Elegant;
     switch (dialect) {
+      case 'mariadb':
       case 'mysql':
-        const MySql = ( await import(path.resolve(__filename, '../mysql'))).default;
+        const MySql = ( await import(path.resolve(__filename, '../../lib/elegant/mysql'))).default;
         elegant = new MySql();
         break;
       default:

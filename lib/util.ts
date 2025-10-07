@@ -40,7 +40,7 @@ export const appPath = (subPath?:string) => {
  * Logs as an error if a non-zero exit code is provided.
  * @param {number} [code=0] - Exit code to terminate the process with. Defaults to 0 indicating a successful exit.
  **/
-export const exit = (msg?:string, code:number=0) => {
+export const exit = (msg?:any, code:number=0) => {
   if (msg) {
     if (code) {
       console.error(msg)

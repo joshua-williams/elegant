@@ -5,7 +5,7 @@ let schema:Schema;
 
 describe('schema', () => {
   beforeEach(async () => {
-    const config = getAppConfig()
+    const config = await getAppConfig()
     schema = new Schema(config)
   })
   it('should create table on specfic connection', () => {
@@ -13,8 +13,8 @@ describe('schema', () => {
       .create('users', (table) => {
         table.temporary()
           .engine('InnoDB')
-          .charset('utf8')
-          .collation('utf8_unicode_ci')
+          .charset('utf8mb3')
+          .collation('utf16_general_ci')
           .comment('users table')
         table.integer('id', 255).autoIncrement().unique().primary()
         table.string('name').unique()

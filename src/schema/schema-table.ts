@@ -238,11 +238,12 @@ export default class SchemaTable {
 
   protected encapsulate(value:string):string {
     switch(this.dialect) {
+      case 'mariadb':
       case 'mysql':    return `\`${value}\``
       case 'postgres': return `"${value}"`
       case 'mssql':    return `[${value}]`
       case 'sqlite':
-      default:   return value
+      default:         return value
     }
   }
 

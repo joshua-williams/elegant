@@ -3,7 +3,6 @@ import {BaseMigration} from './BaseMigration';
 import fs from 'node:fs';
 import {MigrationFileMap} from '../types';
 
-
 class MigrationResult {
   migration:string
   action: 'migration'|'rollback' = 'migration'
@@ -52,7 +51,6 @@ export default class MigrationRunner extends BaseMigration {
   private async runMigrations(maps:MigrationFileMap[], direction:'up'|'down'):Promise<MigrationResult[]> {
     const results:MigrationResult[] = []
     const lastRanMigration = this.getLastRanMigration()
-
     maps = maps.filter(map => map.constructor.shouldRun())
       .filter(map => {
         if (direction === 'up' && this.getMigrationStatus(lastRanMigration, map.file) === 'outstanding') return true
@@ -64,9 +62,9 @@ export default class MigrationRunner extends BaseMigration {
         let job = direction === 'up' ? 'migration' : 'rollback'
         throw new MigrationError(`Error running ${job}: ${migrationMap.constructor.constructor.name}:\n${result.error}`, result)
       }
+      this.saveState(migrationMap)
       results.push(result)
     }
-    if (results.length) this.saveState(maps[maps.length - 1])
     return results;
   }
 
@@ -98,12 +96,11 @@ export default class MigrationRunner extends BaseMigration {
 
     try {
       await db.transaction(executeMigrationQueries)
+      await db.close()
     } catch (error) {
       result.status = 'error'
       result.error = error.message
     }
-
-    await db.close()
 
     if (direction === 'down') {
       this.clearState()

@@ -81,19 +81,11 @@ export class BaseMigration {
   getMigrationStatus(lastRanMigration:MigrationFile, migrationFile:MigrationFile, action:'migrate'|'rollback'='migrate'):MigrationStatus {
     switch (action) {
       case 'migrate':
-        if (migrationFile.date.getTime() <= lastRanMigration.date.getTime()) {
-          return 'success'
-        } else if (migrationFile.date.getTime() > lastRanMigration.date.getTime()) {
-          return 'outstanding'
-        }
-        break;
+        if (! lastRanMigration) return 'outstanding'
+        return (migrationFile.date.getTime() <= lastRanMigration.date.getTime()) ?  'success' : 'outstanding'
       case "rollback":
-        if (migrationFile.date.getTime() >= lastRanMigration.date.getTime()) {
-          return 'success'
-        } else if (migrationFile.date.getTime() < lastRanMigration.date.getTime()) {
-          return 'outstanding'
-        }
-        break;
+        if (! lastRanMigration) return 'outstanding'
+        return (migrationFile.date.getTime() >= lastRanMigration.date.getTime()) ? 'success' : 'outstanding'
     }
   }
   /**

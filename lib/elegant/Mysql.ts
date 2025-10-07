@@ -1,9 +1,9 @@
 import {createConnection} from 'mysql2/promise';
-import Elegant from './elegant';
-import {Scalar, ConnectionConfig} from '../types';
+import Elegant from '../../src/elegant';
+import {Scalar, ConnectionConfig} from '../../types';
 
-class MySql extends Elegant {
-  async connect(config: ConnectionConfig): Promise<MySql> {
+export default class Mysql extends Elegant {
+  async connect(config: ConnectionConfig): Promise<Mysql> {
     delete config.dialect
     this.connection = await createConnection(config)
     return this;
@@ -93,5 +93,3 @@ class MySql extends Elegant {
     return this.connection.end();
   }
 }
-
-export default MySql
