@@ -1,7 +1,10 @@
-import SchemaTable from './schema-table';
+import SchemaTable from '../../lib/schema/SchemaTable';
 import Elegant from '../../index';
-import {DropSchemaTable} from './drop-schema-table';
-import {DropSchemaClosure, ElegantConfig, SchemaClosure} from '../../types';
+import {DropSchemaTable} from '../../lib/schema/DropSchemaTable';
+import {DropSchemaClosure, ElegantConfig, SchemaClosure, SchemaDialect} from '../../types';
+import MysqlSchemaTable from '../../lib/schema/MysqlSchemaTable';
+import MariaDbSchemaTable from '../../lib/schema/MariaDbSchemaTable';
+import PostgresSchemaTable from '../../lib/schema/PostgresSchemaTable';
 
 type SchemaMeta = {
   config:ElegantConfig,
@@ -25,14 +28,19 @@ export default class Schema {
     return this
   }
 
-  public create(tableName:string, closure:SchemaClosure):void {
-    const table = new SchemaTable(tableName)
+  public create(tableName:string, closure:SchemaClosure, dialect:SchemaDialect='mysql'):void {
+    let table:SchemaTable;
+    switch(dialect) {
+      case 'mysql': table = new MysqlSchemaTable(tableName); break;
+      case 'mariadb': table = new MariaDbSchemaTable(tableName); break;
+      case "postgres": table = new PostgresSchemaTable(tableName); break;
+    }
     this.$.tables.push(table)
     closure(table)
   }
 
-  public drop(tableName:string, closure?:DropSchemaClosure):void {
-    const dropTable:DropSchemaTable = new DropSchemaTable(tableName)
+  public drop(tableName:string, closure?:DropSchemaClosure, dialect:SchemaDialect='mysql'):void {
+    const dropTable:DropSchemaTable = new DropSchemaTable(tableName, dialect)
     if (closure) closure(dropTable)
     this.$.tables.push(dropTable)
   }
@@ -40,7 +48,7 @@ export default class Schema {
   public async getTables():Promise<string[]> {
     const db = await Elegant.connection(this.$.connection)
 
-    const tables = await db.query(`SHOW TABLES`)
+    const tables:any[] = await db.query(`SHOW TABLES`)
     return tables.map(table => table)
   }
 

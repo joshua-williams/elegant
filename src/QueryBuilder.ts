@@ -39,7 +39,8 @@ class QueryMeta {
   previousCommand: 'select' | 'insert' | 'update' | 'delete' | 'scalar' | 'table'| 'where' | 'and' | 'or' = 'select'
   conditions:QueryCondition[] = []
 }
-class QueryBuilder {
+
+export default class QueryBuilder {
   private $:QueryMeta = new QueryMeta()
 
   reset():QueryBuilder {
@@ -149,5 +150,3 @@ class QueryBuilder {
     return this.$
   }
 }
-
-export default QueryBuilder

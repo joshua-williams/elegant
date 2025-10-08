@@ -2,8 +2,8 @@
 // @ts-ignore
 
 import {Migration} from './index';
-import SchemaTable from './src/schema/schema-table';
-import {DropSchemaTable} from './src/schema/drop-schema-table';
+import SchemaTable from './lib/schema/SchemaTable';
+import {DropSchemaTable} from './lib/schema/DropSchemaTable';
 import Schema from './src/schema/Schema';
 
 type ElegantConfig = {
@@ -80,3 +80,5 @@ declare module 'ascii-table' {
     toString(): string
   }
 }
+
+type SchemaTableConstructor = new (tableName:string) => SchemaTable

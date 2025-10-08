@@ -1,4 +1,4 @@
-import ColumnDefinition from './column-definition';
+import ColumnDefinition from './ColumnDefinition';
 import {NumericDataType, Scalar} from '../../types';
 
 export class NumberColumnDefinition extends ColumnDefinition {
@@ -71,6 +71,35 @@ export class TimestampColumnDefinition extends ColumnDefinition {
   }
 }
 
+export class TimeColumnDefinition extends ColumnDefinition {
+  type:string = 'TIME'
+  constructor(name:string, defaultValue?:'CURRENT_TIME' | Date, precision?:number, nullable?:boolean) {
+    super(name)
+    this.$.nullable = nullable
+    if (precision) this.type = `TIME(${precision})`
+    if (defaultValue instanceof Date) {
+      this.$.default =`${defaultValue.getHours()}:${defaultValue.getMinutes()}:${defaultValue.getSeconds()}`
+    } else if (defaultValue === 'CURRENT_TIME') {
+      this.$.default = 'CURRENT_TIME'
+    } else {
+      this.$.default = defaultValue
+    }
+  }
+  precision(precision:number) {
+    this.type = `TIME(${precision})`
+    return this
+  }
+}
+
+export class BooleanColumnDefinition extends ColumnDefinition {
+  type:string = 'BOOLEAN'
+  constructor(name:string, defaultValue?:boolean, nullable?:boolean) {
+    super(name)
+    this.$.default = defaultValue
+    this.$.nullable = nullable
+  }
+}
+
 export class DateTimeColumnDefinition extends TimestampColumnDefinition {
   type:string = 'DATETIME'
 }
@@ -81,20 +110,5 @@ export class YearColumnDefinition extends ColumnDefinition {
     super(name)
     this.$.default = defaultValue
     this.$.nullable = nullable
-  }
-}
-
-export class TimeColumnDefinition extends ColumnDefinition {
-  type:string = 'TIME'
-  constructor(name:string, precison?:number, defaultValue?:string|number, nullable?:boolean) {
-    super(name)
-    this.$.default = defaultValue
-    this.$.nullable = nullable
-    if (precison) {
-      this.type = `TIME(${precison})`
-    } else {
-      this.type = 'TIME'
-    }
-
   }
 }

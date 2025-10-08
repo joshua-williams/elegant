@@ -1,12 +1,12 @@
 import {createConnection} from 'mysql2/promise';
-import Elegant from '../../src/elegant';
+import Elegant from '../../src/Elegant';
 import {Scalar, ConnectionConfig} from '../../types';
 
 export default class Mysql extends Elegant {
-  async connect(config: ConnectionConfig): Promise<Mysql> {
+  async connect(config: ConnectionConfig): Promise<Elegant> {
     delete config.dialect
     this.connection = await createConnection(config)
-    return this;
+    return this as Elegant;
   }
 
   async select<T>(query: string, params?: any[]): Promise<T[]> {
@@ -33,6 +33,16 @@ export default class Mysql extends Elegant {
       .then(results => results[0].affectedRows)
   }
 
+  async statement(query: string, params: Scalar[] = []): Promise<any> {
+    const statement = await this.connection.prepare(query)
+    const promises:Promise<any>[] = []
+    for (const param of params) {
+      const promise = statement.execute(param)
+        .then(results => results[0][0])
+      promises.push(promise)
+    }
+    return Promise.all(promises)
+  }
   /**
    *
    * Executes a prepared SQL statement with the given query and parameters.
@@ -44,7 +54,7 @@ export default class Mysql extends Elegant {
    * Each parameter set corresponds to a single execution of the query.
    * @return {Promise<any>} A Promise that resolves to an array of objects containing the results of the query execution.
    */
-  async statement(query: string, params: Scalar[][] = []): Promise<any> {
+  async statements(query: string, params: Scalar[][] = []): Promise<any> {
     const statement = await this.connection.prepare(query)
     const promises:Promise<any>[] = []
     for (const param of params) {

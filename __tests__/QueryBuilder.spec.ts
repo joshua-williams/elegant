@@ -1,4 +1,4 @@
-import QueryBuilder from '../src/query-builder';
+import QueryBuilder from '../src/QueryBuilder';
 
 describe('query builder', () => {
   let qb:QueryBuilder = new QueryBuilder();

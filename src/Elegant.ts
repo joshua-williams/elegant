@@ -1,6 +1,6 @@
 import * as fs from 'node:fs';
 import {Connection} from 'mysql2/promise'
-import QueryBuilder from './query-builder';
+import QueryBuilder from './QueryBuilder';
 import path from 'node:path';
 import {pathToFileURL} from 'url';
 import {ElegantConfig, Scalar, ConnectionConfig} from '../types';
@@ -25,7 +25,9 @@ export default abstract class Elegant {
 
   public abstract delete(query:string, params?:Scalar[]):Promise<any>
 
-  public abstract statement(query:string, params?:Scalar[][]):Promise<any>
+  public abstract statement(query:string, params?:Scalar[]):Promise<any>
+
+  public abstract statements(query:string, params?:Scalar[][]):Promise<any>
 
   public abstract scalar(query:string, params?:Scalar[]):Promise<Scalar>
 
@@ -52,14 +54,22 @@ export default abstract class Elegant {
     let elegant:Elegant;
     switch (dialect) {
       case 'mariadb':
+        const MariaDb = ( await import(path.resolve(__filename, '../../lib/elegant/MariaDb'))).default;
+        elegant = new MariaDb();
+        break;
       case 'mysql':
-        const MySql = ( await import(path.resolve(__filename, '../../lib/elegant/mysql'))).default;
+        const MySql = ( await import(path.resolve(__filename, '../../lib/elegant/Mysql'))).default;
         elegant = new MySql();
         break;
+      case 'postgres':
+        const Postgres = ( await import(path.resolve(__filename, '../../lib/elegant/Postgres'))).default;
+        elegant = new Postgres();
+        break
       default:
         throw new Error(`Unsupported database driver: ${dialect}`)
     }
     this.pool.set(name, elegant)
+
     return elegant.connect(config.connections[name])
   }
 

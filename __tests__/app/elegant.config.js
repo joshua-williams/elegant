@@ -1,6 +1,22 @@
 export default{
-  default: 'mysql',
+  default: 'postgres',
   connections: {
+    postgres: {
+      dialect: 'postgres',
+      host: 'localhost',
+      port: 5432,
+      database: 'elegant',
+      user: 'root',
+      password: 'password',
+    },
+    mariadb: {
+      dialect: 'mariadb',
+      host: 'localhost',
+      port: 3333,
+      database: 'elegant',
+      user: 'root',
+      password: 'password',
+    },
     mysql: {
       dialect: 'mysql',
       host: 'localhost',
