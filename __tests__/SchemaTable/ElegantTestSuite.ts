@@ -1,4 +1,4 @@
-import SchemaTable from '../../lib/schema/SchemaTable';
+import ElegantTable from '../../lib/schema/ElegantTable';
 import {SchemaTableConstructor} from '../../types';
 import {exit} from '../../lib/util';
 
@@ -14,7 +14,7 @@ const enclose = (name:string, value:string) => {
 export const runStringTestSuite = (name:string, Table:SchemaTableConstructor) => {
 
   describe(`${name} string columns`, () => {
-    let table:SchemaTable;
+    let table:ElegantTable;
 
     beforeEach(() => {
       table = new Table('users')
@@ -55,7 +55,7 @@ export const runStringTestSuite = (name:string, Table:SchemaTableConstructor) =>
 
 export const runNumberTestSuite = (name:string, Table:SchemaTableConstructor) => {
   describe(`${name} numeric columns`, () => {
-    let table:SchemaTable;
+    let table:ElegantTable;
 
     beforeEach(() => {
       table = new Table('users')
@@ -144,7 +144,7 @@ export const runNumberTestSuite = (name:string, Table:SchemaTableConstructor) =>
 
 export const runDateTimeTestSuite = (name:string, Table:SchemaTableConstructor) => {
   describe(`${name} timestamp columns`, () => {
-    let table:SchemaTable;
+    let table:ElegantTable;
 
     beforeEach(() => {
       table = new Table('users')

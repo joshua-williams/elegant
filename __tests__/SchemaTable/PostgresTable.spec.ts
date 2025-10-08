@@ -1,10 +1,10 @@
-import PostgresSchemaTable from '../../lib/schema/PostgresSchemaTable';
+import PostgresTable from '../../lib/schema/PostgresTable';
 
-describe('MysqlSchemaTable', () => {
-  let table:PostgresSchemaTable;
+describe('MysqlTable', () => {
+  let table:PostgresTable;
 
   beforeEach(() => {
-    table = new PostgresSchemaTable('users')
+    table = new PostgresTable('users')
   })
 
   describe('boolean', () => {

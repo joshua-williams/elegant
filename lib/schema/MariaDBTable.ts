@@ -1,7 +1,7 @@
 import ColumnDefinition from 'lib/schema/ColumnDefinition';
 import { SchemaDialect } from 'types';
-import SchemaTable from "./SchemaTable";
+import ElegantTable from "./ElegantTable";
 import {TimestampColumnDefinition} from './TableDefinitions';
-import MysqlSchemaTable from './MysqlSchemaTable';
+import MysqlTable from './MysqlTable';
 
-export default class MariaDbSchemaTable extends MysqlSchemaTable {}
+export default class MariaDBTable extends MysqlTable {}

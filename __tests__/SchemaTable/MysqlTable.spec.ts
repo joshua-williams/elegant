@@ -1,10 +1,10 @@
-import MysqlSchemaTable from '../../lib/schema/MysqlSchemaTable';
+import MysqlTable from '../../lib/schema/MysqlTable';
 
-describe('MysqlSchemaTable', () => {
-  let table:MysqlSchemaTable;
+describe('MysqlTable', () => {
+  let table:MysqlTable;
 
   beforeEach(() => {
-    table = new MysqlSchemaTable('users')
+    table = new MysqlTable('users')
   })
 
   describe('string columns', () => {

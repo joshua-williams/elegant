@@ -1,5 +1,5 @@
 import Schema from './schema/Schema';
-import SchemaTable from './schema/schema-table';
+import ElegantTable from '../lib/schema/ElegantTable';
 import {ElegantConfig, MigrationMeta} from '../types';
 
 
@@ -49,7 +49,7 @@ export default abstract class Migration {
   get config():ElegantConfig {
     return this.$.config
   }
-  get tables():SchemaTable[] {
+  get tables():ElegantTable[] {
     return this.$.tables
   }
 }

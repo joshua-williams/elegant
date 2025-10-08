@@ -88,7 +88,7 @@ export default class MigrationRunner extends BaseMigration {
 
     const executeMigrationQueries = async (db:Elegant) => {
       for (const table of migration.schema.tables) {
-        const sql = table.toSql()
+        const sql = table.toCreateStatement()
         await db.query(sql)
         result.duration = Date.now() - result.timestamp
       }

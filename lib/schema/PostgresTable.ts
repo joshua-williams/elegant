@@ -1,9 +1,9 @@
 import ColumnDefinition from 'lib/schema/ColumnDefinition';
-import SchemaTable from "./SchemaTable";
+import ElegantTable from "./ElegantTable";
 import {BooleanColumnDefinition, TimestampColumnDefinition} from './TableDefinitions';
 import {exit} from '../util';
 
-export default class PostgresSchemaTable extends SchemaTable {
+export default class PostgresTable extends ElegantTable {
   protected enclosure: string = '"';
 
   boolean(columnName: string, defaultValue?: boolean, nullable?: boolean): ColumnDefinition {

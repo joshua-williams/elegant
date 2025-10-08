@@ -2,8 +2,8 @@
 // @ts-ignore
 
 import {Migration} from './index';
-import SchemaTable from './lib/schema/SchemaTable';
-import {DropSchemaTable} from './lib/schema/DropSchemaTable';
+import ElegantTable from './lib/schema/ElegantTable';
+import {DropTable} from './lib/schema/DropTable';
 import Schema from './src/schema/Schema';
 
 type ElegantConfig = {
@@ -31,11 +31,11 @@ type ConnectionConfig = {
 }
 
 type Scalar = string | number | boolean | null
-type SchemaClosure = (table:SchemaTable) => void;
-type DropSchemaClosure = (table:DropSchemaTable) => void;
+type SchemaClosure = (table:ElegantTable) => void;
+type DropSchemaClosure = (table:DropTable) => void;
 type MigrationMeta = {
   config:ElegantConfig,
-  tables:SchemaTable[],
+  tables:ElegantTable[],
   schema:Schema,
 }
 
@@ -81,4 +81,4 @@ declare module 'ascii-table' {
   }
 }
 
-type SchemaTableConstructor = new (tableName:string) => SchemaTable
+type SchemaTableConstructor = new (tableName:string) => ElegantTable

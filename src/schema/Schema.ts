@@ -1,15 +1,15 @@
-import SchemaTable from '../../lib/schema/SchemaTable';
+import ElegantTable from '../../lib/schema/ElegantTable';
 import Elegant from '../../index';
-import {DropSchemaTable} from '../../lib/schema/DropSchemaTable';
+import {DropTable} from '../../lib/schema/DropTable';
 import {DropSchemaClosure, ElegantConfig, SchemaClosure, SchemaDialect} from '../../types';
-import MysqlSchemaTable from '../../lib/schema/MysqlSchemaTable';
-import MariaDbSchemaTable from '../../lib/schema/MariaDbSchemaTable';
-import PostgresSchemaTable from '../../lib/schema/PostgresSchemaTable';
+import MysqlTable from '../../lib/schema/MysqlTable';
+import MariaDBTable from '../../lib/schema/MariaDBTable';
+import PostgresTable from '../../lib/schema/PostgresTable';
 
 type SchemaMeta = {
   config:ElegantConfig,
   connection:string,
-  tables:SchemaTable[]
+  tables:ElegantTable[]
 }
 
 export default class Schema {
@@ -29,18 +29,18 @@ export default class Schema {
   }
 
   public create(tableName:string, closure:SchemaClosure, dialect:SchemaDialect='mysql'):void {
-    let table:SchemaTable;
+    let table:ElegantTable;
     switch(dialect) {
-      case 'mysql': table = new MysqlSchemaTable(tableName); break;
-      case 'mariadb': table = new MariaDbSchemaTable(tableName); break;
-      case "postgres": table = new PostgresSchemaTable(tableName); break;
+      case 'mysql': table = new MysqlTable(tableName); break;
+      case 'mariadb': table = new MariaDBTable(tableName); break;
+      case "postgres": table = new PostgresTable(tableName); break;
     }
     this.$.tables.push(table)
     closure(table)
   }
 
   public drop(tableName:string, closure?:DropSchemaClosure, dialect:SchemaDialect='mysql'):void {
-    const dropTable:DropSchemaTable = new DropSchemaTable(tableName, dialect)
+    const dropTable:DropTable = new DropTable(tableName, dialect)
     if (closure) closure(dropTable)
     this.$.tables.push(dropTable)
   }
@@ -52,7 +52,7 @@ export default class Schema {
     return tables.map(table => table)
   }
 
-  get tables():SchemaTable[] {
+  get tables():ElegantTable[] {
     return this.$.tables
   }
   get config():ElegantConfig {

@@ -1,7 +1,7 @@
 import Elegant from '../src/Elegant'
 import Schema from '../src/schema/Schema';
 import {getAppConfig} from '../lib/config';
-import SchemaTable from '../lib/schema/SchemaTable';
+import ElegantTable from '../lib/schema/ElegantTable';
 
 
 const runTestsWithConnection = (connection:string) => {
@@ -14,7 +14,7 @@ const runTestsWithConnection = (connection:string) => {
       const config = await getAppConfig()
       db = await Elegant.connection(connection)
       schema = new Schema(config)
-      const createTableFn = (table:SchemaTable) => {
+      const createTableFn = (table:ElegantTable) => {
         table.id()
         table.string('name')
         table.string('email').unique()
@@ -29,9 +29,7 @@ const runTestsWithConnection = (connection:string) => {
       schema.create('users', createTableFn, 'postgres')
       const [table] = schema.tables
       const sql = table.toCreateStatement()
-      throw new Error(sql)
       await db.query(sql)
-      throw new Error(sql)
     })
 
     beforeEach(async () => {

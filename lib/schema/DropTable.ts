@@ -1,7 +1,7 @@
-import SchemaTable from './SchemaTable';
+import ElegantTable from './ElegantTable';
 import ColumnDefinition from './ColumnDefinition';
 
-export class DropSchemaTable extends SchemaTable {
+export class DropTable extends ElegantTable {
   protected enclosure: string;
   _ifExists:boolean = false;
 
@@ -19,7 +19,7 @@ export class DropSchemaTable extends SchemaTable {
     return `DROP TABLE ${ifExists}${this.enclose(this.tableName)}`
   }
 
-  ifExists():DropSchemaTable {
+  ifExists():DropTable {
     this._ifExists = true
     return this
   }

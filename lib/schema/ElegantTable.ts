@@ -14,7 +14,7 @@ type SchemaTableMeta = {
   comment:string
 }
 
-export default abstract class SchemaTable {
+export default abstract class ElegantTable {
   protected abstract enclosure:string;
   protected columns:ColumnDefinition[] = []
   protected tableName:string
@@ -146,27 +146,27 @@ export default abstract class SchemaTable {
   abstract boolean(columnName:string, defaultValue?:boolean, nullable?:boolean):ColumnDefinition
 
 
-  charset(charset:Charset):SchemaTable {
+  charset(charset:Charset):ElegantTable {
     this.$.charset = charset
     return this
   }
 
-  collation(collation:Collation):SchemaTable {
+  collation(collation:Collation):ElegantTable {
     this.$.collation = collation
     return this
   }
 
-  engine(engine:string):SchemaTable {
+  engine(engine:string):ElegantTable {
     this.$.engine = engine
     return this
   }
 
-  comment(comment:string):SchemaTable {
+  comment(comment:string):ElegantTable {
     this.$.comment = comment
     return this
   }
 
-  temporary():SchemaTable {
+  temporary():ElegantTable {
     this.$.temporary = true
     return this
   }

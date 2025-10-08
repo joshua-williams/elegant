@@ -1,13 +1,13 @@
 import ColumnDefinition from 'lib/schema/ColumnDefinition';
 import { SchemaDialect } from 'types';
-import SchemaTable from "./SchemaTable";
+import ElegantTable from "./ElegantTable";
 import {
   NumberColumnDefinition,
   StringColumnDefinition,
   TimestampColumnDefinition, YearColumnDefinition
 } from './TableDefinitions';
 
-export default class MysqlSchemaTable extends SchemaTable {
+export default class MysqlTable extends ElegantTable {
   protected enclosure: string = '`';
 
   mediumText(columnName:string):ColumnDefinition {
