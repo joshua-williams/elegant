@@ -1,7 +1,7 @@
 import Elegant from '../src/Elegant'
-import QueryBuilder from '../src/QueryBuilder';
 import Schema from '../src/schema/Schema';
 import {getAppConfig} from '../lib/config';
+import SchemaTable from '../lib/schema/SchemaTable';
 
 
 const runTestsWithConnection = (connection:string) => {
@@ -14,8 +14,8 @@ const runTestsWithConnection = (connection:string) => {
       const config = await getAppConfig()
       db = await Elegant.connection(connection)
       schema = new Schema(config)
-      schema.create('users', (table) => {
-        table.id().autoIncrement().primary()
+      const createTableFn = (table:SchemaTable) => {
+        table.id()
         table.string('name')
         table.string('email').unique()
         table.string('password')
@@ -25,9 +25,10 @@ const runTestsWithConnection = (connection:string) => {
         table.char('state', 2)
         table.char('zip', 5)
         table.char('country', 2)
-      }, 'postgres')
+      }
+      schema.create('users', createTableFn, 'postgres')
       const [table] = schema.tables
-      const sql = table.toSql()
+      const sql = table.toCreateStatement()
       throw new Error(sql)
       await db.query(sql)
       throw new Error(sql)

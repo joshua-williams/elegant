@@ -86,6 +86,12 @@ export default abstract class SchemaTable {
     return column
   }
 
+  id(columnName:string = 'id'):ColumnDefinition {
+    const column = new NumberColumnDefinition(columnName, 'INT')
+    column.autoIncrement().primary()
+    this.columns.push(column)
+    return column
+  }
   smallInteger(columnName:string, length?:number, nullable?:boolean):ColumnDefinition {
     const column = new NumberColumnDefinition(columnName, 'SMALLINT', length, undefined, nullable)
     this.columns.push(column)
@@ -169,8 +175,26 @@ export default abstract class SchemaTable {
     return `${this.enclosure}${value}${this.enclosure}`
   }
 
-  public abstract toCreateStatement():string
+  protected columnToSql(column:ColumnDefinition):string { return }
 
   public abstract toUpdateStatement():string
+
+  public toCreateStatement(): string {
+    let sql = 'CREATE '
+    if (this.$.temporary) sql += 'TEMPORARY '
+    sql += 'TABLE ' + this.enclose(this.tableName) + ' (\n'
+    sql += this.columns.map(column => {
+      return '  ' + this.columnToSql(column)
+    }).join(',\n')
+    sql += '\n)'
+
+    const tableOptions:string[] = []
+    if (this.$.engine) tableOptions.push(`ENGINE=${this.$.engine}`)
+    if (this.$.charset) tableOptions.push(`DEFAULT CHARSET=${this.$.charset}`)
+    if (this.$.collation) tableOptions.push(`COLLATE=${this.$.collation}`)
+    if (this.$.comment) tableOptions.push(`COMMENT='${this.$.comment}'`)
+    if (tableOptions) sql += `\n${tableOptions.join('\n')}`
+    return sql.trim()
+  }
 
 }

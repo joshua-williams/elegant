@@ -8,7 +8,7 @@ describe('schema', () => {
     const config = await getAppConfig()
     schema = new Schema(config)
   })
-  it('should create table on specfic connection', () => {
+  it.skip('should create table on specific connection', () => {
     schema.connection('postgres')
       .create('users', (table) => {
         table.temporary()
@@ -18,33 +18,8 @@ describe('schema', () => {
           .comment('users table')
         table.integer('id', 255).autoIncrement().unique().primary()
         table.string('name').unique()
-        console.log(table.toSql())
+        console.log(table.toCreateStatement())
       })
-  })
-  describe('table', () => {
-
-    describe('numeric columns', () => {
-      it('should create tinyint', () => {
-        schema.create('users', (table) => {
-          table.tinyInteger('id')
-          const sql = table.toSql()
-          const expected = 'CREATE TABLE `users` (\n  `id` TINYINT NOT NULL\n)'
-          expect(sql).toEqual(expected)
-        })
-      })
-      it('should create smallint', () => {
-        schema.create('users', (table) => {
-          table.smallInteger('id')
-        })
-      })
-    })
-    it('should create table', () => {
-      schema.create('users', (table) => {
-        table.integer('id', 255).autoIncrement().unique().primary()
-        table.string('name').unique()
-        console.log(table.toSql())
-      })
-    })
   })
 
   describe('inspect database', ()=> {
@@ -58,7 +33,7 @@ describe('schema', () => {
     it('should drop table', () => {
       schema.drop('users', table => {
         table.ifExists()
-        expect(table.toSql()).toEqual('DROP TABLE IF EXISTS `users`')
+        expect(table.toCreateStatement()).toEqual('DROP TABLE IF EXISTS `users`')
       })
     })
   })

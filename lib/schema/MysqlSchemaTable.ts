@@ -80,24 +80,6 @@ export default class MysqlSchemaTable extends SchemaTable {
     return sql
   }
 
-  public toCreateStatement(): string {
-    let sql = 'CREATE '
-    if (this.$.temporary) sql += 'TEMPORARY '
-    sql += 'TABLE ' + this.enclose(this.tableName) + ' (\n'
-    sql += this.columns.map(column => {
-      return '  ' + this.columnToSql(column)
-    }).join(',\n')
-    sql += '\n)'
-
-    const tableOptions:string[] = []
-    if (this.$.engine) tableOptions.push(`ENGINE=${this.$.engine}`)
-    if (this.$.charset) tableOptions.push(`DEFAULT CHARSET=${this.$.charset}`)
-    if (this.$.collation) tableOptions.push(`COLLATE=${this.$.collation}`)
-    if (this.$.comment) tableOptions.push(`COMMENT='${this.$.comment}'`)
-    if (tableOptions) sql += `\n${tableOptions.join('\n')}`
-    return sql.trim()
-  }
-
   public toUpdateStatement(): string {
       throw new Error('Method not implemented.');
   }

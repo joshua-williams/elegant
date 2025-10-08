@@ -1,6 +1,7 @@
 import ColumnDefinition from 'lib/schema/ColumnDefinition';
 import SchemaTable from "./SchemaTable";
 import {BooleanColumnDefinition, TimestampColumnDefinition} from './TableDefinitions';
+import {exit} from '../util';
 
 export default class PostgresSchemaTable extends SchemaTable {
   protected enclosure: string = '"';
@@ -11,7 +12,7 @@ export default class PostgresSchemaTable extends SchemaTable {
     return column
   }
 
-  private columnToSql(column: ColumnDefinition): string {
+  protected columnToSql(column: ColumnDefinition): string {
     let sql = `${this.enclose(column.name)} ${column.type}`;
     if (column.$.unsigned) sql += ' UNSIGNED'
     sql += column.$.nullable ? ' NULL' : ' NOT NULL'
@@ -28,24 +29,6 @@ export default class PostgresSchemaTable extends SchemaTable {
     if (column.$.key) sql += ` KEY ${column.$.key}`
     if (column.$.comment) sql += ` COMMENT '${column.$.comment}'`
     return sql
-  }
-
-  public toCreateStatement(): string {
-    let sql = 'CREATE '
-    if (this.$.temporary) sql += 'TEMPORARY '
-    sql += 'TABLE ' + this.enclose(this.tableName) + ' (\n'
-    sql += this.columns.map(column => {
-      return '  ' + this.columnToSql(column)
-    }).join(',\n')
-    sql += '\n)'
-
-    const tableOptions:string[] = []
-    if (this.$.engine) tableOptions.push(`ENGINE=${this.$.engine}`)
-    if (this.$.charset) tableOptions.push(`DEFAULT CHARSET=${this.$.charset}`)
-    if (this.$.collation) tableOptions.push(`COLLATE=${this.$.collation}`)
-    if (this.$.comment) tableOptions.push(`COMMENT='${this.$.comment}'`)
-    if (tableOptions) sql += `\n${tableOptions.join('\n')}`
-    return sql.trim()
   }
 
   public toUpdateStatement(): string {
