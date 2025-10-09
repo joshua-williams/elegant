@@ -4,8 +4,9 @@ import fs from 'node:fs';
 import {basename} from 'node:path'
 import {Migration, Schema} from '../index';
 import {ElegantConfig, MigrationFile, MigrationFileMap, MigrationStatus} from '../types';
+import {pathToFileURL} from 'url';
 
-export class BaseMigration {
+export class MigrationManager {
   protected migrationPath:string;
   protected config:ElegantConfig;
 
@@ -67,7 +68,8 @@ export class BaseMigration {
     const migrationFiles = this.getMigrationFiles(order)
     const migrations:MigrationFileMap[] = []
     for (const file of migrationFiles) {
-      const {default:MigrationClass} = await import(file.path)
+      const fileUrl = pathToFileURL(file.path).href
+      const {default:MigrationClass} = await import(fileUrl)
       const schema = new Schema(this.config)
       const migration:Migration = new MigrationClass(schema)
       migrations.push({

@@ -1,7 +1,8 @@
 import MigrationRunner from '../lib/MigrationRunner';
 
-describe('migration', () => {
+describe('migration', async () => {
   let runner:MigrationRunner = new MigrationRunner();
+  await runner.init()
 
   describe('run', () => {
     it('should run migrations', async () => {

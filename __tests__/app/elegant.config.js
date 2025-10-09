@@ -2,6 +2,7 @@ export default{
   default: 'postgres',
   connections: {
     postgres: {
+      schema: 'elegant',
       dialect: 'postgres',
       host: 'localhost',
       port: 5432,

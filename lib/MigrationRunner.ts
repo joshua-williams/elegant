@@ -1,5 +1,5 @@
 import Elegant from '../index';
-import {BaseMigration} from './BaseMigration';
+import {MigrationManager} from './MigrationManager';
 import fs from 'node:fs';
 import {MigrationFileMap} from '../types';
 
@@ -35,7 +35,7 @@ class MigrationError extends Error {
   }
 }
 
-export default class MigrationRunner extends BaseMigration {
+export default class MigrationRunner extends MigrationManager {
 
   public async run(direction:'up'|'down' = 'up'):Promise<MigrationResult[]> {
     const migrations = await this.getMigrations()
@@ -93,7 +93,6 @@ export default class MigrationRunner extends BaseMigration {
         result.duration = Date.now() - result.timestamp
       }
     }
-
     try {
       await db.transaction(executeMigrationQueries)
       await db.close()

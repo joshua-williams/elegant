@@ -1,4 +1,4 @@
-import Elegant,{ Migration, Schema, SchemaTable } from 'elegant'
+import { Migration } from '@pristine/elegant'
 
 export default class UsersMigration extends Migration {
   /**
@@ -19,7 +19,6 @@ export default class UsersMigration extends Migration {
       table.char('state', 2)
       table.char('zip', 5)
       table.char('country', 3)
-      table.tinyInteger('gender', 1)
     })
   }
 

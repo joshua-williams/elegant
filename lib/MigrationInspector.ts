@@ -1,7 +1,7 @@
-import {BaseMigration} from './BaseMigration';
+import {MigrationManager} from './MigrationManager';
 import {MigrationFile} from '../types';
 
-export default class MigrationInspector extends BaseMigration {
+export default class MigrationInspector extends MigrationManager {
 
   async getRanMigrations():Promise<MigrationFile[]> {
     const lastMigrationFile = this.getLastRanMigration()

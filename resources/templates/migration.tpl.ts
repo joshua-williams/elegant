@@ -1,4 +1,4 @@
-import Elegant,{ Migration, SchemaTable } from 'elegant'
+import { Migration } from '@pristine/elegant'
 
 export default class MigrationClass extends Migration {
 
