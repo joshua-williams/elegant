@@ -13,6 +13,9 @@ export default abstract class Elegant{
     this.config = config
     return Promise.resolve(this)
   }
+  public abstract beginTransaction():Promise<any>
+  public abstract commit():Promise<any>
+  public abstract rollback():Promise<any>
 
   public abstract transaction(callback:(db:Elegant) => void):Promise<void>
 

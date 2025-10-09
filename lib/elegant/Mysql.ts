@@ -3,6 +3,15 @@ import Elegant from '../../src/Elegant';
 import {Scalar, ConnectionConfig} from '../../types';
 
 export default class Mysql extends Elegant {
+  public beginTransaction(): Promise<void> {
+    return this.connection.beginTransaction()
+  }
+  public commit(): Promise<void> {
+    return this.connection.commit()
+  }
+  public rollback(): Promise<void> {
+    return this.connection.rollback()
+  }
   async connect(config: ConnectionConfig): Promise<Elegant> {
     delete config.dialect
     this.connection = await createConnection(config)

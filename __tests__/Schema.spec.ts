@@ -47,7 +47,7 @@ describe('schema', () => {
     it('should drop table', () => {
       schema.drop('users', table => {
         table.ifExists()
-        expect(table.toCreateStatement()).toEqual('DROP TABLE IF EXISTS `users`')
+        expect(table.toStatement()).toEqual('DROP TABLE IF EXISTS `users`')
       })
     })
   })

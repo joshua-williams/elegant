@@ -1,10 +1,11 @@
-import Elegant from '../src/Elegant'
-import Schema from '../src/schema/Schema';
-import {getAppConfig} from '../lib/config';
-import ElegantTable from '../lib/schema/ElegantTable';
+import Elegant from '../../src/Elegant'
+import Schema from '../../src/schema/Schema';
+import {getAppConfig} from '../../lib/config';
+import ElegantTable from '../../lib/schema/ElegantTable';
+import {SchemaDialect} from '../../types';
 
 
-const runTestsWithConnection = (connection:string) => {
+const runTestsWithConnection = (connection:SchemaDialect) => {
   let db: Elegant;
   let schema:Schema;
 
@@ -14,7 +15,7 @@ const runTestsWithConnection = (connection:string) => {
       const config = await getAppConfig()
       db = await Elegant.connection(connection)
       schema = new Schema(config)
-      const createTableFn = (table:ElegantTable) => {
+      const createUserTable = (table:ElegantTable) => {
         table.id()
         table.string('name')
         table.string('email').unique()
@@ -25,17 +26,22 @@ const runTestsWithConnection = (connection:string) => {
         table.char('state', 2)
         table.char('zip', 5)
         table.char('country', 2)
+        table.ifNotExists();
       }
-      schema.create('users', createTableFn, 'postgres')
-      const [table] = schema.tables
-      const sql = table.toCreateStatement()
-      await db.query(sql)
+      await schema.create('users', createUserTable, connection)
+    })
+
+    afterAll(async () => {
+      await schema.drop('users', (table) => {
+        table.ifExists()
+      })
+      await db.close()
     })
 
     beforeEach(async () => {
       db = await Elegant.connection(connection)
-
     })
+
     afterEach(async () => {
       await db.close()
     })
@@ -44,6 +50,16 @@ const runTestsWithConnection = (connection:string) => {
       expect(db).toBeInstanceOf(Elegant);
     })
 
+    it('should insert', async () => {
+      db = await Elegant.connection(connection)
+      const email = Math.random().toString(36).substring(7) + '@gmail.com'
+      const password = Math.random().toString(36).substring(7)
+
+      return db.insert('insert into users (name, email, password) values ($1, $2, $3)', ['test',email, password])
+        .then(res => {
+          expect(typeof res).toBe('number')
+        })
+    })
     it.skip('should select', async () => {
       db = await Elegant.connection('mysl')
       return db.select('select * from migrations')
@@ -55,6 +71,7 @@ const runTestsWithConnection = (connection:string) => {
 }
 
 runTestsWithConnection('postgres')
+
 //
 // describe('connection', () => {
 //   let db: Elegant;
@@ -68,13 +85,7 @@ runTestsWithConnection('postgres')
 //
 //
 //
-//   it('should insert', async () => {
-//     db = await Elegant.connection('forecastcrm')
-//     return db.insert('insert into migrations (migration, batch) values (?,?)', ['test',5])
-//       .then(res => {
-//         expect(typeof res).toBe('number')
-//       })
-//   })
+//
 //   it('should scalar', async () => {
 //     db = await Elegant.connection('forecastcrm')
 //     return db.scalar('select count(*) from migrations')

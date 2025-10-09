@@ -31,27 +31,36 @@ export default class Schema {
     return this
   }
 
-  public create(tableName:string, closure:SchemaClosure, dialect:SchemaDialect='mysql'):void {
+  public async create(tableName:string, closure:SchemaClosure, dialect:SchemaDialect='mysql'):Promise<void> {
     const connection = this.$.connection ||  this.$.config.default;
     const config:ConnectionConfig = this.$.config.connections[connection]
     let table:ElegantTable;
     switch(config.dialect) {
-      case 'mysql': table = new MysqlTable(tableName, 'create'); break;
-      case 'mariadb': table = new MariaDBTable(tableName, 'create'); break;
-      case "postgres": table = new PostgresTable(tableName, 'create'); break;
+      case 'mysql': table = new MysqlTable(tableName, 'create', "`"); break;
+      case 'mariadb': table = new MariaDBTable(tableName, 'create', "`"); break;
+      case "postgres": table = new PostgresTable(tableName, 'create', '"'); break;
     }
-    console.log(table.constructor.name,)
     this.$.tables.push(table)
     closure(table)
     if (this.$.autoExecute) {
-      // execute the table.toStatement() query
+      const db = await Elegant.connection(this.$.connection)
+      await db.query(table.toStatement())
+      await db.close()
     }
   }
 
-  public drop(tableName:string, closure?:DropSchemaClosure, dialect:SchemaDialect='mysql'):void {
-    const dropTable:DropTable = new DropTable(tableName, dialect)
+  public async drop(tableName:string, closure?:DropSchemaClosure, dialect:SchemaDialect='mysql'):Promise<void> {
+    const connection = this.$.connection ||  this.$.config.default;
+    const config:ConnectionConfig = this.$.config.connections[connection]
+
+    const dropTable:DropTable = new DropTable(tableName, 'drop', this.enclosure(config.dialect) )
     if (closure) closure(dropTable)
     this.$.tables.push(dropTable)
+    if(this.$.autoExecute) {
+      const db = await Elegant.connection(this.$.connection)
+      await db.query(dropTable.toStatement())
+      await db.close()
+    }
   }
 
   /**
@@ -91,4 +100,13 @@ export default class Schema {
   get config():ElegantConfig {
     return this.$.config
   }
+
+  private enclosure(name:string) {
+    switch(name.toLowerCase()) {
+      case 'mysql':
+      case 'mariadb': return '`'
+      default: return '"'
+    }
+  }
+
 }

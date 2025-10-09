@@ -11,11 +11,13 @@ type SchemaTableMeta = {
   collation:Collation,
   engine:string,
   temporary:boolean,
-  comment:string
+  comment:string,
+  ifExists:boolean,
+  ifNotExists:boolean,
 }
 
 export default abstract class ElegantTable {
-  protected abstract enclosure:string;
+  protected enclosure = '"';
   protected action:ElegantTableAction = 'create'
   protected columns:ColumnDefinition[] = []
   protected tableName:string
@@ -25,11 +27,14 @@ export default abstract class ElegantTable {
     collation:undefined,
     engine:undefined,
     temporary:false,
-    comment:undefined
+    comment:undefined,
+    ifExists:false,
+    ifNotExists:false,
   }
   constructor(tableName:string, action:ElegantTableAction, enclosure?:string) {
     this.tableName = tableName
     this.action = action;
+    if (enclosure) this.enclosure = enclosure
   }
 
   char(columnName:string, length:number = 255):ColumnDefinition {
@@ -183,7 +188,12 @@ export default abstract class ElegantTable {
     let sql = ''
     switch (this.action) {
       case 'create':
-        sql += `CREATE TABLE ${this.enclose(this.tableName)} (\n`
+        sql += 'CREATE'
+        if (this.$.temporary) sql += ' TEMPORARY'
+        sql += ` TABLE`
+        if (this.$.ifNotExists) sql += ' IF NOT EXISTS'
+        sql += ` ${this.enclose(this.tableName)}`
+        sql+= '(\n'
         sql += this.columns.map(column => {
           return '  ' + this.columnToSql(column)
         }).join(',\n')
@@ -194,6 +204,7 @@ export default abstract class ElegantTable {
         if (this.$.collation) tableOptions.push(`COLLATE=${this.$.collation}`)
         if (this.$.comment) tableOptions.push(`COMMENT='${this.$.comment}'`)
         if (tableOptions) sql += `\n${tableOptions.join('\n')}`
+
         return sql.trim()
       case 'alter':
         sql += `ALTER TABLE ${this.enclose(this.tableName)}`
@@ -209,22 +220,13 @@ export default abstract class ElegantTable {
     return
   }
 
-  public toCreateStatement(): string {
-    let sql = 'CREATE '
-    if (this.$.temporary) sql += 'TEMPORARY '
-    sql += 'TABLE ' + this.enclose(this.tableName) + ' (\n'
-    sql += this.columns.map(column => {
-      return '  ' + this.columnToSql(column)
-    }).join(',\n')
-    sql += '\n)'
-
-    const tableOptions:string[] = []
-    if (this.$.engine) tableOptions.push(`ENGINE=${this.$.engine}`)
-    if (this.$.charset) tableOptions.push(`DEFAULT CHARSET=${this.$.charset}`)
-    if (this.$.collation) tableOptions.push(`COLLATE=${this.$.collation}`)
-    if (this.$.comment) tableOptions.push(`COMMENT='${this.$.comment}'`)
-    if (tableOptions) sql += `\n${tableOptions.join('\n')}`
-    return sql.trim()
+  ifExists():ElegantTable {
+    this.$.ifExists = true
+    return this
   }
 
+  ifNotExists():ElegantTable {
+    this.$.ifNotExists = true
+    return this
+  }
 }

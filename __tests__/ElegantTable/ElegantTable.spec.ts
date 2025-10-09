@@ -1,7 +1,7 @@
 import MysqlTable from '../../lib/schema/MysqlTable';
 import MariaDBTable from '../../lib/schema/MariaDBTable';
 import PostgresTable from '../../lib/schema/PostgresTable';
-import {AlterTableTestSuite, CreateTableTestSuite} from './ElegantTestSuite';
+import {AlterTableTestSuite, CreateTableTestSuite} from './ElegantTableTestSuite';
 
 describe('Elegant Tables', () => {
 

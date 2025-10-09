@@ -6,7 +6,7 @@ export default abstract class ColumnDefinition {
   $:ColumnDefinitionProperties = {
     length:0,
     default: false,
-    nullable: false,
+    nullable: undefined,
     primary: false,
     unique: false,
     key: false,

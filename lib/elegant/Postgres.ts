@@ -5,6 +5,19 @@ import {Scalar, ConnectionConfig} from '../../types';
 import { QueryResult } from 'pg';
 
 export default class Postgres extends Elegant {
+
+  public beginTransaction(): Promise<any> {
+    return this.connection.query('BEGIN')
+  }
+
+  public commit(): Promise<any> {
+    return this.connection.query('COMMIT')
+  }
+
+  public rollback(): Promise<any> {
+    return this.connection.query('ROLLBACK')
+  }
+
   public async transaction(callback: (db: Elegant) => void|Promise<any>): Promise<void> {
     await this.connection.query('BEGIN')
     try {
@@ -16,10 +29,12 @@ export default class Postgres extends Elegant {
     }
   }
   public select<T>(query: string, params?: Scalar[]): Promise<T[]> {
-      throw new Error('Method not implemented.');
+    return this.connection.query(query, params)
+      .then((res:any) => res.rows)
   }
-  public insert(query: string, params?: Scalar[]): Promise<number> {
-      throw new Error('Method not implemented.');
+  public insert(query: string, params?: Scalar[]): Promise<any> {
+    return this.connection.query(query, params)
+      .then((res:any) => res.rowCount)
   }
   public update(query: string, params?: Scalar[]): Promise<number> {
       throw new Error('Method not implemented.');
