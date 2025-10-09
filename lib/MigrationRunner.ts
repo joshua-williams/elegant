@@ -107,8 +107,6 @@ export default class MigrationRunner extends MigrationManager {
     return result
   }
 
-
-
   private clearState() {
     fs.writeFileSync(`${this.migrationPath}/.state`, '')
   }

@@ -4,7 +4,7 @@ describe('MysqlTable', () => {
   let table:MysqlTable;
 
   beforeEach(() => {
-    table = new MysqlTable('users')
+    table = new MysqlTable('users', 'create')
   })
 
   describe('string columns', () => {

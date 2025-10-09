@@ -1,22 +1,19 @@
 import MysqlTable from '../../lib/schema/MysqlTable';
 import MariaDBTable from '../../lib/schema/MariaDBTable';
 import PostgresTable from '../../lib/schema/PostgresTable';
-import {runDateTimeTestSuite, runNumberTestSuite, runStringTestSuite} from './ElegantTestSuite';
+import {AlterTableTestSuite, CreateTableTestSuite} from './ElegantTestSuite';
 
 describe('Elegant Tables', () => {
 
-  describe('Base Elegant Table', () => {
-    runStringTestSuite('MySQL', MysqlTable)
-    runNumberTestSuite('MySQL', MysqlTable)
-    runDateTimeTestSuite('MySQL', MysqlTable)
+  describe('Base Elegant Table: Create', () => {
+    CreateTableTestSuite('MySQL', MysqlTable)
+    CreateTableTestSuite('MySQL', MariaDBTable)
+    CreateTableTestSuite('Postgres', PostgresTable)
+  })
 
-    runStringTestSuite('MariaDB', MariaDBTable)
-    runNumberTestSuite('MariaDB', MariaDBTable)
-    runDateTimeTestSuite('MariaDB', MariaDBTable)
-
-    runStringTestSuite('Postgres', PostgresTable)
-    runNumberTestSuite('Postgres', PostgresTable)
-    runDateTimeTestSuite('Postgres', PostgresTable)
-
+  describe('Base Elegant Table: Alter', () => {
+    // AlterTableTestSuite('MySQL', MysqlTable)
+    // AlterTableTestSuite('MariaDB', MariaDBTable)
+    AlterTableTestSuite('Postgres', PostgresTable)
   })
 });

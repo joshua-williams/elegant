@@ -4,7 +4,7 @@ describe('MysqlTable', () => {
   let table:PostgresTable;
 
   beforeEach(() => {
-    table = new PostgresTable('users')
+    table = new PostgresTable('users', 'create')
   })
 
   describe('boolean', () => {
