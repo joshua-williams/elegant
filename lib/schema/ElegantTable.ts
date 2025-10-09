@@ -1,4 +1,4 @@
-import {Charset, Collation, SchemaDialect} from '../../types';
+import {Charset, Collation, ElegantTableAction, SchemaDialect} from '../../types';
 import ColumnDefinition from './ColumnDefinition';
 import {
   DateTimeColumnDefinition, NumberColumnDefinition,
@@ -16,6 +16,7 @@ type SchemaTableMeta = {
 
 export default abstract class ElegantTable {
   protected abstract enclosure:string;
+  protected action:ElegantTableAction = 'create'
   protected columns:ColumnDefinition[] = []
   protected tableName:string
 
@@ -26,8 +27,9 @@ export default abstract class ElegantTable {
     temporary:false,
     comment:undefined
   }
-  constructor(tableName:string) {
+  constructor(tableName:string, action:ElegantTableAction, enclosure?:string) {
     this.tableName = tableName
+    this.action = action;
   }
 
   char(columnName:string, length:number = 255):ColumnDefinition {
@@ -177,7 +179,35 @@ export default abstract class ElegantTable {
 
   protected columnToSql(column:ColumnDefinition):string { return }
 
-  public abstract toUpdateStatement():string
+  public toStatement():string {
+    let sql = ''
+    switch (this.action) {
+      case 'create':
+        sql += `CREATE TABLE ${this.enclose(this.tableName)} (\n`
+        sql += this.columns.map(column => {
+          return '  ' + this.columnToSql(column)
+        }).join(',\n')
+        sql += '\n)'
+        const tableOptions:string[] = []
+        if (this.$.engine) tableOptions.push(`ENGINE=${this.$.engine}`)
+        if (this.$.charset) tableOptions.push(`DEFAULT CHARSET=${this.$.charset}`)
+        if (this.$.collation) tableOptions.push(`COLLATE=${this.$.collation}`)
+        if (this.$.comment) tableOptions.push(`COMMENT='${this.$.comment}'`)
+        if (tableOptions) sql += `\n${tableOptions.join('\n')}`
+        return sql.trim()
+      case 'alter':
+        sql += `ALTER TABLE ${this.enclose(this.tableName)}`
+        sql += this.columns.map(column => {
+          return ` ${this.columnToSql(column)}`
+        })
+        return sql.trim()
+      case 'drop':
+        sql += `DROP TABLE ${this.enclose(this.tableName)}`
+        return sql.trim()
+
+    }
+    return
+  }
 
   public toCreateStatement(): string {
     let sql = 'CREATE '

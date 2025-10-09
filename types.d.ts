@@ -23,6 +23,7 @@ type Operator = '='|'!='|'<'|'<='|'>'|'>='|'like'|'in'|'between'|'is'|'is not'
 
 type ConnectionConfig = {
   dialect: 'mysql' | 'mariadb' | 'postgres' | 'mssql' | 'sqlite',
+  schema?: string,
   host: string,
   port: number,
   database: string,
@@ -81,4 +82,5 @@ declare module 'ascii-table' {
   }
 }
 
-type SchemaTableConstructor = new (tableName:string) => ElegantTable
+type ElegantTableConstructor = new (tableName:string, action:ElegantTableAction, enclosure?:string) => ElegantTable
+type ElegantTableAction = 'create'|'alter'|'drop'

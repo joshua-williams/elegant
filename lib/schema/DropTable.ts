@@ -8,7 +8,7 @@ export class DropTable extends ElegantTable {
   boolean(columnName: string, defaultValue?: boolean, nullable?: boolean): ColumnDefinition { return}
 
   constructor(tableName:string, enclosure:string) {
-    super(tableName)
+    super(tableName, 'drop')
   }
   public toUpdateStatement(): string {
     let ifExists = this._ifExists ? 'IF EXISTS ' : ''
