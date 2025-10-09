@@ -15,7 +15,7 @@ export default class Mysql extends Elegant {
   async connect(config: ConnectionConfig): Promise<Elegant> {
     delete config.dialect
     this.connection = await createConnection(config)
-    return this
+    return this as unknown as Elegant
   }
 
   async select<T>(query: string, params?: any[]): Promise<T[]> {

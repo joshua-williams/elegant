@@ -1,28 +1,15 @@
 import ElegantTable from '../../lib/schema/ElegantTable';
 import {ElegantTableConstructor} from '../../types';
-import Elegant from '../../src/Elegant';
 
-const setup = async (name:string) => {
-  const query = `DROP TABLE IF EXISTS ${enclose(name, 'users')};`
-  const db = await Elegant.connection(name.toLowerCase())
-  await db.query(query)
-  await db.query(`
-    CREATE TABLE ${enclose(name, 'users')} (
-      id INT NOT NULL PRIMARY KEY,
-      ${enclose(name, 'first_name')} VARCHAR(255) NOT NULL
-     )
-  `)
-  await db.close()
-
-}
 const enclose = (name:string, value:string) => {
-  switch(name) {
-    case 'MySQL':
-    case 'MariaDB': return `\`${value}\``
-    case 'MSSQL': return `[${value}]`
+  switch(name.toLowerCase()) {
+    case 'mysql':
+    case 'mariadb': return `\`${value}\``
+    case 'mssql': return `[${value}]`
     default: return `"${value}"`
   }
 }
+
 export const CreateTableTestSuite = (name, Table:ElegantTableConstructor) => {
   const runStringTestSuite = (name:string, Table:ElegantTableConstructor) => {
 

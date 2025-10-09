@@ -21,6 +21,7 @@ export default abstract class ElegantTable {
   protected action:ElegantTableAction = 'create'
   protected columns:ColumnDefinition[] = []
   protected tableName:string
+  protected schema:string
 
   $:SchemaTableMeta ={
     charset:undefined,
@@ -191,8 +192,9 @@ export default abstract class ElegantTable {
         sql += 'CREATE'
         if (this.$.temporary) sql += ' TEMPORARY'
         sql += ` TABLE`
-        if (this.$.ifNotExists) sql += ' IF NOT EXISTS'
-        sql += ` ${this.enclose(this.tableName)}`
+        if (this.$.ifNotExists) sql += ' IF NOT EXISTS '
+        if (this.schema) sql += ` ${this.enclose(this.schema)}`
+        sql += `${this.enclose(this.tableName)}`
         sql+= '(\n'
         sql += this.columns.map(column => {
           return '  ' + this.columnToSql(column)
@@ -204,7 +206,6 @@ export default abstract class ElegantTable {
         if (this.$.collation) tableOptions.push(`COLLATE=${this.$.collation}`)
         if (this.$.comment) tableOptions.push(`COMMENT='${this.$.comment}'`)
         if (tableOptions) sql += `\n${tableOptions.join('\n')}`
-
         return sql.trim()
       case 'alter':
         sql += `ALTER TABLE ${this.enclose(this.tableName)}`

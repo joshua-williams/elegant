@@ -31,7 +31,7 @@ export default class Schema {
     return this
   }
 
-  public async create(tableName:string, closure:SchemaClosure, dialect:SchemaDialect='mysql'):Promise<void> {
+  public async create(tableName:string, closure:SchemaClosure):Promise<void> {
     const connection = this.$.connection ||  this.$.config.default;
     const config:ConnectionConfig = this.$.config.connections[connection]
     let table:ElegantTable;
@@ -43,8 +43,8 @@ export default class Schema {
     this.$.tables.push(table)
     closure(table)
     if (this.$.autoExecute) {
-      const db = await Elegant.connection(this.$.connection)
-      await db.query(table.toStatement())
+      const db = await Elegant.connection(connection)
+      await db.statement(table.toStatement())
       await db.close()
     }
   }

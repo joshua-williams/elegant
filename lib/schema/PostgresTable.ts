@@ -30,8 +30,4 @@ export default class PostgresTable extends ElegantTable {
     if (column.$.comment) sql += ` COMMENT '${column.$.comment}'`
     return sql
   }
-
-  public toUpdateStatement(): string {
-      throw new Error('Method not implemented.');
-  }
 }

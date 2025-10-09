@@ -14,14 +14,18 @@ export default abstract class Elegant{
     return Promise.resolve(this)
   }
   public abstract beginTransaction():Promise<any>
+
   public abstract commit():Promise<any>
+
   public abstract rollback():Promise<any>
 
   public abstract transaction(callback:(db:Elegant) => void):Promise<void>
 
   public abstract select<T>(query:string, params?:Scalar[]):Promise<T[]>
 
-  public abstract query(query:string, params?:Scalar[]):Promise<any>
+  public abstract query<T>(query:string, params?:Scalar[]):Promise<T[]>
+
+  public abstract scalar<T>(query:string, params?:Scalar[]):Promise<T|Scalar>
 
   public abstract insert(query:string, params?:Scalar[]):Promise<number>
 
@@ -33,7 +37,6 @@ export default abstract class Elegant{
 
   public abstract statements(query:string, params?:Scalar[][]):Promise<any>
 
-  public abstract scalar(query:string, params?:Scalar[]):Promise<Scalar>
 
   public abstract close():Promise<void>
 
