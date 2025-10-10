@@ -8,7 +8,7 @@ import PostgresTable from '../../lib/schema/PostgresTable';
 import { ConnectionConfig } from '../../types'
 
 type SchemaMeta = {
-  config:ElegantConfig,
+  db:Elegant,
   connection:string,
   tables:ElegantTable[],
   autoExecute:boolean
@@ -16,19 +16,14 @@ type SchemaMeta = {
 
 export default class Schema {
   private $:SchemaMeta = {
-    config: undefined,
+    db: undefined,
     tables: [],
     connection: undefined,
     autoExecute: true
   }
 
-  constructor( config:ElegantConfig) {
-    this.$.config = config
-  }
-
-  public connection(name:string) {
-    this.$.connection = name
-    return this
+  constructor( db:Elegant) {
+    this.$.db = db
   }
 
   /**
@@ -39,10 +34,8 @@ export default class Schema {
    * @return {Promise<void>} A promise that resolves when the table creation process is completed.
    */
   public async create(tableName:string, closure:SchemaClosure):Promise<void> {
-    const connection = this.$.connection ||  this.$.config.default;
-    const config:ConnectionConfig = this.$.config.connections[connection]
     let table:ElegantTable;
-    switch(config.dialect) {
+    switch(this.$.db.constructor.name) {
       case 'mysql': table = new MysqlTable(tableName, 'create', "`"); break;
       case 'mariadb': table = new MariaDBTable(tableName, 'create', "`"); break;
       case "postgres": table = new PostgresTable(tableName, 'create', '"'); break;
@@ -50,9 +43,7 @@ export default class Schema {
     this.$.tables.push(table)
     closure(table)
     if (this.$.autoExecute) {
-      const db = await Elegant.connection(connection)
-      await db.statement(table.toStatement())
-      await db.close()
+      await this.$.db.statement(table.toStatement())
     }
   }
 
@@ -66,15 +57,11 @@ export default class Schema {
    * @return {Promise<void>} A Promise that resolves when the drop operation is complete.
    */
   public async drop(tableName:string, closure?:DropSchemaClosure):Promise<void> {
-    const connection = this.$.connection ||  this.$.config.default;
-    const config:ConnectionConfig = this.$.config.connections[connection]
-    const dropTable:DropTable = new DropTable(tableName, 'drop', this.enclosure(config.dialect) )
+    const dropTable:DropTable = new DropTable(tableName, 'drop')
     if (closure) closure(dropTable)
     this.$.tables.push(dropTable)
     if(this.$.autoExecute) {
-      const db = await Elegant.connection(this.$.connection)
-      await db.query(dropTable.toStatement())
-      await db.close()
+      await this.$.db.query(dropTable.toStatement())
     }
   }
 
@@ -84,11 +71,8 @@ export default class Schema {
    * @param {SchemaDialect} dialect - The database dialect used to determine the schema.
    * @return {string} The schema configuration, or a dialect-specific schema resolution.
    */
-  private getSchema(dialect:SchemaDialect):any {
-    const connection = this.$.connection ||  this.$.config.default;
-    const config:ConnectionConfig = this.$.config.connections[connection]
-    if (config.schema) return config.schema
-    switch(dialect) {
+  private getSchema():any {
+    switch(this.$.db.constructor.name.toLowerCase()) {
       case 'postgres': return 'current_schema()'
     }
   }
@@ -100,19 +84,15 @@ export default class Schema {
    * @return {Promise<string[]>} - A promise that resolves to an array of table names as strings.
    */
   public async listTables(schema?:string):Promise<string[]> {
-    const db = await Elegant.connection(this.$.connection)
-    const connection = this.$.connection ||  this.$.config.default;
-    const config:ConnectionConfig = this.$.config.connections[connection]
     const query = () => {
-      switch(config.dialect) {
+      switch(this.$.db.constructor.name.toLowerCase()) {
         case 'postgres':
-          return `SELECT table_name FROM information_schema.tables WHERE table_schema = ${schema || this.getSchema('postgres')} AND table_type = 'BASE TABLE';
+          return `SELECT table_name FROM information_schema.tables WHERE table_schema = ${schema || this.getSchema()} AND table_type = 'BASE TABLE';
           `;
         default: return `SHOW TABLES`
       }
     }
-    const tables = await db.query(query())
-    await db.close()
+    const tables = await this.$.db.query(query())
     return tables.map(table => Object.values(table)[0])
   }
 
@@ -123,14 +103,6 @@ export default class Schema {
    */
   get tables():ElegantTable[] {
     return this.$.tables
-  }
-
-  /**
-   * Retrieves the configuration object for the current schema.
-   * @return {ElegantConfig} The configuration object for the current schema.
-   */
-  get config():ElegantConfig {
-    return this.$.config
   }
 
   private enclosure(name:string) {

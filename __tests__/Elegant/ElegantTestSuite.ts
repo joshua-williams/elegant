@@ -12,9 +12,8 @@ export const ElegantTestSuite = (connection:SchemaDialect) => {
   describe(`Elegant: ${connection}`, () => {
 
     beforeAll(async () => {
-      const config = await getAppConfig()
-      schema = new Schema(config)
-      schema.connection(connection)
+      const db = await Elegant.connection(connection)
+      schema = new Schema(db)
       await schema.drop('users', (table) => table.ifExists())
       const createUserTable = (table:ElegantTable) => {
         table.id()

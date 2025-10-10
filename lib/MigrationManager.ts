@@ -2,7 +2,7 @@ import {getAppConfig} from './config';
 import {appPath} from './util';
 import fs from 'node:fs';
 import {basename} from 'node:path'
-import {Migration, Schema} from '../index';
+import Elegant, {Migration, Schema} from '../index';
 import {ElegantConfig, MigrationFile, MigrationFileMap, MigrationStatus} from '../types';
 import {pathToFileURL} from 'url';
 
@@ -70,7 +70,7 @@ export class MigrationManager {
     for (const file of migrationFiles) {
       const fileUrl = pathToFileURL(file.path).href
       const {default:MigrationClass} = await import(fileUrl)
-      const schema = new Schema(this.config)
+      const schema = new Schema(await Elegant.connection())
       const migration:Migration = new MigrationClass(schema)
       migrations.push({
         constructor:migration,

@@ -21,7 +21,6 @@ export default abstract class Migration {
   constructor(schema:Schema) {
     (schema as any).$.autoExecute = false;
     this.schema = schema;
-    this.connection = this.connection ||  schema.config.default;
   }
 
   /**
