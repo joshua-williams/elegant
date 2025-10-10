@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach } from 'vitest'
 import {SchemaDialect} from '../../types';
 import Elegant from '../../src/Elegant';
 import Schema from '../../src/schema/Schema';
@@ -12,8 +13,8 @@ export const ElegantTestSuite = (connection:SchemaDialect) => {
 
     beforeAll(async () => {
       const config = await getAppConfig()
-      db = await Elegant.connection(connection)
       schema = new Schema(config)
+      schema.connection(connection)
       await schema.drop('users', (table) => table.ifExists())
       const createUserTable = (table:ElegantTable) => {
         table.id()
@@ -44,17 +45,15 @@ export const ElegantTestSuite = (connection:SchemaDialect) => {
       await db.close()
     })
 
-    it('should get Elegant instance', async () => {
+    it('should get Elegant instance', () => {
       expect(db).toBeInstanceOf(Elegant);
     })
-
     describe('insert', () => {
       it('should insert', async () => {
-        db = await Elegant.connection(connection)
         const email = Math.random().toString(36).substring(7) + '@gmail.com'
         const password = Math.random().toString(36).substring(7)
-
-        return db.insert('insert into users (name, email, password) values ($1, $2, $3)', ['test',email, password])
+        const query = `insert into users (name, email, password, phone) values (${p(4)})`
+        return db.insert(query, ['test',email, password, '555-555-5555'])
           .then(res => {
             expect(typeof res).toBe('number')
           })
@@ -76,18 +75,20 @@ export const ElegantTestSuite = (connection:SchemaDialect) => {
 
     describe('query', () => {
       it('should query', async () => {
-        const users = await db.query('select * from users')
+        class User {firstName:string; lastName:string}
+        const users:User[] = await db.query('select * from users')
         expect(users).toBeInstanceOf(Array)
+        expect(users.length).toEqual(1)
         expect(users).toHaveLength(1)
       })
       it('should query with generic return type', async () => {
         class User {name:string; email:string}
         const users:User[] = await db.query<User>('select * from users')
         expect(users).toBeInstanceOf(Array)
-        expect(users).toHaveLength(1)
+        expect(users.length).toEqual(1)
       })
       it('should query with parameters', async () => {
-        const users:any[] = await db.query('select * from users where name = $1', ['test'])
+        const users:any[] = await db.query(`select * from users where name = ${p(1)}`, ['test'])
         expect(users).toBeInstanceOf(Array)
         expect(users).toHaveLength(1)
         expect(users[0].name).toBe('test')
@@ -106,7 +107,7 @@ export const ElegantTestSuite = (connection:SchemaDialect) => {
         expect(typeof count).toBe('number')
       })
       it('should select scalar with parameters and generic return type', async () => {
-        const name = await db.scalar<string>('select name from users where name = $1', ['test'])
+        const name = await db.scalar<string>(`select name from users where name = ${p(1)}`, ['test'])
         expect(typeof name).toEqual('string')
         expect(name).toEqual('test')
       })
@@ -118,7 +119,8 @@ export const ElegantTestSuite = (connection:SchemaDialect) => {
         expect(count).toBe(1)
       })
       it('should update with parameters', async () => {
-        const res = await db.update('update users set name = $1 where name = $2', ['test', 'test2'])
+        const query = `update users set name = ${t(1)} where name = ${t(2)}`
+        const res = await db.update(query, ['test', 'test2'])
         expect(res).toBe(1)
       })
     })
@@ -132,7 +134,7 @@ export const ElegantTestSuite = (connection:SchemaDialect) => {
         expect(user).toHaveProperty('cell_phone')
       })
       it('should execute statement with params', async () => {
-        const res = await db.statement(`update users set name=$1 where name = $2`, ['test2', 'test'])
+        const res = await db.statement(`update users set name=${t(1)} where name = ${t(2)}`, ['test2', 'test'])
         expect(res).toBe(undefined)
         const users = await db.select("select * from users")
         const user = users[0]
@@ -142,9 +144,78 @@ export const ElegantTestSuite = (connection:SchemaDialect) => {
 
     describe('delete', () => {
       it('should delete', async () => {
-        const count = await db.delete('delete from users where name = $1', ['test2'])
+        const count = await db.delete(`delete from users where name = ${p()}`, ['test2'])
         expect(count).toBe(1)
       })
     })
+
+    describe('transaction', () => {
+      it('should run transaction', async () => {
+        const email = Math.random().toString(36).substring(7) + '@gmail.com'
+        const password = Math.random().toString(36).substring(7)
+
+        await db.transaction(async (db) => {
+          const params = ['test',email, password]
+          await db.insert(`insert into users (name, email, password) values (${p(3)})`, params)
+        })
+        const users = await db.select(`select * from users where email=${p()}`,[email])
+        expect(users).toHaveLength(1)
+        const user = users[0]
+        expect(user).toHaveProperty('email', email)
+      })
+
+      it('should automatically rollback transaction on error', async () => {
+        const email = Math.random().toString(36).substring(7) + '@gmail.com'
+        const password = Math.random().toString(36).substring(7)
+        try {
+          await db.transaction(async (db) => {
+            const params = ['test',email, password]
+            await db.insert(`insert into users (name, email, password) values (${p(3)})`, params)
+            await db.insert('insert into users (name, email, password) values ()', params)
+            expect(true).toBe(false)
+          })
+        } catch (e) {}
+        const users = await db.query(`select * from users where email=${p()}`,[email])
+        expect(users).toHaveLength(0)
+      })
+
+      it('should rollback transaction', async () => {
+        await db.beginTransaction()
+        const email = Math.random().toString(36).substring(7) + '@gmail.com'
+        const password = Math.random().toString(36).substring(7)
+        await db.insert(`insert into users (name, email, password) values (${p(3)})`, ['test',email, password])
+        await db.rollback()
+        const users = await db.query(`select * from users where email=${p()}`,[email])
+        expect(users).toHaveLength(0)
+      })
+      it('should commit transaction', async () => {
+        await db.beginTransaction()
+        const email = Math.random().toString(36).substring(7) + '@gmail.com'
+        const password = Math.random().toString(36).substring(7)
+        await db.insert(`insert into users (name, email, password) values (${p(3)})`, ['test',email, password])
+        await db.commit()
+        const users = await db.query(`select * from users where email=${p()}`,[email])
+        expect(users).toHaveLength(1)
+      })
+    })
+
+    const t = (num:number) => {
+      switch(connection) {
+        case 'mysql':
+        case 'mariadb':
+          return '?'
+        default:
+          return `$${num}`
+      }
+    }
+    const p = (count = 1) => {
+      switch (connection) {
+        case 'mysql':
+        case "mariadb":
+          return Array(count).fill('?').join(', ')
+        default:
+          return Array(count).fill('$').map((x,i) =>`$${i+1}`).join(', ')
+      }
+    }
   })
 }

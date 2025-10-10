@@ -63,10 +63,11 @@ export default class Postgres extends Elegant {
 
   public statement(query: string, params?: Scalar[]): Promise<void> {
     return this.connection.query(query, params)
-      .then((res:QueryResult) => {})
-      .catch((err:any) => {
-        console.log(query, params, err.message)
-      })
+      .then(() => {})
+      // .then((res:QueryResult) => {})
+      // .catch((err:any) => {
+      //   console.log(query, params, err.message)
+      // })
   }
 
   public statements(query: string, params?: Scalar[][]): Promise<any> {

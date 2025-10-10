@@ -1,6 +1,8 @@
 import {ElegantTestSuite} from './ElegantTestSuite';
 
-describe('Elegant', () => {
+describe('Elegant', async () => {
+  ElegantTestSuite('mysql')
+  ElegantTestSuite('mariadb')
   ElegantTestSuite('postgres')
 
 })

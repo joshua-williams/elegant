@@ -31,6 +31,13 @@ export default class Schema {
     return this
   }
 
+  /**
+   * Creates a new database table using the specified name and schema configuration.
+   *
+   * @param {string} tableName - The name of the table to be created.
+   * @param {SchemaClosure} closure - A closure that defines the schema of the table.
+   * @return {Promise<void>} A promise that resolves when the table creation process is completed.
+   */
   public async create(tableName:string, closure:SchemaClosure):Promise<void> {
     const connection = this.$.connection ||  this.$.config.default;
     const config:ConnectionConfig = this.$.config.connections[connection]
@@ -49,10 +56,18 @@ export default class Schema {
     }
   }
 
+  /**
+   * Drops a specified table from the database, optionally allowing additional schema configuration through a closure
+   * and specifying the SQL dialect to be used.
+   *
+   * @param {string} tableName - The name of the table to be dropped.
+   * @param {DropSchemaClosure} [closure] - An optional closure (callback) to configure the drop table operation.
+   * @param {SchemaDialect} [dialect='mysql'] - The SQL dialect to be used, defaulting to 'mysql'.
+   * @return {Promise<void>} A Promise that resolves when the drop operation is complete.
+   */
   public async drop(tableName:string, closure?:DropSchemaClosure, dialect:SchemaDialect='mysql'):Promise<void> {
     const connection = this.$.connection ||  this.$.config.default;
     const config:ConnectionConfig = this.$.config.connections[connection]
-
     const dropTable:DropTable = new DropTable(tableName, 'drop', this.enclosure(config.dialect) )
     if (closure) closure(dropTable)
     this.$.tables.push(dropTable)
@@ -77,6 +92,13 @@ export default class Schema {
       case 'postgres': return 'current_schema()'
     }
   }
+
+  /**
+   * Retrieves a list of table names from the database.
+   *
+   * @param {string} [schema] - The schema from which to list the tables. If not provided, the default schema will be used based on the database dialect.
+   * @return {Promise<string[]>} - A promise that resolves to an array of table names as strings.
+   */
   public async listTables(schema?:string):Promise<string[]> {
     const db = await Elegant.connection(this.$.connection)
     const connection = this.$.connection ||  this.$.config.default;
@@ -94,9 +116,19 @@ export default class Schema {
     return tables.map(table => Object.values(table)[0])
   }
 
+  /**
+   * Retrieves the list of tables in queue for creation.
+   *
+   * @return {ElegantTable[]} An array of ElegantTable objects.
+   */
   get tables():ElegantTable[] {
     return this.$.tables
   }
+
+  /**
+   * Retrieves the configuration object for the current schema.
+   * @return {ElegantConfig} The configuration object for the current schema.
+   */
   get config():ElegantConfig {
     return this.$.config
   }

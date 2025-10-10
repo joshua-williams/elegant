@@ -64,7 +64,7 @@ export default class MysqlTable extends ElegantTable {
   protected columnToSql(column: ColumnDefinition): string {
     let sql = `${this.enclose(column.name)} ${column.type}`;
     if (column.$.unsigned) sql += ' UNSIGNED'
-    sql += column.$.nullable ? ' NULL' : ' NOT NULL'
+    if (column.$.nullable !== undefined) sql += column.$.nullable ? ' NULL' : ' NOT NULL'
     if (column.$.autoIncrement) sql += ' AUTO_INCREMENT'
     if (column.$.primary) {
       sql += ' PRIMARY KEY'

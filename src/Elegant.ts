@@ -46,8 +46,6 @@ export default abstract class Elegant{
   }
 
   static async connection(name?:string):Promise<Elegant>{
-    // check if the connection pool is initialized
-    if (this.pool.has(name)) return this.pool.get(name)
     // get elegant configuration
     const config = await getAppConfig()
     // check if config has connections configured
@@ -74,7 +72,6 @@ export default abstract class Elegant{
       default:
         throw new Error(`Unsupported database driver: ${dialect}`)
     }
-    this.pool.set(name, elegant)
     const connectConfig:ConnectionConfig = config.connections[name]
     return elegant.connect(connectConfig)
   }
