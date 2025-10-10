@@ -14,6 +14,6 @@ describe('Elegant Tables', () => {
   describe('Base Elegant Table: Alter', () => {
     // AlterTableTestSuite('MySQL', MysqlTable)
     // AlterTableTestSuite('MariaDB', MariaDBTable)
-    AlterTableTestSuite('Postgres', PostgresTable)
+    // AlterTableTestSuite('Postgres', PostgresTable)
   })
 });

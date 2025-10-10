@@ -58,7 +58,7 @@ export default abstract class Elegant{
     let elegant:Elegant;
     switch (dialect) {
       case 'mariadb':
-        const MariaDb = ( await import(path.resolve(__filename, '../../lib/elegant/MariaDb'))).default;
+        const MariaDb = ( await import(path.resolve(__filename, '../../lib/elegant/MariaDB'))).default;
         elegant = new MariaDb();
         break;
       case 'mysql':

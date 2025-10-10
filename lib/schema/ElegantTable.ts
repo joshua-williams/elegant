@@ -191,11 +191,10 @@ export default abstract class ElegantTable {
       case 'create':
         sql += 'CREATE'
         if (this.$.temporary) sql += ' TEMPORARY'
-        sql += ` TABLE`
-        if (this.$.ifNotExists) sql += ' IF NOT EXISTS '
+        sql += ` TABLE `
+        if (this.$.ifNotExists) sql += 'IF NOT EXISTS '
         if (this.schema) sql += ` ${this.enclose(this.schema)}`
-        sql += `${this.enclose(this.tableName)}`
-        sql+= '(\n'
+        sql += `${this.enclose(this.tableName)} (\n`
         sql += this.columns.map(column => {
           return '  ' + this.columnToSql(column)
         }).join(',\n')
