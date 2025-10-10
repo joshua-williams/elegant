@@ -1,7 +1,6 @@
 import ColumnDefinition from 'lib/schema/ColumnDefinition';
 import ElegantTable from "./ElegantTable";
 import {BooleanColumnDefinition, TimestampColumnDefinition} from './TableDefinitions';
-import {exit} from '../util';
 
 export default class PostgresTable extends ElegantTable {
   protected enclosure: string = '"';

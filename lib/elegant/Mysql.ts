@@ -127,7 +127,7 @@ export default class Mysql extends Elegant {
       const promise = statement.execute(param)
         .then(results => {
           const keys = Object.keys(results[0])
-          const reducer = (acc:Record<string,Scalar>, key:any, i:number) => {
+          const reducer = (acc:Record<string,Scalar>, key:any) => {
             acc[key] = results[0][key]
             return acc
           }

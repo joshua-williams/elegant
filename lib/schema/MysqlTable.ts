@@ -1,5 +1,4 @@
 import ColumnDefinition from 'lib/schema/ColumnDefinition';
-import { SchemaDialect } from 'types';
 import ElegantTable from "./ElegantTable";
 import {
   NumberColumnDefinition,

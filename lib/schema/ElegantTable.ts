@@ -1,4 +1,4 @@
-import {Charset, Collation, ElegantTableAction, SchemaDialect} from '../../types';
+import {Charset, Collation, ElegantTableAction} from '../../types';
 import ColumnDefinition from './ColumnDefinition';
 import {
   DateTimeColumnDefinition, NumberColumnDefinition,

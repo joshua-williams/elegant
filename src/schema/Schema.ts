@@ -65,7 +65,7 @@ export default class Schema {
    * @param {SchemaDialect} [dialect='mysql'] - The SQL dialect to be used, defaulting to 'mysql'.
    * @return {Promise<void>} A Promise that resolves when the drop operation is complete.
    */
-  public async drop(tableName:string, closure?:DropSchemaClosure, dialect:SchemaDialect='mysql'):Promise<void> {
+  public async drop(tableName:string, closure?:DropSchemaClosure):Promise<void> {
     const connection = this.$.connection ||  this.$.config.default;
     const config:ConnectionConfig = this.$.config.connections[connection]
     const dropTable:DropTable = new DropTable(tableName, 'drop', this.enclosure(config.dialect) )

@@ -238,9 +238,8 @@ export const AlterTableTestSuite = (name, Table:ElegantTableConstructor) => {
       it('string with default length', () => {
         table.string('name')
         const sql = table.toStatement()
-        const expected = `ALTER TABLE ${enclose(name, 'users')} ADD ${enclose(name, 'name')} VARCHAR(255) NOT NULL`
-        // const expected = `CREATE TABLE ${enclose(name, 'users')} (\n  ${enclose(name, 'name')} VARCHAR(255) NOT NULL\n)`
-        // expect(sql).toEqual(expected)
+        const expected = `CREATE TABLE ${enclose(name, 'users')} (\n  ${enclose(name, 'name')} VARCHAR(255) NOT NULL\n)`
+        expect(sql).toEqual(expected)
       })
       it.skip('string with custom length', () => {
         table.string('name', 100)
