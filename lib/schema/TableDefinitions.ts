@@ -3,7 +3,7 @@ import {NumericDataType, Scalar} from '../../types';
 
 export class NumberColumnDefinition extends ColumnDefinition {
   type:NumericDataType = 'INT'
-  constructor(name:string, type:NumericDataType, length?:number, _default?:NumericDataType, nullable?:boolean) {
+  constructor(name:string, type:NumericDataType, length?:number, _default?:number, nullable?:boolean) {
     super(name)
 
     if (['DOUBLE','FLOAT'].includes(type)) {

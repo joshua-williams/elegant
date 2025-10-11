@@ -32,6 +32,9 @@ type ConnectionConfig = {
 }
 
 type Scalar = string | number | boolean | null
+type SchemaOptions = {
+  autoExecute?: boolean
+}
 type SchemaClosure = (table:ElegantTable) => void;
 type DropSchemaClosure = (table:DropTable) => void;
 type MigrationMeta = {

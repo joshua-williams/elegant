@@ -10,6 +10,17 @@ types.setTypeParser(types.builtins.INT8, function(val) {
 
 export default class Postgres extends Elegant {
 
+  async connect(connectionConfig?: ConnectionConfig): Promise<Elegant> {
+    const config:any = {...connectionConfig}
+    if (config.schema) {
+      config.options = `--search_path=${config.schema},public`
+      delete config.schema
+    }
+    this.connection = new Client(config)
+    await this.connection.connect()
+    return this
+  }
+
   public beginTransaction(): Promise<any> {
     return this.connection.query('BEGIN')
   }
@@ -76,16 +87,5 @@ export default class Postgres extends Elegant {
 
   close(): Promise<void> {
     return Promise.resolve(undefined);
-  }
-
-  async connect(connectionConfig?: ConnectionConfig): Promise<Elegant> {
-    const config:any = {...connectionConfig}
-    if (config.schema) {
-      config.options = `--search_path=${config.schema},public`
-      delete config.schema
-    }
-    this.connection = new Client(config)
-    await this.connection.connect()
-    return this
   }
 }

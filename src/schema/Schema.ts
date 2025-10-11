@@ -1,11 +1,11 @@
 import ElegantTable from '../../lib/schema/ElegantTable';
 import Elegant from '../../index';
 import {DropTable} from '../../lib/schema/DropTable';
-import {DropSchemaClosure, ElegantConfig, SchemaClosure, SchemaDialect} from '../../types';
+import {DropSchemaClosure, SchemaClosure, SchemaDialect, SchemaOptions} from '../../types';
 import MysqlTable from '../../lib/schema/MysqlTable';
 import MariaDBTable from '../../lib/schema/MariaDBTable';
 import PostgresTable from '../../lib/schema/PostgresTable';
-import { ConnectionConfig } from '../../types'
+import SqliteTable from '../../lib/schema/SqliteTable';
 
 type SchemaMeta = {
   db:Elegant,
@@ -22,8 +22,11 @@ export default class Schema {
     autoExecute: true
   }
 
-  constructor( db:Elegant) {
+  constructor( db:Elegant, options?:SchemaOptions) {
     this.$.db = db
+    if (options) {
+      if (options.autoExecute !== undefined) this.$.autoExecute = options.autoExecute
+    }
   }
 
   /**
@@ -35,10 +38,11 @@ export default class Schema {
    */
   public async create(tableName:string, closure:SchemaClosure):Promise<void> {
     let table:ElegantTable;
-    switch(this.$.db.constructor.name) {
+    switch(this.$.db.constructor.name.toLowerCase()) {
       case 'mysql': table = new MysqlTable(tableName, 'create', "`"); break;
       case 'mariadb': table = new MariaDBTable(tableName, 'create', "`"); break;
       case "postgres": table = new PostgresTable(tableName, 'create', '"'); break;
+      case "sqlite": table = new SqliteTable(tableName, 'create', '"'); break;
     }
     this.$.tables.push(table)
     closure(table)

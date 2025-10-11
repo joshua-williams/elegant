@@ -5,8 +5,7 @@ import { Scalar, ConnectionConfig} from '../types';
 import {getAppConfig} from '../lib/config';
 
 export default abstract class Elegant{
-  public connection:Connection;
-  protected static pool:Map<string,Elegant> = new Map()
+  public connection:any;
   protected config:ConnectionConfig;
 
   public connect(config:ConnectionConfig):Promise<Elegant> {
@@ -34,9 +33,6 @@ export default abstract class Elegant{
   public abstract delete(query:string, params?:Scalar[]):Promise<any>
 
   public abstract statement(query:string, params?:Scalar[]):Promise<any>
-
-  public abstract statements(query:string, params?:Scalar[][]):Promise<any>
-
 
   public abstract close():Promise<void>
 
@@ -69,6 +65,10 @@ export default abstract class Elegant{
         const Postgres = ( await import(path.resolve(__filename, '../../lib/elegant/Postgres'))).default;
         elegant = new Postgres();
         break
+      case 'sqlite':
+        const Sqlite = ( await import(path.resolve(__filename, '../../lib/elegant/Sqlite'))).default;
+        elegant = new Sqlite();
+        break;
       default:
         throw new Error(`Unsupported database driver: ${dialect}`)
     }
