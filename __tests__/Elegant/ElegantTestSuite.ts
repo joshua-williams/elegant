@@ -2,7 +2,6 @@ import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach } from
 import {SchemaDialect} from '../../types';
 import Elegant from '../../src/Elegant';
 import Schema from '../../src/schema/Schema';
-import {getAppConfig} from '../../lib/config';
 import ElegantTable from '../../lib/schema/ElegantTable';
 
 export const ElegantTestSuite = (connection:SchemaDialect) => {
@@ -149,7 +148,7 @@ export const ElegantTestSuite = (connection:SchemaDialect) => {
     })
 
     describe('transaction', () => {
-      it.skip('should run transaction', async () => {
+      it('should run transaction', async () => {
         const email = Math.random().toString(36).substring(7) + '@gmail.com'
         const password = Math.random().toString(36).substring(7)
 

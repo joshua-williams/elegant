@@ -1,7 +1,7 @@
 // @ts-ignore
 // @ts-ignore
 
-import {Migration} from './index';
+import {Migration, Elegant} from './index';
 import ElegantTable from './lib/schema/ElegantTable';
 import {DropTable} from './lib/schema/DropTable';
 import Schema from './src/schema/Schema';
@@ -85,5 +85,5 @@ declare module 'ascii-table' {
   }
 }
 
-type ElegantTableConstructor = new (tableName:string, action:ElegantTableAction, enclosure?:string) => ElegantTable
+type ElegantTableConstructor = new (tableName:string, action:ElegantTableAction, db:Elegant) => ElegantTable
 type ElegantTableAction = 'create'|'alter'|'drop'
