@@ -8,7 +8,7 @@ export class DropTable extends ElegantTable {
 
   toStatement(): string {
     let ifExists = this._ifExists ? 'IF EXISTS ' : ''
-    return `DROP TABLE ${ifExists} ${this.enclose(this.tableName)}`
+    return `DROP TABLE ${ifExists}${this.enclose(this.tableName)}`
   }
 
   ifExists():DropTable {

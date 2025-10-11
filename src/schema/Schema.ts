@@ -39,10 +39,10 @@ export default class Schema {
   public async create(tableName:string, closure:SchemaClosure):Promise<void> {
     let table:ElegantTable;
     switch(this.$.db.constructor.name.toLowerCase()) {
-      case 'mysql': table = new MysqlTable(tableName, 'create', "`"); break;
-      case 'mariadb': table = new MariaDBTable(tableName, 'create', "`"); break;
-      case "postgres": table = new PostgresTable(tableName, 'create', '"'); break;
-      case "sqlite": table = new SqliteTable(tableName, 'create', '"'); break;
+      case 'mysql': table = new MysqlTable(tableName, 'create', this.$.db); break;
+      case 'mariadb': table = new MariaDBTable(tableName, 'create', this.$.db); break;
+      case "postgres": table = new PostgresTable(tableName, 'create', this.$.db); break;
+      case "sqlite": table = new SqliteTable(tableName, 'create', this.$.db); break;
     }
     this.$.tables.push(table)
     closure(table)
@@ -61,7 +61,7 @@ export default class Schema {
    * @return {Promise<void>} A Promise that resolves when the drop operation is complete.
    */
   public async drop(tableName:string, closure?:DropSchemaClosure):Promise<void> {
-    const dropTable:DropTable = new DropTable(tableName, 'drop')
+    const dropTable:DropTable = new DropTable(tableName, 'drop', this.$.db)
     if (closure) closure(dropTable)
     this.$.tables.push(dropTable)
     if(this.$.autoExecute) {

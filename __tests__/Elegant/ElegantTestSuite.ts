@@ -34,7 +34,6 @@ export const ElegantTestSuite = (connection:SchemaDialect) => {
 
     afterAll(async () => {
       await schema.drop('users', (table) => table.ifExists())
-      await db.close()
     })
 
     beforeEach(async () => {
@@ -42,7 +41,7 @@ export const ElegantTestSuite = (connection:SchemaDialect) => {
     })
 
     afterEach(async () => {
-      // await db.close()
+      await db.close()
     })
 
     it('should get Elegant instance', () => {

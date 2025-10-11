@@ -5,6 +5,7 @@ import {
   StringColumnDefinition, TimeColumnDefinition,
   TimestampColumnDefinition
 } from './TableDefinitions';
+import Elegant from '../../src/Elegant';
 
 type SchemaTableMeta = {
   charset:Charset,
@@ -22,6 +23,7 @@ export default abstract class ElegantTable {
   protected columns:ColumnDefinition[] = []
   protected tableName:string
   protected schema:string
+  protected db:Elegant
 
   $:SchemaTableMeta ={
     charset:undefined,
@@ -32,10 +34,22 @@ export default abstract class ElegantTable {
     ifExists:false,
     ifNotExists:false,
   }
-  constructor(tableName:string, action:ElegantTableAction, enclosure?:string) {
+  constructor(tableName:string, action:ElegantTableAction, db:Elegant) {
     this.tableName = tableName
     this.action = action;
-    if (enclosure) this.enclosure = enclosure
+    this.db = db
+    switch(db.constructor.name.toLowerCase()) {
+      case 'mysql':
+      case 'mariadb':
+        this.enclosure = '`'
+        break
+      case 'sqlite':
+        this.enclosure = '"'
+        break
+      case 'postgres':
+        this.enclosure = '"'
+        break
+    }
   }
 
   char(columnName:string, length:number = 255):ColumnDefinition {
