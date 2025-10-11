@@ -9,8 +9,8 @@ describe('Elegant Tables', () => {
   describe('Base Elegant Table: Create', () => {
     CreateTableTestSuite('MySQL', MysqlTable)
     CreateTableTestSuite('MariaDB', MariaDBTable)
-    CreateTableTestSuite('Postgres', PostgresTable)
     CreateTableTestSuite('Sqlite', SqliteTable)
+    CreateTableTestSuite('Postgres', PostgresTable)
   })
 
   describe('Base Elegant Table: Alter', () => {
@@ -22,7 +22,7 @@ describe('Elegant Tables', () => {
   describe('Database Columns', () => {
     GetDatabaseColumnsTestSuite('MySQL', MysqlTable)
     GetDatabaseColumnsTestSuite('MariaDB', MariaDBTable)
-    GetDatabaseColumnsTestSuite('Postgres', PostgresTable)
     GetDatabaseColumnsTestSuite('Sqlite', SqliteTable)
+    GetDatabaseColumnsTestSuite('Postgres', PostgresTable)
   })
 });

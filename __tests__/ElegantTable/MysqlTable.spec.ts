@@ -11,15 +11,15 @@ describe('MysqlTable', () => {
   })
 
   describe('string columns', () => {
-    it('mediumText', () => {
+    it('mediumText', async () => {
       table.mediumText('description')
-      const sql = table.toStatement()
+      const sql = await table.toStatement()
       const expected = 'CREATE TABLE `users` (\n  `description` MEDIUMTEXT\n)'
       expect(sql).toEqual(expected)
     })
-    it('longText', () => {
+    it('longText',  async () => {
       table.longText('description')
-      const sql = table.toStatement()
+      const sql = await table.toStatement()
       const expected = 'CREATE TABLE `users` (\n  `description` LONGTEXT\n)'
       expect(sql).toEqual(expected)
     })
@@ -28,63 +28,63 @@ describe('MysqlTable', () => {
   describe('numeric columns', () => {
 
     describe('signed', () => {
-      it('tinyint', () => {
+      it('tinyint', async () => {
         table.tinyInteger('id')
-        const sql = table.toStatement()
+        const sql = await table.toStatement()
         const expected = 'CREATE TABLE `users` (\n  `id` TINYINT\n)'
         expect(sql).toEqual(expected)
       })
-      it('mediumint', () => {
+      it('mediumint', async () => {
         table.mediumInteger('id')
-        const sql = table.toStatement()
+        const sql = await table.toStatement()
         const expected = 'CREATE TABLE `users` (\n  `id` MEDIUMINT\n)'
         expect(sql).toEqual(expected)
       })
     })
 
     describe('unsigned', () => {
-      it('unsigned tinyint', () => {
+      it('unsigned tinyint', async () => {
         table.unsignedTinyInteger('id')
-        const sql = table.toStatement()
+        const sql = await table.toStatement()
         const expected = 'CREATE TABLE `users` (\n  `id` TINYINT UNSIGNED\n)'
         expect(sql).toEqual(expected)
       })
-      it('unsigned tinyint with custom length', () => {
+      it('unsigned tinyint with custom length', async () => {
         table.unsignedTinyInteger('id', 2)
-        const sql = table.toStatement()
+        const sql = await table.toStatement()
         const expected = 'CREATE TABLE `users` (\n  `id` TINYINT(2) UNSIGNED\n)'
         expect(sql).toEqual(expected)
       })
-      it('unsigned mediumint', () => {
+      it('unsigned mediumint', async () => {
         table.unsignedMediumInteger('id')
-        const sql = table.toStatement()
+        const sql = await table.toStatement()
         const expected = 'CREATE TABLE `users` (\n  `id` MEDIUMINT UNSIGNED\n)'
         expect(sql).toEqual(expected)
       })
-      it('unsigned mediumint with custom length', () => {
+      it('unsigned mediumint with custom length', async () => {
         table.unsignedMediumInteger('id', 2)
-        const sql = table.toStatement()
+        const sql = await table.toStatement()
         const expected = 'CREATE TABLE `users` (\n  `id` MEDIUMINT(2) UNSIGNED\n)'
         expect(sql).toEqual(expected)
       })
-      it('double', () => {
+      it('double', async () => {
         table.double('id')
-        const sql = table.toStatement()
+        const sql = await table.toStatement()
         const expected = 'CREATE TABLE `users` (\n  `id` DOUBLE\n)'
         expect(sql).toEqual(expected)
       })
     })
 
     describe('boolean', () => {
-      it('boolean', () => {
+      it('boolean', async () => {
         table.boolean('is_active')
-        const sql = table.toStatement()
+        const sql = await table.toStatement()
         const expected = 'CREATE TABLE `users` (\n  `is_active` TINYINT(1)\n)'
         expect(sql).toEqual(expected)
       })
-      it('boolean with default value', () => {
+      it('boolean with default value', async () => {
         table.boolean('is_active', true)
-        const sql = table.toStatement()
+        const sql = await table.toStatement()
         const expected = 'CREATE TABLE `users` (\n  `is_active` TINYINT(1) DEFAULT 1\n)'
         expect(sql).toEqual(expected)
       })
@@ -92,36 +92,36 @@ describe('MysqlTable', () => {
   })
 
   describe('datetime columns', () => {
-    it('year', () => {
+    it('year', async () => {
       table.year('created_at')
-      const sql = table.toStatement()
+      const sql = await table.toStatement()
       const expected = 'CREATE TABLE `users` (\n  `created_at` YEAR\n)'
       expect(sql).toEqual(expected)
     })
   })
 
   describe('modifiers', () => {
-    it('autoIncrement', () => {
+    it('autoIncrement', async () => {
       table.integer('id', 255).autoIncrement().primary()
-      const sql = table.toStatement()
+      const sql = await table.toStatement()
       const expected = 'CREATE TABLE `users` (\n  `id` INT(255) AUTO_INCREMENT PRIMARY KEY\n)'
       expect(sql).toEqual(expected)
     })
   })
 
   describe('timestamp', () => {
-    it('timestamp with onUpdate CURRENT_TIMESTAMP', () => {
+    it('timestamp with onUpdate CURRENT_TIMESTAMP', async () => {
       table.timestamp('created_at', 'CURRENT_TIMESTAMP')
         .onUpdate('CURRENT_TIMESTAMP')
-      const sql = table.toStatement()
+      const sql = await table.toStatement()
       const expected = `CREATE TABLE \`users\` (\n  \`created_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP\n)`
       expect(sql).toEqual(expected)
     })
-    it('timestamp with onUpdate Date', () => {
+    it('timestamp with onUpdate Date', async () => {
       const date = new Date('2025-01-01')
       table.timestamp('created_at', 'CURRENT_TIMESTAMP')
         .onUpdate(date)
-      const sql = table.toStatement()
+      const sql = await table.toStatement()
       const expected = `CREATE TABLE \`users\` (\n  \`created_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE '${date.toISOString()}'\n)`
       expect(sql).toEqual(expected)
     })

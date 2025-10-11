@@ -11,9 +11,10 @@ export default class SqliteTable extends ElegantTable {
   }
 
   protected columnToSql(column: ColumnDefinition): string {
-    let type = column.type;
+    let type = column.type.toUpperCase();
     if (column instanceof NumberColumnDefinition) {
-      [type] = column.type.split('(')
+      if (column.type.includes('INT'))
+        [type] = column.type.split('(')
     }
     let sql = `${this.enclose(column.name)} ${type}`;
     if (column.$.nullable !== undefined) sql += column.$.nullable ? ' NULL' : ' NOT NULL'
