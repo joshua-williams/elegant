@@ -6,7 +6,7 @@ export class DropTable extends ElegantTable {
 
   boolean(columnName: string, defaultValue?: boolean, nullable?: boolean): ColumnDefinition { return}
 
-  toStatement(): string {
+  async toStatement():Promise<string> {
     let ifExists = this._ifExists ? 'IF EXISTS ' : ''
     return `DROP TABLE ${ifExists}${this.enclose(this.tableName)}`
   }
@@ -16,4 +16,7 @@ export class DropTable extends ElegantTable {
     return this
   }
 
+  protected getDatabaseColumns(): Promise<any[]> {
+    throw new Error('Method not implemented.');
+  }
 }

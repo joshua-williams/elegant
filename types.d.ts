@@ -43,7 +43,7 @@ type MigrationMeta = {
   schema:Schema,
 }
 
-type NumericDataType =  'TINYINT'| 'SMALLINT' | 'MEDIUMINT' | 'INT' | 'BIGINT' | 'DECIMAL' | 'FLOAT' | 'DOUBLE'
+type NumericDataType =  'TINYINT'| 'SMALLINT' | 'MEDIUMINT' | 'INT' | 'INTEGER' | 'BIGINT' | 'DECIMAL' | 'FLOAT' | 'DOUBLE'
 type SchemaDialect = 'mysql' | 'mariadb' | 'postgres' | 'mssql' | 'sqlite'
 type ColumnDefinitionProperties = {
   length:number,

@@ -32,7 +32,7 @@ export default abstract class ElegantTable {
     temporary:false,
     comment:undefined,
     ifExists:false,
-    ifNotExists:false,
+    ifNotExists:false
   }
   constructor(tableName:string, action:ElegantTableAction, db:Elegant) {
     this.tableName = tableName
@@ -109,8 +109,8 @@ export default abstract class ElegantTable {
   }
 
   id(columnName:string = 'id'):ColumnDefinition {
-    const column = new NumberColumnDefinition(columnName, 'INT')
-    column.autoIncrement().primary()
+    const column = new NumberColumnDefinition(columnName, 'INTEGER', 11)
+    column.autoIncrement().primary().unsigned()
     this.columns.push(column)
     return column
   }
@@ -193,13 +193,23 @@ export default abstract class ElegantTable {
     return this
   }
 
+  ifExists():ElegantTable {
+    this.$.ifExists = true
+    return this
+  }
+
+  ifNotExists():ElegantTable {
+    this.$.ifNotExists = true
+    return this
+  }
+
   protected enclose(value:string):string {
     return `${this.enclosure}${value}${this.enclosure}`
   }
 
   protected columnToSql(column:ColumnDefinition):string { return }
 
-  public toStatement():string {
+  public async toStatement():Promise<string> {
     let sql = ''
     switch (this.action) {
       case 'create':
@@ -221,6 +231,8 @@ export default abstract class ElegantTable {
         if (tableOptions) sql += `\n${tableOptions.join('\n')}`
         return sql.trim()
       case 'alter':
+        const existingColumns = await this.getDatabaseColumns()
+        const existingColumnNames = existingColumns.map(column => column.name)
         sql += `ALTER TABLE ${this.enclose(this.tableName)}`
         sql += this.columns.map(column => {
           return ` ${this.columnToSql(column)}`
@@ -234,13 +246,6 @@ export default abstract class ElegantTable {
     return
   }
 
-  ifExists():ElegantTable {
-    this.$.ifExists = true
-    return this
-  }
+  protected abstract getDatabaseColumns():Promise<any[]>
 
-  ifNotExists():ElegantTable {
-    this.$.ifNotExists = true
-    return this
-  }
 }

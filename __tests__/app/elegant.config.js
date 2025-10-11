@@ -2,6 +2,7 @@ export default{
   default: 'postgres',
   connections: {
     sqlite: {
+      schema: 'elegant',
       dialect: 'sqlite',
       database: 'resources/database/database.sqlite'
     },

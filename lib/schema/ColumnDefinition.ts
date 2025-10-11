@@ -3,6 +3,7 @@ import {ColumnDefinitionProperties, Scalar, SchemaDialect} from '../../types';
 export default abstract class ColumnDefinition {
   type:string
   dialect:SchemaDialect
+  private action: 'drop' | 'add' | 'change' = 'add'
   $:ColumnDefinitionProperties = {
     length:0,
     default: false,
@@ -19,6 +20,10 @@ export default abstract class ColumnDefinition {
 
   constructor(public name:string) {}
 
+  change() {
+    this.action = 'change'
+    return this
+  }
   unique():ColumnDefinition {
     this.$.unique = true
     return this

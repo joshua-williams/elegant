@@ -1,6 +1,7 @@
 import ColumnDefinition from 'lib/schema/ColumnDefinition';
 import ElegantTable from "./ElegantTable";
 import {
+  GeneralColumnDefinition,
   NumberColumnDefinition,
   StringColumnDefinition,
   TimestampColumnDefinition, YearColumnDefinition
@@ -79,7 +80,21 @@ export default class MysqlTable extends ElegantTable {
     return sql
   }
 
-  public toUpdateStatement(): string {
-      throw new Error('Method not implemented.');
+  protected getDatabaseColumns():Promise<any[]> {
+    return this.db.query(`DESCRIBE ${this.enclose(this.tableName)}`)
+      .then(fields => fields.map((field:any) => {
+        const match = field.Type.match(/(\w+)(\((\d+)\))?/)
+        let [_, type, , length] = match || []
+        type = length ? `${type}(${length})` : type
+        const column = new GeneralColumnDefinition(field.Field, type, Number(length)||undefined)
+        if (field.Null === 'YES') column.null()
+        if (field.Type.includes('unsigned')) column.unsigned()
+        if (field.Extra === 'auto_increment') column.autoIncrement()
+        if (field.Key === 'PRI') column.primary()
+        if (field.Key === 'UNI') column.unique()
+        if (field.Default) column.default(field.Default)
+        return column
+
+      }))
   }
 }

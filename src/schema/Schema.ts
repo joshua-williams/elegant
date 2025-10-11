@@ -47,7 +47,8 @@ export default class Schema {
     this.$.tables.push(table)
     closure(table)
     if (this.$.autoExecute) {
-      await this.$.db.statement(table.toStatement())
+      const statement = await table.toStatement()
+      await this.$.db.statement(statement)
     }
   }
 
@@ -65,7 +66,7 @@ export default class Schema {
     if (closure) closure(dropTable)
     this.$.tables.push(dropTable)
     if(this.$.autoExecute) {
-      await this.$.db.query(dropTable.toStatement())
+      await this.$.db.query(await dropTable.toStatement())
     }
   }
 

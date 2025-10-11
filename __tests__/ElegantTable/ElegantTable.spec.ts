@@ -2,7 +2,7 @@ import MysqlTable from '../../lib/schema/MysqlTable';
 import MariaDBTable from '../../lib/schema/MariaDBTable';
 import PostgresTable from '../../lib/schema/PostgresTable';
 import SqliteTable from '../../lib/schema/SqliteTable';
-import {AlterTableTestSuite, CreateTableTestSuite} from './ElegantTableTestSuite';
+import {AlterTableTestSuite, CreateTableTestSuite, GetDatabaseColumnsTestSuite} from './ElegantTableTestSuite';
 
 describe('Elegant Tables', () => {
 
@@ -17,5 +17,12 @@ describe('Elegant Tables', () => {
     // AlterTableTestSuite('MySQL', MysqlTable)
     // AlterTableTestSuite('MariaDB', MariaDBTable)
     // AlterTableTestSuite('Postgres', PostgresTable)
+  })
+
+  describe('Database Columns', () => {
+    GetDatabaseColumnsTestSuite('MySQL', MysqlTable)
+    GetDatabaseColumnsTestSuite('MariaDB', MariaDBTable)
+    GetDatabaseColumnsTestSuite('Postgres', PostgresTable)
+    GetDatabaseColumnsTestSuite('Sqlite', SqliteTable)
   })
 });
