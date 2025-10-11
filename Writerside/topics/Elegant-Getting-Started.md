@@ -6,4 +6,3 @@ Elegant ORM, an object-relational mapper that makes it enjoyable to interact wit
 >
 > Before getting started, be sure to configure a database connection in your application's elegant.config.js configuration file. For more information on configuring your database, check out the database configuration documentation.
 >
-{style="note"}

@@ -28,7 +28,6 @@ DB_DATABASE=/absolute/path/to/database.sqlite
 >
 > If you use the `elegant init` command to create your Elegant configuration and select SQLite as your database, Elegant will automatically create a resources/database/database.sqlite file and run the default database migrations for you.
 >
-{style="note"}
 
 ## Running SQL Queries
 
@@ -39,7 +38,7 @@ Once you have configured your database connection, you may run queries using the
 To run a basic SELECT query, you may use the select method on the Elegant instance:
 
 ```typescript
-import Elegant from '@elegant/core';
+import Elegant from 'elegant';
 
 const db = await Elegant.connection();
 const users = await db.select('select * from users where id = ?',[1])

@@ -17,7 +17,7 @@ Before creating your first Elegant project, make sure that your local machine ha
 ### Installing Elegant
 To install Elegant, you can use NPM or Yarn.
 ```bash
-npm install elegant
+npm install @pristine/elegant
 ```
 
 You can then setup npm scripts to run Elegant commands.
@@ -36,7 +36,7 @@ You can then setup npm scripts to run Elegant commands.
 If you want to install Elegant globally, you can use NPM or Yarn.
 
 ```bash
-npm install elegant -g
+npm install @pristine/elegant -g
 ```
 
 ### Initializing Configuration

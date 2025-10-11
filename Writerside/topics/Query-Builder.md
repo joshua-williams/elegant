@@ -16,7 +16,7 @@ fluent query builder instance for the given `table`, allowing you to chain more 
 finally retrieve the results of the query using the `get` method:
 
 ```typescript
-import Elegant from '@elegant/core';
+import Elegant from 'elegant';
 
 const db = await Elegant.connection();
 const users = await db.table('users').get()
@@ -26,7 +26,7 @@ is an object literal. You may pass a top type to the get method to cast the resu
 
 ```typescript
 import User from './User';
-import Elegant from '@elegant/core';
+import Elegant from 'elegant';
 
 const db = await Elegant.connection()
 const users:Collection<User> = await db.table('users').get<User>()
@@ -35,7 +35,7 @@ const users:Collection<User> = await db.table('users').get<User>()
 You may access each column's value by accessing the column as a property of the object:
 ```typescript
 import User from './User';
-import Elegant from '@elegant/core';
+import Elegant from 'elegant';
 
 const db = await Elegant.connection()
 const users:Collection<User> = await db.table('users').get<User>()
