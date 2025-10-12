@@ -1,8 +1,7 @@
-import {Connection} from 'mysql2/promise'
-import QueryBuilder from './QueryBuilder';
+import QueryBuilder from './QueryBuilder.js';
 import path from 'node:path';
-import { Scalar, ConnectionConfig} from '../types';
-import {getAppConfig} from '../lib/config';
+import { Scalar, ConnectionConfig} from '../types.js';
+import {getAppConfig} from '../lib/config.js';
 
 export default abstract class Elegant{
   public connection:any;

@@ -1,6 +1,6 @@
-import Schema from '../../src/schema/Schema';
+import Schema from '../../src/schema/Schema.js';
 import {beforeEach} from 'vitest';
-import Elegant from '../../src/Elegant';
+import Elegant from '../../src/Elegant.js';
 
 export const SchemaTestSuite = (connection:string) => {
   describe(`Schema: ${connection}`, () => {

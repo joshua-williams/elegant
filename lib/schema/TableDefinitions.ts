@@ -1,5 +1,5 @@
-import ColumnDefinition from './ColumnDefinition';
-import {NumericDataType, Scalar} from '../../types';
+import ColumnDefinition from './ColumnDefinition.js';
+import {NumericDataType, Scalar} from '../../types.js';
 
 export class GeneralColumnDefinition extends ColumnDefinition {
 

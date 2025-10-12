@@ -1,6 +1,6 @@
-import Schema from './schema/Schema';
-import ElegantTable from '../lib/schema/ElegantTable';
-import {ElegantConfig, MigrationMeta} from '../types';
+import Schema from './schema/Schema.js';
+import ElegantTable from '../lib/schema/ElegantTable.js';
+import {ElegantConfig, MigrationMeta} from '../types.js';
 
 
 export default abstract class Migration {

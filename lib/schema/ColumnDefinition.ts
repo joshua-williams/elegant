@@ -1,4 +1,4 @@
-import {ColumnDefinitionProperties, Scalar, SchemaDialect} from '../../types';
+import {ColumnDefinitionProperties, Scalar, SchemaDialect} from '../../types.js';
 
 export default abstract class ColumnDefinition {
   type:string

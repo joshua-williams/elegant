@@ -1,5 +1,5 @@
-import MysqlTable from '../../lib/schema/MysqlTable';
-import Elegant from '../../src/Elegant';
+import MysqlTable from '../../lib/schema/MysqlTable.js';
+import Elegant from '../../src/Elegant.js';
 
 describe('MysqlTable', () => {
   let table:MysqlTable;

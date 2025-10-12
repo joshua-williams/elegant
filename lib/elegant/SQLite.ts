@@ -1,7 +1,7 @@
-import {ConnectionConfig, Scalar} from '../../types';
+import {ConnectionConfig, Scalar} from '../../types.js';
 import {Database} from 'sqlite3';
-import Elegant from '../../src/Elegant';
-import {appPath} from '../util';
+import Elegant from '../../src/Elegant.js';
+import {appPath} from '../util.js';
 
 export default class SQLite extends Elegant {
   declare connection:Database;

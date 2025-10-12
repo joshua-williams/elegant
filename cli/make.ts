@@ -1,1 +1,1 @@
-export {default as MakeCommand } from './make/make-migration'
+export {default as MakeCommand } from './make/make-migration.js'

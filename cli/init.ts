@@ -1,6 +1,6 @@
 import {Command} from 'commander'
-import {getConfig, getConfigString} from '../lib/config';
-import {appPath, exit} from '../lib/util';
+import {getConfig, getConfigString} from '../lib/config.js';
+import {appPath} from '../lib/util.js';
 import * as fs from 'node:fs';
 import path from 'node:path';
 

@@ -1,5 +1,5 @@
-import {MigrationManager} from './MigrationManager';
-import {MigrationFile} from '../types';
+import {MigrationManager} from './MigrationManager.js';
+import {MigrationFile} from '../types.js';
 
 export default class MigrationInspector extends MigrationManager {
 

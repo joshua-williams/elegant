@@ -1,5 +1,5 @@
-import ElegantTable from './ElegantTable';
-import ColumnDefinition from './ColumnDefinition';
+import ElegantTable from './ElegantTable.js';
+import ColumnDefinition from './ColumnDefinition.js';
 
 export class DropTable extends ElegantTable {
   _ifExists:boolean = false;

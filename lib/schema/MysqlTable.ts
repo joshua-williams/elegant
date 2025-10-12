@@ -1,11 +1,11 @@
-import ColumnDefinition from 'lib/schema/ColumnDefinition';
-import ElegantTable from "./ElegantTable";
+import ColumnDefinition from 'lib/schema/ColumnDefinition.js';
+import ElegantTable from "./ElegantTable.js";
 import {
   GeneralColumnDefinition,
   NumberColumnDefinition,
   StringColumnDefinition,
   TimestampColumnDefinition, YearColumnDefinition
-} from './TableDefinitions';
+} from './TableDefinitions.js';
 
 export default class MysqlTable extends ElegantTable {
   protected enclosure: string = '`';

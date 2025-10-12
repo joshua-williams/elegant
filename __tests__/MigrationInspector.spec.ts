@@ -1,4 +1,4 @@
-import MigrationInspector from '../lib/MigrationInspector';
+import MigrationInspector from '../lib/MigrationInspector.js';
 import {beforeAll} from 'vitest';
 
 let inspector:MigrationInspector = new MigrationInspector();

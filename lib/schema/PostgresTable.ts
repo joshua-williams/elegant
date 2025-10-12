@@ -1,11 +1,11 @@
-import ColumnDefinition from 'lib/schema/ColumnDefinition';
-import ElegantTable from "./ElegantTable";
+import ColumnDefinition from 'lib/schema/ColumnDefinition.js';
+import ElegantTable from "./ElegantTable.js";
 import {
   BooleanColumnDefinition,
   GeneralColumnDefinition,
   NumberColumnDefinition,
   TimestampColumnDefinition
-} from './TableDefinitions';
+} from './TableDefinitions.js';
 
 export default class PostgresTable extends ElegantTable {
   protected enclosure: string = '"';

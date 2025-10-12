@@ -1,9 +1,9 @@
-import ElegantTable from '../../lib/schema/ElegantTable';
-import {ElegantTableConstructor} from '../../types';
-import Elegant from '../../src/Elegant';
+import ElegantTable from '../../lib/schema/ElegantTable.js';
+import {ElegantTableConstructor} from '../../types.js';
+import Elegant from '../../src/Elegant.js';
 import {beforeEach} from 'vitest';
-import Schema from '../../src/schema/Schema'
-import ColumnDefinition from '../../lib/schema/ColumnDefinition';
+import Schema from '../../src/schema/Schema.js'
+import ColumnDefinition from '../../lib/schema/ColumnDefinition.js';
 
 const enclose = (name:string, value:string) => {
   switch(name.toLowerCase()) {

@@ -1,9 +1,9 @@
-import {getAppConfig} from './config';
-import {appPath} from './util';
+import {getAppConfig} from './config.js';
+import {appPath} from './util.js';
 import fs from 'node:fs';
 import {basename} from 'node:path'
-import Elegant, {Migration, Schema} from '../index';
-import {ElegantConfig, MigrationFile, MigrationFileMap, MigrationStatus} from '../types';
+import Elegant, {Migration, Schema} from '../index.js';
+import {ElegantConfig, MigrationFile, MigrationFileMap, MigrationStatus} from '../types.js';
 import {pathToFileURL} from 'url';
 
 export class MigrationManager {

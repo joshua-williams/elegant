@@ -1,6 +1,6 @@
-import ColumnDefinition from './ColumnDefinition';
-import ElegantTable from './ElegantTable';
-import {GeneralColumnDefinition, NumberColumnDefinition, TimestampColumnDefinition} from './TableDefinitions';
+import ColumnDefinition from './ColumnDefinition.js';
+import ElegantTable from './ElegantTable.js';
+import {GeneralColumnDefinition, NumberColumnDefinition, TimestampColumnDefinition} from './TableDefinitions.js';
 
 export default class SqliteTable extends ElegantTable {
   boolean(columnName: string, defaultValue?: boolean, nullable?: boolean): ColumnDefinition {

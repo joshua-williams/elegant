@@ -1,7 +1,7 @@
 import AsciiTable from 'ascii-table'
 import {Command} from 'commander'
-import MigrationRunner from '../lib/MigrationRunner';
-import MigrationInspector from '../lib/MigrationInspector';
+import MigrationRunner from '../lib/MigrationRunner.js';
+import MigrationInspector from '../lib/MigrationInspector.js';
 
 const runner = new MigrationRunner();
 const inspector = new MigrationInspector();

@@ -1,7 +1,7 @@
 import pg from 'pg'
 const { Client, types } = pg
-import Elegant from '../../src/Elegant';
-import {Scalar, ConnectionConfig} from '../../types';
+import Elegant from '../../src/Elegant.js';
+import {Scalar, ConnectionConfig} from '../../types.js';
 import { QueryResult } from 'pg';
 
 types.setTypeParser(types.builtins.INT8, function(val) {

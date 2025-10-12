@@ -1,4 +1,4 @@
-import {Operator, Scalar} from '../types';
+import {Operator, Scalar} from '../types.js';
 
 class QueryCondition {
   column:string

@@ -1,11 +1,11 @@
-import {Charset, Collation, ElegantTableAction} from '../../types';
-import ColumnDefinition from './ColumnDefinition';
+import {Charset, Collation, ElegantTableAction} from '../../types.js';
+import ColumnDefinition from './ColumnDefinition.js';
 import {
   DateTimeColumnDefinition, NumberColumnDefinition,
   StringColumnDefinition, TimeColumnDefinition,
   TimestampColumnDefinition
-} from './TableDefinitions';
-import Elegant from '../../src/Elegant';
+} from './TableDefinitions.js';
+import Elegant from '../../src/Elegant.js';
 
 type SchemaTableMeta = {
   charset:Charset,

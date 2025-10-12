@@ -1,5 +1,5 @@
-import PostgresTable from '../../lib/schema/PostgresTable';
-import Elegant from '../../src/Elegant';
+import PostgresTable from '../../lib/schema/PostgresTable.js';
+import Elegant from '../../src/Elegant.js';
 
 describe('PostgresTable', () => {
   let table:PostgresTable;

@@ -1,4 +1,4 @@
-import {SchemaTestSuite} from './SchemaTestSuite';
+import {SchemaTestSuite} from './SchemaTestSuite.js';
 
 describe('Schema', () => {
   SchemaTestSuite('postgres')

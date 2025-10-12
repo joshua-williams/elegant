@@ -1,6 +1,6 @@
 import {createConnection} from 'mysql2/promise';
-import Elegant from '../../src/Elegant';
-import {Scalar, ConnectionConfig} from '../../types';
+import Elegant from '../../src/Elegant.js';
+import {Scalar, ConnectionConfig} from '../../types.js';
 
 export default class Mysql extends Elegant {
   /**

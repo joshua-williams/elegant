@@ -1,7 +1,7 @@
 import { pathToFileURL } from 'url';
-import {appPath, resourcePath} from './util';
+import {appPath, resourcePath} from './util.js';
 import * as fs from 'node:fs';
-import {ElegantConfig} from '../types';
+import {ElegantConfig} from '../types.js';
 
 export const getConfig = async ():Promise<ElegantConfig> => {
   const configPath = resourcePath('elegant.config.js')

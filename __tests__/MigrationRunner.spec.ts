@@ -1,4 +1,4 @@
-import MigrationRunner from '../lib/MigrationRunner';
+import MigrationRunner from '../lib/MigrationRunner.js';
 
 describe('migration', async () => {
   let runner:MigrationRunner = new MigrationRunner();

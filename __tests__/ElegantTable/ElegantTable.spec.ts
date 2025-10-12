@@ -1,8 +1,8 @@
-import MysqlTable from '../../lib/schema/MysqlTable';
-import MariaDBTable from '../../lib/schema/MariaDBTable';
-import PostgresTable from '../../lib/schema/PostgresTable';
-import SqliteTable from '../../lib/schema/SqliteTable';
-import {AlterTableTestSuite, CreateTableTestSuite, GetDatabaseColumnsTestSuite} from './ElegantTableTestSuite';
+import MysqlTable from '../../lib/schema/MysqlTable.js';
+import MariaDBTable from '../../lib/schema/MariaDBTable.js';
+import PostgresTable from '../../lib/schema/PostgresTable.js';
+import SqliteTable from '../../lib/schema/SqliteTable.js';
+import {AlterTableTestSuite, CreateTableTestSuite, GetDatabaseColumnsTestSuite} from './ElegantTableTestSuite.js';
 
 describe('Elegant Tables', () => {
 

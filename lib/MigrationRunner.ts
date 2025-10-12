@@ -1,7 +1,7 @@
-import Elegant from '../index';
-import {MigrationManager} from './MigrationManager';
+import Elegant from '../index.js';
+import {MigrationManager} from './MigrationManager.js';
 import fs from 'node:fs';
-import {MigrationFileMap} from '../types';
+import {MigrationFileMap} from '../types.js';
 
 class MigrationResult {
   migration:string

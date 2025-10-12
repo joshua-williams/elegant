@@ -1,7 +1,7 @@
 import {Command} from 'commander'
-import {appPath, getTemplate, isTypescript} from '../../lib/util';
+import {appPath, getTemplate, isTypescript} from '../../lib/util.js';
 import * as fs from 'node:fs';
-import {getAppConfig} from '../../lib/config';
+import {getAppConfig} from '../../lib/config.js';
 import path from 'node:path';
 
 export default new Command('make:migration')

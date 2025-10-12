@@ -1,10 +1,7 @@
-// @ts-ignore
-// @ts-ignore
-
-import {Migration, Elegant} from './index';
-import ElegantTable from './lib/schema/ElegantTable';
-import {DropTable} from './lib/schema/DropTable';
-import Schema from './src/schema/Schema';
+import Elegant, {Migration} from './index.js';
+import ElegantTable from './lib/schema/ElegantTable.js';
+import {DropTable} from './lib/schema/DropTable.js';
+import Schema from './src/schema/Schema.js';
 
 type ElegantConfig = {
   default: string,

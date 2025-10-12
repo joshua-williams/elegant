@@ -1,11 +1,11 @@
 {
   "compilerOptions": {
     "baseUrl": "./",
-    "module": "preserve",
+    "module": "nodenext",
     "target": "esnext",
     "outDir": "./dist",
     "sourceMap": true,
-    "moduleResolution": "bundler",
+    "moduleResolution": "nodenext",
     "declaration": true,
     "declarationMap": true,
     "isolatedModules": true,
