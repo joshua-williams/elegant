@@ -4,7 +4,7 @@ import {
   DateTimeColumnDefinition, NumberColumnDefinition,
   StringColumnDefinition, TimeColumnDefinition,
   TimestampColumnDefinition
-} from './TableDefinitions.js';
+} from './ColumnDefinitions.js';
 import Elegant from '../../src/Elegant.js';
 
 type SchemaTableMeta = {
@@ -167,7 +167,7 @@ export default abstract class ElegantTable {
 
   abstract boolean(columnName:string, defaultValue?:boolean, nullable?:boolean):ColumnDefinition
 
-
+  abstract json(columnName:string, defaultValue?: any, nullable?:boolean):ColumnDefinition
   charset(charset:Charset):ElegantTable {
     this.$.charset = charset
     return this

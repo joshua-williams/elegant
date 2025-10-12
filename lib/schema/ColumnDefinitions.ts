@@ -10,6 +10,15 @@ export class GeneralColumnDefinition extends ColumnDefinition {
   }
 }
 
+export class JsonColumnDefinition extends ColumnDefinition {
+  type = 'JSON'
+  constructor(name:string, defaultValue?:string, nullable?:boolean) {
+    super(name);
+    this.$.default = defaultValue;
+    this.$.nullable = nullable;
+  }
+}
+
 export class NumberColumnDefinition extends ColumnDefinition {
   type:NumericDataType = 'INT'
   constructor(name:string, type:NumericDataType, length?:number, _default?:number, nullable?:boolean) {

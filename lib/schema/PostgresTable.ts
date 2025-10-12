@@ -5,13 +5,27 @@ import {
   GeneralColumnDefinition,
   NumberColumnDefinition,
   TimestampColumnDefinition
-} from './TableDefinitions.js';
+} from './ColumnDefinitions.js';
 
 export default class PostgresTable extends ElegantTable {
   protected enclosure: string = '"';
 
   boolean(columnName: string, defaultValue?: boolean, nullable?: boolean): ColumnDefinition {
     const column = new BooleanColumnDefinition(columnName, defaultValue, nullable)
+    this.columns.push(column)
+    return column
+  }
+
+  json(columnName: string, defaultValue?: any, nullable?: boolean): ColumnDefinition {
+    const column = new GeneralColumnDefinition(columnName, 'JSONB')
+    column.default(defaultValue)
+    if (nullable !== undefined) {
+      if (nullable) {
+        column.null()
+      } else {
+        column.notNull()
+      }
+    }
     this.columns.push(column)
     return column
   }

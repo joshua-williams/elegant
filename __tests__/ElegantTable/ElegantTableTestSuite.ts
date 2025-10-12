@@ -2,7 +2,7 @@ import ElegantTable from '../../lib/schema/ElegantTable.js';
 import {ElegantTableConstructor} from '../../types.js';
 import Elegant from '../../src/Elegant.js';
 import {beforeEach} from 'vitest';
-import Schema from '../../src/schema/Schema.js'
+import Schema from '../../src/Schema.js'
 import ColumnDefinition from '../../lib/schema/ColumnDefinition.js';
 
 const enclose = (name:string, value:string) => {

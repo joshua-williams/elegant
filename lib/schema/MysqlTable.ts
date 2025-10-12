@@ -1,11 +1,11 @@
 import ColumnDefinition from 'lib/schema/ColumnDefinition.js';
 import ElegantTable from "./ElegantTable.js";
 import {
-  GeneralColumnDefinition,
+  GeneralColumnDefinition, JsonColumnDefinition,
   NumberColumnDefinition,
   StringColumnDefinition,
   TimestampColumnDefinition, YearColumnDefinition
-} from './TableDefinitions.js';
+} from './ColumnDefinitions.js';
 
 export default class MysqlTable extends ElegantTable {
   protected enclosure: string = '`';
@@ -57,6 +57,12 @@ export default class MysqlTable extends ElegantTable {
 
   year(columnName:string, defaultValue?:number, nullable?:boolean):ColumnDefinition {
     const column = new YearColumnDefinition(columnName, defaultValue, nullable)
+    this.columns.push(column)
+    return column
+  }
+
+  json(columnName:string, defaultValue?:any, nullable?:boolean):ColumnDefinition {
+    const column = new JsonColumnDefinition(columnName, defaultValue, nullable)
     this.columns.push(column)
     return column
   }

@@ -1,5 +1,9 @@
 import * as path from 'node:path';
 import fs from 'node:fs';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 /**
  * Constructs a base path based on the provided subPath.
@@ -8,9 +12,10 @@ import fs from 'node:fs';
  * @param {string} [subPath] - Optional sub-path to append to the base path.
  * @returns {string} The full base path, with or without the appended subPath.
  * */
-export const basePath = (subPath?:string) =>
-  subPath ? path.join(path.dirname(__dirname), subPath) : path.dirname(__dirname)
-
+export const basePath = (subPath?:string): string => {
+  let basePath = path.resolve(__dirname, '../../');
+  return subPath ? path.join(basePath, subPath) : basePath;
+}
 /**
  * Constructs a resource path based on the provided subPath.
  * If a subPath is provided, it appends the subPath to the base resources path.
@@ -19,7 +24,7 @@ export const basePath = (subPath?:string) =>
  * @param {string} [subPath] - Optional sub-path to append to the resources path.
  * @returns {string} The full resource path, with or without the appended subPath.
  **/
-export const resourcePath = (subPath?:string) =>
+export const resourcePath = (subPath?:string):string =>
   subPath ? basePath(`resources/${subPath}`) : basePath(`resources`)
 
 /**

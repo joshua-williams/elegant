@@ -1,7 +1,7 @@
 import Elegant, {Migration} from './index.js';
 import ElegantTable from './lib/schema/ElegantTable.js';
 import {DropTable} from './lib/schema/DropTable.js';
-import Schema from './src/schema/Schema.js';
+import Schema from './src/Schema.js';
 
 type ElegantConfig = {
   default: string,

@@ -1,11 +1,11 @@
-import ElegantTable from '../../lib/schema/ElegantTable.js';
-import Elegant from '../../index.js';
-import {DropTable} from '../../lib/schema/DropTable.js';
-import {DropSchemaClosure, SchemaClosure, SchemaDialect, SchemaOptions} from '../../types.js';
-import MysqlTable from '../../lib/schema/MysqlTable.js';
-import MariaDBTable from '../../lib/schema/MariaDBTable.js';
-import PostgresTable from '../../lib/schema/PostgresTable.js';
-import SqliteTable from '../../lib/schema/SqliteTable.js';
+import ElegantTable from '../lib/schema/ElegantTable.js';
+import Elegant from '../index.js';
+import {DropTable} from '../lib/schema/DropTable.js';
+import {DropSchemaClosure, SchemaClosure, SchemaDialect, SchemaOptions} from '../types.js';
+import MysqlTable from '../lib/schema/MysqlTable.js';
+import MariaDBTable from '../lib/schema/MariaDBTable.js';
+import PostgresTable from '../lib/schema/PostgresTable.js';
+import SqliteTable from '../lib/schema/SqliteTable.js';
 
 type SchemaMeta = {
   db:Elegant,

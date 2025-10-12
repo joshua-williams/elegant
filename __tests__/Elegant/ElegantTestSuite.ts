@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach } from 'vitest'
 import {SchemaDialect} from '../../types.js';
 import Elegant from '../../src/Elegant.js';
-import Schema from '../../src/schema/Schema.js';
+import Schema from '../../src/Schema.js';
 import ElegantTable from '../../lib/schema/ElegantTable.js';
 
 export const ElegantTestSuite = (connection:SchemaDialect) => {

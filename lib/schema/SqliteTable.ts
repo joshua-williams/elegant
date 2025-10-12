@@ -1,13 +1,18 @@
 import ColumnDefinition from './ColumnDefinition.js';
 import ElegantTable from './ElegantTable.js';
-import {GeneralColumnDefinition, NumberColumnDefinition, TimestampColumnDefinition} from './TableDefinitions.js';
+import {GeneralColumnDefinition, NumberColumnDefinition, TimestampColumnDefinition} from './ColumnDefinitions.js';
 
 export default class SqliteTable extends ElegantTable {
+
   boolean(columnName: string, defaultValue?: boolean, nullable?: boolean): ColumnDefinition {
     const column = new NumberColumnDefinition(columnName, 'TINYINT', 1, defaultValue ? 1 : 0, nullable)
     column.unsigned()
     this.columns.push(column)
     return column
+  }
+
+  json(columnName: string, defaultValue?: any, nullable?: boolean): ColumnDefinition {
+    throw new Error('Method not implemented.');
   }
 
   protected columnToSql(column: ColumnDefinition): string {

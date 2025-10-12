@@ -10,6 +10,14 @@ describe('PostgresTable', () => {
     table = new PostgresTable('users', 'create', db)
   })
 
+  describe('json columns', () => {
+    it('json', async () => {
+      table.json('data')
+      const expected = `CREATE TABLE "users" (\n  "data" JSONB\n)`
+      const sql = await table.toStatement()
+      expect(sql).toEqual(expected)
+    })
+  })
   describe('boolean', () => {
     it('boolean', async () => {
       table.boolean('is_active')

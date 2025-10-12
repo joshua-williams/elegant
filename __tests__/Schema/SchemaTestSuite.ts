@@ -1,5 +1,4 @@
-import Schema from '../../src/schema/Schema.js';
-import {beforeEach} from 'vitest';
+import Schema from '../../src/Schema.js';
 import Elegant from '../../src/Elegant.js';
 
 export const SchemaTestSuite = (connection:string) => {

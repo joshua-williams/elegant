@@ -1,4 +1,4 @@
-import Schema from './schema/Schema.js';
+import Schema from './Schema.js';
 import ElegantTable from '../lib/schema/ElegantTable.js';
 import {ElegantConfig, MigrationMeta} from '../types.js';
 
