@@ -60,7 +60,7 @@ export class CreateUsersTable extends Migration {
 ```
 
 ## Tables
-Creating Tables
+### Creating Tables
 To create a new database table, use the `create` method on the Schema facade. The `create` method accepts two arguments: the first is the name of the table, while the second is a closure which receives a `ElegantTable` object that may be used to define the new table:
 
 ```typescript

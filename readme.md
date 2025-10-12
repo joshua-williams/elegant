@@ -2,13 +2,12 @@
 
 ## Introduction
 
-Almost every modern web application interacts with a database. Elegant makes interacting with databases extremely simple across a variety of supported databases using raw SQL, a [fluent query builder](./Writerside/Topics/Query-Builder.md), and the [Elegant ORM](./Writerside/Topics/Elegant-Getting-Started.md). Currently, Elegant provides first-party support for five databases:
+Almost every modern web application interacts with a database. Elegant makes interacting with databases extremely simple across a variety of supported databases using raw SQL, a [fluent query builder](./Writerside/Topics/Query-Builder.md), and the [Elegant ORM](./Writerside/Topics/Elegant-Getting-Started.md). Currently, Elegant provides first-party support for four databases:
 
 * MySQL
 * MariaDB
 * PostgreSQL
-* SQLite3
-* SQL Server
+* SQLite
 
 ### Configuration
 
@@ -19,15 +18,16 @@ The configuration for Elegant's database services is located in your application
 SQLite databases are contained within a single file on your filesystem. You can create a new SQLite database using the touch command in your terminal: `touch database/database.sqlite`. After the database has been created, you may easily configure your environment variables to point to this database by placing the absolute path to the database in the DB_DATABASE environment variable:
 
 ```bash
-DB_CONNECTION=sqlite
-DB_DATABASE=/absolute/path/to/database.sqlite
+{
+  dialect: 'sqlite',
+  database: 'database/database.sqlite'
+}
 ```
 
 > **elegant init**
 >
 > If you use the `elegant init` command to create your Elegant configuration and select SQLite as your database, Elegant will automatically create a resources/database/database.sqlite file and run the default database migrations for you.
 >
-{style="note"}
 
 ## Running SQL Queries
 
@@ -101,7 +101,6 @@ const user = await db.select('select * from users where id = 1')
 >
 > Since unprepared statements do not bind parameters, they may be vulnerable to SQL injection. You should never allow user controlled values within an unprepared statement.
 >
-{style="warning"}
 
 ### Implicit Commits
 

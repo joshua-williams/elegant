@@ -26,7 +26,7 @@ You can then setup npm scripts to run Elegant commands.
 
 {
   "scripts": {
-    "migrate:rollback": "elegant migrate rollback",
+    "migrate:rollback": "elegant migrate:rollback",
     "migrate:latest": "elegant migrate latest",
   }
 }
