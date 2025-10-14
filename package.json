@@ -26,6 +26,7 @@
     "local:start": "cd ./__tests__/app && docker compose up -d",
     "local:stop": "cd ./__tests__/app && docker compose down",
     "local:migrate": "npm run migrate --prefix ./__tests__/app",
+    "docs:extract": "unzip -o docs/webHelpE2-all.zip -d docs && rm -rf docs/webHelpE2-all.zip",
     "prepublishOnly": "npm run build"
   },
   "author": "Joshua D. Williams",

@@ -26,4 +26,8 @@
         <description>Created after removal of "Query Builder" from Elegant</description>
         <accepts>Query-Builder.html</accepts>
     </rule>
+    <rule id="235232ab">
+        <description>Created after removal of "How to" from Elegant</description>
+        <accepts>How-to.html</accepts>
+    </rule>
 </rules>

@@ -2,54 +2,108 @@
 <show-structure for="chapter,procedure" depth="2"/>
 
 ## Meet Elegant
-Elegant is a web application framework with expressive, elegant syntax.
 
-Elegant strives to provide an amazing developer experience while providing powerful features such as fluent query builder,
-Object Relational Mapping, multiple database support, and more.
+Elegant is a TypeScript database toolkit that brings simplicity and expressiveness to database interactions. Built with developer experience in mind, Elegant provides an intuitive API for working with relational databases without sacrificing power or flexibility.
 
-### Why Elegant? 
-There are a variety of database tools and frameworks available to you when building a web application. 
-However, we believe Elegant is the best choice for interfacing with your database.
+Whether you're building a REST API, web application, or data-intensive service, Elegant streamlines your database operations with a fluent query builder, comprehensive migration system, and powerful ORM capabilities.
 
-## Creating a Elegant Project
-Before creating your first Elegant project, make sure that your local machine has Node and NPM or Bun installed. 
+### Why Choose Elegant?
 
-### Installing Elegant
-To install Elegant, you can use NPM or Yarn.
-```bash
-npm install @pristine/elegant
-```
+When building modern applications, choosing the right database abstraction layer is crucial. Here's what sets Elegant apart:
 
-You can then setup npm scripts to run Elegant commands.
+**Multi-Database Support** - Write once, run anywhere. Elegant provides a unified API that works seamlessly across MySQL, MariaDB, PostgreSQL, and SQLite, allowing you to switch databases without rewriting code.
 
-```bash
+**Type Safety** - Built with TypeScript from the ground up, Elegant leverages type inference to catch errors at compile time and provide excellent IDE support with autocomplete and inline documentation.
 
+**Developer Experience** - Elegant's fluent, chainable API reads like natural language, making database operations intuitive and your code more maintainable.
+
+**Zero Dependencies Drama** - Elegant is designed to be lightweight and focused, minimizing bloat while maximizing functionality.
+
+## Prerequisites
+
+Before installing Elegant, ensure you have the following installed on your development machine:
+
+- **Node.js** (version 16 or higher)
+- **NPM**, **Yarn**, or **Bun** package manager
+
+## Installation
+
+### Adding Elegant to Your Project
+
+Install Elegant using your preferred package manager:
+
+#### Using NPM
+`npm install @pristine/elegant`
+
+#### Using Yarn
+yarn add @pristine/elegant
+
+#### Using Bun
+`bun add @pristine/elegant`
+
+### Setting Up NPM Scripts
+
+Add Elegant commands to your `package.json` for quick access:
+
+```json
 {
   "scripts": {
-    "migrate:rollback": "elegant migrate:rollback",
-    "migrate:latest": "elegant migrate latest",
+    "db:migrate": "elegant migrate",
+    "db:rollback": "elegant migrate:rollback",
+    "db:status": "elegant migrate:status",
+    "db:make:migration": "elegant make:migration"
   }
 }
 ```
 
-#### Installing Elegant Globally
-If you want to install Elegant globally, you can use NPM or Yarn.
-
+Now you can run migrations with simple commands:
 ```bash
-npm install @pristine/elegant -g
+npm run db:migrate 
+npm run db:rollback
 ```
 
-### Initializing Configuration
-To initialize Elegant, you can use the `elegant init` command to generate a configuration file, 
-migrations directory, and seeders directory.
+## Project Initialization
 
+### Quick Start with Init Command
+
+Elegant provides an initialization command that scaffolds your database configuration and directory structure:
+
+#### Basic Initialization
 ```bash
-# initialize Elegant with migrations
-npx elegant init --migration
-
-# initialize Elegant with migrations in a custom path
-npx elegant init --migration-path ./database/migrations
-
-# initialize Elegant with migrations and seeders
-npx elegant init --migration --seeder
+npx elegant init
 ```
+
+#### Custom Migrations Directory
+```bash
+npx elegant init --migration-dir ./database/migrations
+```
+
+```javascript
+export default {
+  default: 'mysql',
+  connections: {
+    mysql: {
+      dialect: 'mysql',
+      host: process.env.DB_HOST || 'localhost',
+      port: parseInt(process.env.DB_PORT) || 3306,
+      database: process.env.DB_DATABASE || 'elegant_db',
+      user: process.env.DB_USER || 'root',
+      password: process.env.DB_PASSWORD || ''
+    },
+    sqlite: {
+      dialect: 'sqlite',
+      database: 'database/database.sqlite'
+    }
+  }
+}
+```
+
+## Next Steps
+
+Now that Elegant is installed, you're ready to:
+
+1. [Configure your database connection](Getting-Started.md#configuration)
+2. [Run your first query](Getting-Started.md#running-sql-queries)
+3. [Create database migrations](Migrations.md)
+4. [Build queries with the Query Builder](Query-Builder.md)
+5. [Define models with Elegant ORM](Elegant-Getting-Started.md)

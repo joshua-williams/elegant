@@ -3,122 +3,240 @@
 
 ## Introduction
 
-Almost every modern web application interacts with a database. Elegant makes interacting with databases extremely simple across a variety of supported databases using raw SQL, a [fluent query builder](Query-Builder.md), and the [Elegant ORM](Elegant-Getting-Started.md). Currently, Elegant provides first-party support for four databases:
+Modern applications depend on reliable, efficient database interactions. Elegant simplifies this process by providing a clean, expressive interface for working with databases. Whether you need raw SQL power, a fluent query builder, or an elegant ORM, this toolkit has you covered.
 
-* MySQL
-* MariaDB
-* PostgreSQL
-* SQLite
+Elegant offers native support for four popular database systems:
 
-### Configuration
+* **MySQL** - The world's most popular open-source database
+* **MariaDB** - A performance-enhanced MySQL fork
+* **PostgreSQL** - Advanced open-source relational database
+* **SQLite** - Lightweight, file-based database perfect for development
 
-The configuration for Elegant's database services is located in your application's `elegant.config.js` configuration file. In this file, you may define all of your database connections, as well as specify which connection should be used by default. Most of the configuration options within this file are driven by the values of your application's environment variables. Examples for most of Laravel's supported database systems are provided in this file.
+## Configuration
 
-#### SQLite Configuration
+### Setting Up Your Database Connection
 
-SQLite databases are contained within a single file on your filesystem. You can create a new SQLite database using the touch command in your terminal: `touch database/database.sqlite`. After the database has been created, you may easily configure your environment variables to point to this database by placing the absolute path to the database in the DB_DATABASE environment variable:
+Database configuration is managed through the `elegant.config.js` file in your project root. This file defines your database connections and specifies which one to use by default.
 
-```json
-{
-  "driver": "sqlite",
-  "database": "database/database.sqlite"
+Here's a complete configuration example:
+
+```javaScript
+export default {
+  default: 'mysql',
+  connections: {
+    mysql: {
+      dialect: 'mysql',
+      host: process.env.DB_HOST || 'localhost',
+      port: parseInt(process.env.DB_PORT) || 3306,
+      database: process.env.DB_DATABASE,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD
+    },
+    postgres: {
+      dialect: 'postgres',
+      host: process.env.PG_HOST || 'localhost',
+      port: parseInt(process.env.PG_PORT) || 5432,
+      database: process.env.PG_DATABASE,
+      user: process.env.PG_USER,
+      password: process.env.PG_PASSWORD
+    },
+
+    sqlite: {
+      dialect: 'sqlite',
+      database: 'database/database.sqlite'
+    }
+  }
 }
 ```
 
-> **elegant init**
+### Environment Variables
+It's best practice to store sensitive database credentials in environment variables. Create a `.env` file in your project root:
+
+```
+DB_HOST=localhost
+DB_PORT=3306
+DB_DATABASE=my_database
+DB_USER=my_user
+DB_PASSWORD=my_password
+```
+
+You may override the default config and migrations path.
+```bash
+ELEGANT_CONFIG_PATH=relative/path/elegant.config.js
+ELEGANT_MIGRATION_DIR=relative/path/to/migrations
+```
+
+> **Quick Setup Tip**
 >
-> If you use the `elegant init` command to create your Elegant configuration and select SQLite as your database, Elegant will automatically create a resources/database/database.sqlite file and run the default database migrations for you.
+> Run `elegant init` and select SQLite to automatically create the database file and run initial migrations.
 >
+{style="note"}
 
-## Running SQL Queries
 
-Once you have configured your database connection, you may run queries using the Elegant instance. The Elegant instance provides methods for each type of query: `select`, `update`, `insert`, `delete`, and `statement`.
+## Executing SQL Queries
 
-### Running a Select Query
+### Establishing a Connection
 
-To run a basic SELECT query, you may use the select method on the Elegant instance:
+Before running queries, establish a connection to your database:
 
-```typescript
-import Elegant from 'elegant';
-
+```typescript 
+import Elegant from '@pristine/elegant';
 const db = await Elegant.connection();
-const users = await db.select('select * from users where id = ?',[1])
-
 ```
 
-The first argument passed to the `select` method is the SQL query, while the second argument is any parameter bindings that need to be bound to the query. Typically, these are the values of the `where` clause constraints. Parameter binding provides protection against SQL injection.
+To use a specific connection (other than the default):
+```typescript 
+const db = await Elegant.connection('postgres');
+```
 
-The `select` method will always return an `array` of results. You can pass a top type to the `select` method to cast the results to a specific type:
+### SELECT Queries
+
+Retrieve data using the `select` method:
+
+```typescript 
+import Elegant from '@pristine/elegant';
+const db = await Elegant.connection(); 
+const users = await db.select('SELECT * FROM users WHERE active = ?', [true]);
+```
+
+
+**Parameters:**
+- First argument: SQL query string
+- Second argument: Array of parameter bindings
+
+The `select` method returns an array of results. Each result is a plain object with column names as properties.
+
+### Type-Safe Queries
+
+Leverage TypeScript's type system for better code safety and IDE support:
+```typescript
+interface User { 
+  id: number; 
+  name: string; 
+  email: string; 
+  active: boolean; 
+}
+const users = await db.select<User>( 'SELECT * FROM users WHERE active = ?', [true] );
+// TypeScript now knows the structure of users users.forEach(user => { console.log(user.email); // Type-safe access });
+```
+
+
+### Retrieving Scalar Values
+
+When you need a single value instead of a full result set, use the `scalar` method:
 
 ```typescript
-const users:User[] = await db.select<User>('select * from users')
+ const maxId = await db.scalar ('SELECT MAX(id) FROM users'); const userCount = await db.scalar('SELECT COUNT(*) FROM users WHERE active = ?', [true]);
 ```
 
-### Selecting Scalar Values
+### UPDATE Queries
 
-Sometimes your database query may result in a single, scalar value. Instead of being required to retrieve the query's scalar result from a record object, Laravel allows you to retrieve this value directly using the `scalar` method:
+Modify existing records with the `update` method, which returns the number of affected rows:
 
+```typescript 
+const affectedRows = await db.update( 'UPDATE users SET last_login = NOW() WHERE email = ?', ['user@example.com'] );
+console.log(`Updated ${affectedRows} user(s)`);
+```
+
+### DELETE Queries
+
+Remove records using the `delete` method:
 ```typescript
-const id:number = await db.scalar('select max(id) from users')
+const deletedRows = await db.delete(`DELETE FROM users WHERE is_active = 0`);
+console.log(`Cleaned up ${deletedRows} expired session(s)`);
 ```
 
-### Running an Update Statement
+### Raw Queries Without Binding
 
-The `update` method should be used to update existing records in the database. The number of rows affected by the statement is returned by the method:
-
-```typescript
-const affected = await db.update('update users set votes = votes + 1 where name = ?', ['John'])
+```typescript 
+const result = await db.select('SELECT * FROM users LIMIT 10');
 ```
 
-### Running a Delete Statement
 
-The `delete` method should be used to delete records from the database. Like `update`, the number of rows affected will be returned by the method:
-
-```typescript
-const affected = await db.delete('delete from users where name = ?', ['John'])
-```
-
-### Insert/Update Multiple Records
-When you need to insert or update multiple records at once, you may use the `statement` method. The `statement` method accepts a SQL statement and an array of parameter bindings. The `statement` method will return the number of rows affected by the statement:
-
-```typescript
-const users = [
-  ["John", "Doe"],
-  ["Jane", "Doe"],
-  ["John", "Doe"]
-]
-
-const affected = await db.statement('insert into users (name, email) values (?, ?)', users)
-```
-
-### Running an Unprepared Statement
-
-Sometimes you may want to execute an SQL statement without binding any values. You may use the `select` method to accomplish this:
-
-```typescript
-const user = await db.select('select * from users where id = 1')
-```
-> **SQL Injections**
+> **Security Warning**
 >
-> Since unprepared statements do not bind parameters, they may be vulnerable to SQL injection. You should never allow user-controlled values within an unprepared statement.
+> Queries without parameter binding are vulnerable to SQL injection attacks. Never use user input directly in unprepared statements. Always use parameterized queries when dealing with user-provided data.
 >
 {style="warning"}
 
-### Implicit Commits
+## Parameter Binding
 
-When using the Elegant instance's `statement` method within transactions, you must be careful to avoid statements that cause [implicit commits](https://dev.mysql.com/doc/refman/8.0/en/implicit-commit.html). These statements will cause the database engine to indirectly commit the entire transaction, leaving Laravel unaware of the database's transaction level. An example of such a statement is creating a database table:
-
-```typescript
-await db.statement('create table users (id int, name varchar(255))')
-```
-Please refer to the MySQL manual for [a list of all statements](https://dev.mysql.com/doc/refman/8.0/en/implicit-commit.html) that trigger implicit commits.
-
-## Using Multiple Database Connections
-
-If your application defines multiple connections in your `elegant.config.js` configuration file, you may access each connection via the `connection` method provided by the Elegant instance. The connection name passed to the connection method should correspond to one of the connections listed in your `elegant.config.js` configuration file or configured at runtime using the config helper:
-
-```typescript
-const db = await Elegant.connection('mysql')
+Elegant uses parameterized queries to protect against SQL injection. Parameters are represented by `?` placeholders in your SQL:
+```typescript 
+// Safe - uses parameter binding 
+const user = await db.select( 'SELECT * FROM users WHERE email = ?', [userInput] );
 ```
 
-You may access the raw, underlying driver instance of a connection using the getConnection method on a connection instance:
+```typescript
+// Dangerous - DO NOT DO THIS 
+const user = await db.select( SELECT * FROM users WHERE email = '${userInput}' );
+```
+
+
+### Accessing the Underlying Driver
+
+For advanced use cases, access the raw database driver:
+```typescript
+const db = await Elegant.connection(); 
+const rawConnection = db.connection;
+// Now you can use driver-specific features
+```
+
+
+## Database Transactions
+
+Transactions ensure data integrity by grouping multiple operations into an atomic unit:
+```typescript
+const db = await Elegant.connection();
+await db.transaction(async (trx) => {
+  await trx.insert('INSERT INTO orders (user_id, total) VALUES (?, ?)', [userId, total]);
+  await trx.update('UPDATE inventory SET quantity = quantity - ? WHERE product_id = ?', [qty, productId]);
+  await trx.insert('INSERT INTO order_items (order_id, product_id) VALUES (?, ?)', [orderId, productId]);
+// If any query fails, all changes are rolled back // If all succeed, changes are committed automatically });
+```
+
+
+Manual transaction control:
+
+```typescript 
+const db = await Elegant.connection();
+await db.beginTransaction();
+try {
+  await db.insert('INSERT INTO accounts (name) VALUES (?)', ['Savings']);
+  await db.update('UPDATE balances SET amount = amount - ? WHERE id = ?', [100, 1]);
+  await db.commit();
+} catch (error) {
+  await db.rollback();
+  throw error;
+}
+```
+
+
+> **Important: Implicit Commits**
+>
+> Some SQL statements trigger implicit commits that cannot be rolled back. These include DDL statements like `CREATE TABLE`, `DROP TABLE`, `ALTER TABLE`, etc. Avoid these statements within transactions unless you understand their implications.
+>
+> Refer to your database documentation for a complete list of statements that cause implicit commits.
+>
+{style="warning"}
+
+## Closing Connections
+
+Close database connections when your application shuts down:
+
+```typescript
+const db = await Elegant.connection();
+// ... perform database operations ...
+await db.close();
+```
+
+
+## Next Steps
+
+Now that you understand the basics of database operations with Elegant, explore more advanced features:
+
+- [Query Builder](Query-Builder.md) - Build complex queries with a fluent interface
+- [Migrations](Migrations.md) - Version control for your database schema
+- [Elegant ORM](Elegant-Getting-Started.md) - Work with models instead of raw SQL
+
+

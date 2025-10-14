@@ -4,3 +4,4 @@ node_modules
 /dist
 /coverage
 /__tests__/app/resources/database/database.sqlite
+.DS_Store

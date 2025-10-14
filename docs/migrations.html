@@ -1,0 +1,508 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="built-on" content="2025-10-14T17:55:06.624948"><title>Database: Migrations | Elegant</title><script type="application/json" id="virtual-toc-data">[{"id":"introduction","level":0,"title":"Introduction","anchor":"#introduction"},{"id":"creating-migrations","level":0,"title":"Creating Migrations","anchor":"#creating-migrations"},{"id":"generate-migration-files","level":1,"title":"Generate Migration Files","anchor":"#generate-migration-files"},{"id":"custom-migration-path","level":1,"title":"Custom Migration Path","anchor":"#custom-migration-path"},{"id":"naming-conventions","level":1,"title":"Naming Conventions","anchor":"#naming-conventions"},{"id":"migration-structure","level":0,"title":"Migration Structure","anchor":"#migration-structure"},{"id":"basic-structure","level":1,"title":"Basic Structure","anchor":"#basic-structure"},{"id":"migration-properties","level":1,"title":"Migration Properties","anchor":"#migration-properties"},{"id":"creating-tables","level":0,"title":"Creating Tables","anchor":"#creating-tables"},{"id":"basic-table-creation","level":1,"title":"Basic Table Creation","anchor":"#basic-table-creation"},{"id":"complete-example","level":1,"title":"Complete Example","anchor":"#complete-example"},{"id":"column-types","level":0,"title":"Column Types","anchor":"#column-types"},{"id":"string-columns","level":1,"title":"String Columns","anchor":"#string-columns"},{"id":"numeric-columns","level":1,"title":"Numeric Columns","anchor":"#numeric-columns"},{"id":"boolean-columns","level":1,"title":"Boolean Columns","anchor":"#boolean-columns"},{"id":"date-and-time-columns","level":1,"title":"Date and Time Columns","anchor":"#date-and-time-columns"},{"id":"json-columns","level":1,"title":"JSON Columns","anchor":"#json-columns"},{"id":"binary-columns","level":1,"title":"Binary Columns","anchor":"#binary-columns"},{"id":"column-modifiers","level":0,"title":"Column Modifiers","anchor":"#column-modifiers"},{"id":"constraints-and-options","level":1,"title":"Constraints and Options","anchor":"#constraints-and-options"},{"id":"primary-keys","level":1,"title":"Primary Keys","anchor":"#primary-keys"},{"id":"foreign-keys","level":1,"title":"Foreign Keys","anchor":"#foreign-keys"},{"id":"indexes","level":1,"title":"Indexes","anchor":"#indexes"},{"id":"modifying-tables","level":0,"title":"Modifying Tables","anchor":"#modifying-tables"},{"id":"adding-columns","level":1,"title":"Adding Columns","anchor":"#adding-columns"},{"id":"modifying-columns","level":1,"title":"Modifying Columns","anchor":"#modifying-columns"},{"id":"renaming-columns","level":1,"title":"Renaming Columns","anchor":"#renaming-columns"},{"id":"dropping-columns","level":1,"title":"Dropping Columns","anchor":"#dropping-columns"},{"id":"managing-indexes","level":1,"title":"Managing Indexes","anchor":"#managing-indexes"},{"id":"renaming-and-dropping-tables","level":0,"title":"Renaming and Dropping Tables","anchor":"#renaming-and-dropping-tables"},{"id":"renaming-tables","level":1,"title":"Renaming Tables","anchor":"#renaming-tables"},{"id":"dropping-tables","level":1,"title":"Dropping Tables","anchor":"#dropping-tables"},{"id":"drop-if-exists","level":1,"title":"Drop If Exists","anchor":"#drop-if-exists"},{"id":"running-migrations","level":0,"title":"Running Migrations","anchor":"#running-migrations"},{"id":"execute-all-pending-migrations","level":1,"title":"Execute All Pending Migrations","anchor":"#execute-all-pending-migrations"},{"id":"check-migration-status","level":1,"title":"Check Migration Status","anchor":"#check-migration-status"},{"id":"migration-output","level":1,"title":"Migration Output","anchor":"#migration-output"},{"id":"rolling-back-migrations","level":0,"title":"Rolling Back Migrations","anchor":"#rolling-back-migrations"},{"id":"rollback-last-batch","level":1,"title":"Rollback Last Batch","anchor":"#rollback-last-batch"},{"id":"rollback-multiple-batches","level":1,"title":"Rollback Multiple Batches","anchor":"#rollback-multiple-batches"},{"id":"rollback-all-migrations","level":1,"title":"Rollback All Migrations","anchor":"#rollback-all-migrations"},{"id":"2-keep-migrations-focused","level":1,"title":"2. Keep Migrations Focused","anchor":"#2-keep-migrations-focused"},{"id":"3-test-migrations-both-ways","level":1,"title":"3. Test Migrations Both Ways","anchor":"#3-test-migrations-both-ways"},{"id":"4-use-descriptive-names","level":1,"title":"4. Use Descriptive Names","anchor":"#4-use-descriptive-names"},{"id":"5-handle-production-carefully","level":1,"title":"5. Handle Production Carefully","anchor":"#5-handle-production-carefully"},{"id":"6-version-control","level":1,"title":"6. Version Control","anchor":"#6-version-control"},{"id":"database-specific-considerations","level":0,"title":"Database-Specific Considerations","anchor":"#database-specific-considerations"},{"id":"mysql-mariadb","level":1,"title":"MySQL / MariaDB","anchor":"#mysql-mariadb"},{"id":"postgresql","level":1,"title":"PostgreSQL","anchor":"#postgresql"},{"id":"sqlite","level":1,"title":"SQLite","anchor":"#sqlite"},{"id":"troubleshooting","level":0,"title":"Troubleshooting","anchor":"#troubleshooting"},{"id":"migration-failed","level":1,"title":"Migration Failed","anchor":"#migration-failed"},{"id":"multiple-connections","level":1,"title":"Multiple Connections","anchor":"#multiple-connections"},{"id":"next-steps","level":0,"title":"Next Steps","anchor":"#next-steps"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="https://resources.jetbrains.com/writerside/apidoc/6.22.0-b776/app.css" rel="stylesheet"><meta name="msapplication-TileColor" content="#000000"><link rel="apple-touch-icon" sizes="180x180" href="https://jetbrains.com/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="https://jetbrains.com/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="https://jetbrains.com/favicon-16x16.png"><meta name="msapplication-TileImage" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-144x144.png"><meta name="msapplication-square70x70logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-70x70.png"><meta name="msapplication-square150x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-150x150.png"><meta name="msapplication-wide310x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x150.png"><meta name="msapplication-square310x310logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x310.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Database: Migrations | Elegant"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Elegant Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/migrations.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Database: Migrations | Elegant"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "@id": "writerside-documentation/migrations.html#webpage",
+    "url": "writerside-documentation/migrations.html",
+    "name": "Database: Migrations | Elegant",
+    "description": "",
+    "image": "",
+    "inLanguage":"en-US"
+}</script><!-- End Schema.org --><!-- Schema.org WebSite --><script type="application/ld+json">{
+    "@type": "WebSite",
+    "@id": "writerside-documentation/#website",
+    "url": "writerside-documentation/",
+    "name": "Elegant Help"
+}</script><!-- End Schema.org --></head><body data-id="Migrations" data-main-title="Database: Migrations" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Database"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Elegant  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="Migrations" id="Migrations.md">Database: Migrations</h1><section class="chapter"><h2 id="introduction" data-toc="introduction">Introduction</h2><p id="kvqxht_17">Database migrations are version control for your database schema. They allow your team to define, share, and track changes to the database structure over time. With migrations, you can:</p><ul class="list _bullet" id="kvqxht_18"><li class="list__item" id="kvqxht_20"><p id="kvqxht_25"><span class="control" id="kvqxht_26">Track Changes</span> - Every schema modification is recorded and versioned</p></li><li class="list__item" id="kvqxht_21"><p id="kvqxht_27"><span class="control" id="kvqxht_28">Collaborate Safely</span> - Team members can pull schema changes alongside code changes</p></li><li class="list__item" id="kvqxht_22"><p id="kvqxht_29"><span class="control" id="kvqxht_30">Rollback Errors</span> - Undo problematic migrations when issues arise</p></li><li class="list__item" id="kvqxht_23"><p id="kvqxht_31"><span class="control" id="kvqxht_32">Environment Parity</span> - Ensure consistent database structure across development, staging, and production</p></li><li class="list__item" id="kvqxht_24"><p id="kvqxht_33"><span class="control" id="kvqxht_34">Automate Deployment</span> - Run migrations as part of your deployment pipeline</p></li></ul><p id="kvqxht_19">Elegant's migration system provides a database-agnostic API that works consistently across MySQL, MariaDB, PostgreSQL, and SQLite.</p></section><section class="chapter"><h2 id="creating-migrations" data-toc="creating-migrations">Creating Migrations</h2><section class="chapter"><h3 id="generate-migration-files" data-toc="generate-migration-files">Generate Migration Files</h3><p id="kvqxht_38">Use the <code class="code" id="kvqxht_43">make:migration</code> command to create a new migration file:</p><div class="code-block" data-lang="bash">
+elegant make:migration CreateUsersTable
+</div><p id="kvqxht_40">This generates a timestamped migration file in your <code class="code" id="kvqxht_44">resources/database/migrations</code> directory:</p><div class="code-block" data-lang="bash">
+resources/database/migrations/20250101120000_CreateUsersTable.ts
+</div><p id="kvqxht_42">The timestamp prefix ensures migrations run in the correct order.</p></section><section class="chapter"><h3 id="custom-migration-path" data-toc="custom-migration-path">Custom Migration Path</h3><p id="kvqxht_45">Specify a different location for your migrations:</p><div class="code-block" data-lang="bash">
+elegant make:migration CreatePostsTable --path ./database/migrations
+</div></section><section class="chapter"><h3 id="naming-conventions" data-toc="naming-conventions">Naming Conventions</h3><p id="kvqxht_47">Use descriptive names that clearly indicate what the migration does:</p><div class="code-block" data-lang="bash">
+# Good migration names
+elegant make:migration CreateUsersTable
+elegant make:migration AddEmailVerificationToUsers
+elegant make:migration CreateOrdersTable
+elegant make:migration AddIndexToProductsSku
+
+# Avoid vague names
+elegant make:migration UpdateDatabase
+elegant make:migration Changes
+</div></section></section><section class="chapter"><h2 id="migration-structure" data-toc="migration-structure">Migration Structure</h2><section class="chapter"><h3 id="basic-structure" data-toc="basic-structure">Basic Structure</h3><p id="kvqxht_51">A migration class contains two essential methods:</p><div class="code-block" data-lang="ts">
+import { Migration } from '@pristine/elegant';
+
+export class CreateUsersTable extends Migration {
+  /**
+   * Run the migration - creates schema changes
+   */
+  async up() {
+    await this.schema.create('users', (table) =&gt; {
+      table.id();
+      table.string('name');
+      table.string('email').unique();
+      table.string('password');
+      table.boolean('active').default(true);
+      table.timestamps();
+    });
+  }
+
+  /**
+   * Reverse the migration - undoes schema changes
+   */
+  async down() {
+    await this.schema.drop('users');
+  }
+}
+</div><p id="kvqxht_53"><span class="control" id="kvqxht_54"><code class="code" id="kvqxht_56">up()</code> Method</span> - Defines forward changes (creating tables, adding columns, etc.) <span class="control" id="kvqxht_55"><code class="code" id="kvqxht_57">down()</code> Method</span> - Defines how to undo those changes (dropping tables, removing columns, etc.)</p></section><section class="chapter"><h3 id="migration-properties" data-toc="migration-properties">Migration Properties</h3><p id="kvqxht_58">Customize migration behavior with class properties:</p><div class="code-block" data-lang="ts">
+export class CreateUsersTable extends Migration {
+  // Use a specific database connection
+  connection = 'analytics';
+  
+  // Skip this migration conditionally
+  shouldRun() {
+    return process.env.ENABLE_USERS_TABLE === 'true';
+  }
+  
+  async up() {
+    // Migration logic
+  }
+  
+  async down() {
+    // Rollback logic
+  }
+}
+</div></section></section><section class="chapter"><h2 id="creating-tables" data-toc="creating-tables">Creating Tables</h2><section class="chapter"><h3 id="basic-table-creation" data-toc="basic-table-creation">Basic Table Creation</h3><p id="kvqxht_62">Create a new table using the method: <code class="code" id="kvqxht_64">create</code></p><div class="code-block" data-lang="ts">
+await this.schema.create('users', (table) =&gt; {
+  table.id();
+  table.string('name');
+  table.string('email');
+  table.timestamps();
+});
+</div></section><section class="chapter"><h3 id="complete-example" data-toc="complete-example">Complete Example</h3><p id="kvqxht_65">Here's a comprehensive table definition:</p><div class="code-block" data-lang="ts">
+export class CreateUsersTable extends Migration {
+  async up() {
+    await this.schema.create('users', (table) =&gt; {
+      // Primary key
+      table.id();
+      
+      // String columns
+      table.string('name', 100);
+      table.string('email').unique();
+      table.text('bio').nullable();
+      
+      // Numeric columns
+      table.integer('age').nullable();
+      table.decimal('balance', 10, 2).default(0);
+      
+      // Boolean columns
+      table.boolean('active').default(true);
+      table.boolean('email_verified').default(false);
+      
+      // Date/Time columns
+      table.timestamp('email_verified_at').nullable();
+      table.timestamps(); // created_at and updated_at
+    });
+  }
+  
+  async down() {
+    await this.schema.drop('users');
+  }
+}
+</div></section></section><section class="chapter"><h2 id="column-types" data-toc="column-types">Column Types</h2><section class="chapter"><h3 id="string-columns" data-toc="string-columns">String Columns</h3><div class="code-block" data-lang="ts">
+// VARCHAR with default length (255)
+table.string('name');
+
+// VARCHAR with custom length
+table.string('code', 50);
+
+// CHAR with specified length
+table.char('country_code', 2);
+
+// TEXT column for long content
+table.text('description');
+
+// LONGTEXT for very large content
+table.longText('article_content');
+</div></section><section class="chapter"><h3 id="numeric-columns" data-toc="numeric-columns">Numeric Columns</h3><div class="code-block" data-lang="ts">
+// Integer types
+table.tinyInteger('status');      // TINYINT
+table.smallInteger('quantity');   // SMALLINT
+table.integer('views');           // INT
+table.bigInteger('large_number'); // BIGINT
+
+// Unsigned integers
+table.unsignedTinyInteger('age');
+table.unsignedInteger('count');
+table.unsignedBigInteger('id');
+
+// Decimal and floating point
+table.decimal('price', 8, 2);     // DECIMAL(8,2)
+table.float('rating');            // FLOAT
+table.double('precise_value');    // DOUBLE
+</div></section><section class="chapter"><h3 id="boolean-columns" data-toc="boolean-columns">Boolean Columns</h3><div class="code-block" data-lang="ts">
+// Boolean (stored as TINYINT(1) in MySQL/MariaDB)
+table.boolean('active');
+table.boolean('is_admin').default(false);
+</div></section><section class="chapter"><h3 id="date-and-time-columns" data-toc="date-and-time-columns">Date and Time Columns</h3><div class="code-block" data-lang="ts">
+// Date only
+table.date('birth_date');
+
+// Time only
+table.time('opening_time');
+
+// DateTime
+table.dateTime('event_start');
+
+// Timestamp
+table.timestamp('created_at');
+
+// Timestamp with current time default
+table.timestamp('updated_at').default('CURRENT_TIMESTAMP');
+
+// Convenience method for created_at and updated_at
+table.timestamps();
+</div></section><section class="chapter"><h3 id="json-columns" data-toc="json-columns">JSON Columns</h3><div class="code-block" data-lang="ts">
+// JSON column (where supported)
+table.json('metadata');
+table.json('settings').nullable();
+</div></section><section class="chapter"><h3 id="binary-columns" data-toc="binary-columns">Binary Columns</h3><div class="code-block" data-lang="ts">
+table.enum('status', ['pending', 'active', 'suspended', 'deleted']);
+table.enum('role', ['user', 'admin', 'moderator']).default('user');
+</div></section></section><section class="chapter"><h2 id="column-modifiers" data-toc="column-modifiers">Column Modifiers</h2><section class="chapter"><h3 id="constraints-and-options" data-toc="constraints-and-options">Constraints and Options</h3><p id="kvqxht_83">Add constraints and options to columns:</p><div class="code-block" data-lang="ts">
+await this.schema.create('products', (table) =&gt; {
+  table.id();
+  
+  // Nullable columns
+  table.string('description').nullable();
+  
+  // Default values
+  table.integer('stock').default(0);
+  table.boolean('featured').default(false);
+  table.timestamp('published_at').default('CURRENT_TIMESTAMP');
+  
+  // Unique constraints
+  table.string('sku').unique();
+  table.string('slug').unique();
+  
+  // Unsigned (positive numbers only)
+  table.integer('quantity').unsigned();
+  
+  // Auto-increment
+  table.integer('sort_order').autoIncrement();
+  
+  // Comments (where supported)
+  table.string('code').comment('Product identification code');
+  
+  table.timestamps();
+});
+</div></section><section class="chapter"><h3 id="primary-keys" data-toc="primary-keys">Primary Keys</h3><div class="code-block" data-lang="ts">
+// Auto-incrementing integer primary key (recommended)
+table.id();
+
+// Custom primary key name
+table.id('user_id');
+
+// Composite primary key
+table.integer('user_id');
+table.integer('role_id');
+table.primary(['user_id', 'role_id']);
+
+// UUID primary key
+table.uuid('id').primary();
+</div></section><section class="chapter"><h3 id="foreign-keys" data-toc="foreign-keys">Foreign Keys</h3><p id="kvqxht_86">Define relationships between tables:</p><div class="code-block" data-lang="ts">
+await this.schema.create('posts', (table) =&gt; {
+  table.id();
+  table.string('title');
+  table.text('content');
+  
+  // Foreign key to users table
+  table.integer('user_id').unsigned();
+  table.foreign('user_id')
+    .references('id')
+    .on('users')
+    .onDelete('CASCADE')
+    .onUpdate('CASCADE');
+  
+  table.timestamps();
+});
+</div><p id="kvqxht_88">Shorthand for foreign keys:</p><div class="code-block" data-lang="ts">
+// Creates unsigned integer and foreign key constraint
+table.foreignId('user_id')
+  .constrained()
+  .onDelete('CASCADE');
+
+// Custom table name
+table.foreignId('author_id')
+  .constrained('users')
+  .onDelete('SET NULL');
+</div></section><section class="chapter"><h3 id="indexes" data-toc="indexes">Indexes</h3><p id="kvqxht_90">Improve query performance with indexes:</p><div class="code-block" data-lang="ts">
+await this.schema.create('products', (table) =&gt; {
+  table.id();
+  table.string('name');
+  table.string('sku');
+  table.string('category');
+  table.decimal('price', 10, 2);
+  
+  // Single column index
+  table.index('sku');
+  
+  // Named index
+  table.index('category', 'idx_products_category');
+  
+  // Composite index
+  table.index(['category', 'price']);
+  
+  // Unique index
+  table.unique('sku');
+  table.unique(['category', 'sku']);
+  
+  table.timestamps();
+});
+</div></section></section><section class="chapter"><h2 id="modifying-tables" data-toc="modifying-tables">Modifying Tables</h2><section class="chapter"><h3 id="adding-columns" data-toc="adding-columns">Adding Columns</h3><p id="kvqxht_97">Add columns to existing tables:</p><div class="code-block" data-lang="ts">
+export class AddPhoneToUsers extends Migration {
+  async up() {
+    await this.schema.table('users', (table) =&gt; {
+      table.string('phone', 20).nullable();
+      table.string('address').nullable();
+    });
+  }
+  
+  async down() {
+    await this.schema.table('users', (table) =&gt; {
+      table.dropColumn('phone');
+      table.dropColumn('address');
+    });
+  }
+}
+</div></section><section class="chapter"><h3 id="modifying-columns" data-toc="modifying-columns">Modifying Columns</h3><p id="kvqxht_99">Change existing column definitions:</p><div class="code-block" data-lang="ts">
+export class ModifyUsersNameColumn extends Migration {
+  async up() {
+    await this.schema.table('users', (table) =&gt; {
+      // Change column type or attributes
+      table.string('name', 200).change();
+      table.text('bio').nullable().change();
+    });
+  }
+  
+  async down() {
+    await this.schema.table('users', (table) =&gt; {
+      table.string('name', 100).change();
+      table.text('bio').notNullable().change();
+    });
+  }
+}
+</div></section><section class="chapter"><h3 id="renaming-columns" data-toc="renaming-columns">Renaming Columns</h3><p id="kvqxht_101">Rename columns within a table:</p><div class="code-block" data-lang="ts">
+export class RenameUsersNameColumn extends Migration {
+  async up() {
+    await this.schema.table('users', (table) =&gt; {
+      table.renameColumn('name', 'full_name');
+    });
+  }
+  
+  async down() {
+    await this.schema.table('users', (table) =&gt; {
+      table.renameColumn('full_name', 'name');
+    });
+  }
+}
+</div></section><section class="chapter"><h3 id="dropping-columns" data-toc="dropping-columns">Dropping Columns</h3><p id="kvqxht_103">Remove columns from tables:</p><div class="code-block" data-lang="ts">
+export class RemovePhoneFromUsers extends Migration {
+  async up() {
+    await this.schema.table('users', (table) =&gt; {
+      table.dropColumn('phone');
+      
+      // Drop multiple columns
+      table.dropColumns(['address', 'city', 'state']);
+    });
+  }
+  
+  async down() {
+    await this.schema.table('users', (table) =&gt; {
+      table.string('phone', 20).nullable();
+      table.string('address').nullable();
+      table.string('city', 100).nullable();
+      table.string('state', 2).nullable();
+    });
+  }
+}
+</div></section><section class="chapter"><h3 id="managing-indexes" data-toc="managing-indexes">Managing Indexes</h3><p id="kvqxht_105">Add or remove indexes:</p><div class="code-block" data-lang="ts">
+export class AddIndexesToProducts extends Migration {
+  async up() {
+    await this.schema.table('products', (table) =&gt; {
+      // Add indexes
+      table.index('category');
+      table.index(['category', 'status'], 'idx_category_status');
+      table.unique('sku');
+    });
+  }
+  
+  async down() {
+    await this.schema.table('products', (table) =&gt; {
+      // Drop indexes
+      table.dropIndex('category');
+      table.dropIndex('idx_category_status');
+      table.dropUnique('sku');
+    });
+  }
+}
+</div></section></section><section class="chapter"><h2 id="renaming-and-dropping-tables" data-toc="renaming-and-dropping-tables">Renaming and Dropping Tables</h2><section class="chapter"><h3 id="renaming-tables" data-toc="renaming-tables">Renaming Tables</h3><div class="code-block" data-lang="ts">
+export class RenameUsersToAccounts extends Migration {
+  async up() {
+    await this.schema.rename('users', 'accounts');
+  }
+  
+  async down() {
+    await this.schema.rename('accounts', 'users');
+  }
+}
+</div></section><section class="chapter"><h3 id="dropping-tables" data-toc="dropping-tables">Dropping Tables</h3><div class="code-block" data-lang="ts">
+export class DropUsersTable extends Migration {
+  async up() {
+    await this.schema.drop('users');
+  }
+  
+  async down() {
+    // Recreate the table
+    await this.schema.create('users', (table) =&gt; {
+      table.id();
+      table.string('name');
+      table.string('email');
+      table.timestamps();
+    });
+  }
+}
+</div></section><section class="chapter"><h3 id="drop-if-exists" data-toc="drop-if-exists">Drop If Exists</h3><p id="kvqxht_112">Safely drop tables that may not exist:</p><div class="code-block" data-lang="ts">
+export class DropOldTables extends Migration {
+  async up() {
+    await this.schema.dropIfExists('old_users');
+    await this.schema.dropIfExists('deprecated_logs');
+  }
+  
+  async down() {
+    // Usually no down action needed for cleanup migrations
+  }
+}
+</div></section></section><section class="chapter"><h2 id="running-migrations" data-toc="running-migrations">Running Migrations</h2><section class="chapter"><h3 id="execute-all-pending-migrations" data-toc="execute-all-pending-migrations">Execute All Pending Migrations</h3><p id="kvqxht_117">Run all migrations that haven't been executed yet:</p><div class="code-block" data-lang="bash">
+elegant migrate
+</div><p id="kvqxht_119">This command:</p><ol class="list _decimal" id="kvqxht_120" type="1"><li class="list__item" id="kvqxht_121"><p id="kvqxht_124">Checks which migrations have already run</p></li><li class="list__item" id="kvqxht_122"><p id="kvqxht_125">Executes pending migrations in chronological order</p></li><li class="list__item" id="kvqxht_123"><p id="kvqxht_126">Records successful migrations in the migrations tracking table</p></li></ol></section><section class="chapter"><h3 id="check-migration-status" data-toc="check-migration-status">Check Migration Status</h3><p id="kvqxht_127">View which migrations have run and which are pending:</p><div class="code-block" data-lang="bash">
+elegant migrate:status
+</div><p id="kvqxht_129">Output example:</p><div class="code-block" data-lang="bash">
+Migration Status:
+✓ 20250101120000_CreateUsersTable
+✓ 20250101130000_CreatePostsTable
+✗ 20250102140000_AddPhoneToUsers (pending)
+</div></section><section class="chapter"><h3 id="migration-output" data-toc="migration-output">Migration Output</h3><p id="kvqxht_131">Migrations provide feedback as they run:</p><div class="code-block" data-lang="bash">
+Running migrations...
+✓ CreateUsersTable
+✓ CreatePostsTable
+✓ AddPhoneToUsers
+
+Migrations completed successfully.
+</div></section></section><section class="chapter"><h2 id="rolling-back-migrations" data-toc="rolling-back-migrations">Rolling Back Migrations</h2><section class="chapter"><h3 id="rollback-last-batch" data-toc="rollback-last-batch">Rollback Last Batch</h3><p id="kvqxht_141">Undo the most recent migration batch:</p><div class="code-block" data-lang="bash">
+elegant migrate:rollback
+</div><p id="kvqxht_143">This executes the <code class="code" id="kvqxht_144">down()</code> method of the last batch of migrations.</p></section><section class="chapter"><h3 id="rollback-multiple-batches" data-toc="rollback-multiple-batches">Rollback Multiple Batches</h3><p id="kvqxht_145">Rollback a specific number of migration batches:</p><div class="code-block" data-lang="bash">
+# Rollback last 3 batches
+elegant migrate:rollback --step=3
+</div></section><section class="chapter"><h3 id="rollback-all-migrations" data-toc="rollback-all-migrations">Rollback All Migrations</h3><p id="kvqxht_147">Reset the database to its initial state:</p><div class="code-block" data-lang="bash">
+elegant migrate:reset
+</div><aside class="prompt" data-type="warning" data-title="" id="kvqxht_149"><p id="kvqxht_153">Warning: Data Loss Rolling back migrations will drop tables and delete data. Always backup your database before rolling back migrations in production environments.</p></aside><p id="kvqxht_150">Migration Best Practices</p><ol class="list _decimal" id="kvqxht_151" type="1"><li class="list__item" id="kvqxht_154"><p id="kvqxht_155">Always Provide Down Methods Every migration should have a working down() method:</p></li></ol><div class="code-block" data-lang="ts">
+// Good
+export class CreateUsersTable extends Migration {
+  async up() {
+    await this.schema.create('users', (table) =&gt; {
+      // table definition
+    });
+  }
+  
+  async down() {
+    await this.schema.drop('users');
+  }
+}
+
+// Bad - missing down() implementation
+export class CreateUsersTable extends Migration {
+  async up() {
+    await this.schema.create('users', (table) =&gt; {
+      // table definition
+    });
+  }
+  
+  async down() {
+    // TODO: Implement rollback
+  }
+}
+</div></section><section class="chapter"><h3 id="2-keep-migrations-focused" data-toc="2-keep-migrations-focused">2. Keep Migrations Focused</h3><p id="kvqxht_156">Each migration should do one thing:</p><div class="code-block" data-lang="ts">
+// Good - single purpose
+export class AddEmailVerificationToUsers extends Migration {
+  // Only adds email verification fields
+}
+
+// Bad - does too much
+export class UpdateUsersAndPosts extends Migration {
+  // Modifies multiple unrelated tables
+}
+</div></section><section class="chapter"><h3 id="3-test-migrations-both-ways" data-toc="3-test-migrations-both-ways">3. Test Migrations Both Ways</h3><p id="kvqxht_158">Always test both <code class="code" id="kvqxht_160">up()</code> and <code class="code" id="kvqxht_161">down()</code> methods:</p><div class="code-block" data-lang="bash">
+# Run migration
+elegant migrate
+
+# Test rollback
+elegant migrate:rollback
+
+# Re-run migration
+elegant migrate
+</div></section><section class="chapter"><h3 id="4-use-descriptive-names" data-toc="4-use-descriptive-names">4. Use Descriptive Names</h3><p id="kvqxht_162">Migration names should clearly describe what they do:</p><div class="code-block" data-lang="none">
+// Good
+CreateUsersTable
+AddEmailVerificationToUsers
+AddIndexToProductsSku
+CreateOrdersTable
+
+// Bad
+UpdateDatabase
+Changes
+Migration1
+Fix
+</div></section><section class="chapter"><h3 id="5-handle-production-carefully" data-toc="5-handle-production-carefully">5. Handle Production Carefully</h3><p id="kvqxht_164">In production environments:</p><ul class="list _bullet" id="kvqxht_165"><li class="list__item" id="kvqxht_166"><p id="kvqxht_171"><span class="control" id="kvqxht_172">Backup first</span> - Always backup before running migrations</p></li><li class="list__item" id="kvqxht_167"><p id="kvqxht_173"><span class="control" id="kvqxht_174">Review changes</span> - Understand what each migration does</p></li><li class="list__item" id="kvqxht_168"><p id="kvqxht_175"><span class="control" id="kvqxht_176">Plan downtime</span> - Some migrations may require brief downtime</p></li><li class="list__item" id="kvqxht_169"><p id="kvqxht_177"><span class="control" id="kvqxht_178">Test in staging</span> - Run migrations in a staging environment first</p></li><li class="list__item" id="kvqxht_170"><p id="kvqxht_179"><span class="control" id="kvqxht_180">Monitor performance</span> - Large table alterations can be slow</p></li></ul></section><section class="chapter"><h3 id="6-version-control" data-toc="6-version-control">6. Version Control</h3><ul class="list _bullet" id="kvqxht_181"><li class="list__item" id="kvqxht_182"><p id="kvqxht_185">Always commit migration files to version control</p></li><li class="list__item" id="kvqxht_183"><p id="kvqxht_186">Never modify migrations that have run in production</p></li><li class="list__item" id="kvqxht_184"><p id="kvqxht_187">Create new migrations to fix issues instead of editing old ones</p></li></ul></section></section><section class="chapter"><h2 id="database-specific-considerations" data-toc="database-specific-considerations">Database-Specific Considerations</h2><section class="chapter"><h3 id="mysql-mariadb" data-toc="mysql-mariadb">MySQL / MariaDB</h3><div class="code-block" data-lang="ts">
+await this.schema.create('users', (table) =&gt; {
+  table.id();
+  table.string('name');
+  
+  // MySQL specific options
+  table.engine('InnoDB');
+  table.charset('utf8mb4');
+  table.collation('utf8mb4_unicode_ci');
+});
+</div></section><section class="chapter"><h3 id="postgresql" data-toc="postgresql">PostgreSQL</h3><div class="code-block" data-lang="ts">
+// PostgreSQL supports more advanced column types
+table.json('metadata');          // JSON column
+table.jsonb('settings');         // JSONB column (more efficient)
+table.uuid('id').primary();      // UUID primary key
+</div></section><section class="chapter"><h3 id="sqlite" data-toc="sqlite">SQLite</h3><p id="kvqxht_193">SQLite has some limitations:</p><ul class="list _bullet" id="kvqxht_194"><li class="list__item" id="kvqxht_196"><p id="kvqxht_199">Limited <code class="code" id="kvqxht_200">ALTER TABLE</code> support</p></li><li class="list__item" id="kvqxht_197"><p id="kvqxht_201">No <code class="code" id="kvqxht_202">ENUM</code> type (use CHECK constraints)</p></li><li class="list__item" id="kvqxht_198"><p id="kvqxht_203">Foreign keys must be enabled explicitly</p></li></ul><div class="code-block" data-lang="ts">
+// SQLite limitations
+// ✓ Supported
+table.string('name');
+table.integer('age');
+
+// ✗ Limited support
+table.renameColumn('old', 'new');  // Not supported
+table.dropColumn('column');         // Not supported
+</div></section></section><section class="chapter"><h2 id="troubleshooting" data-toc="troubleshooting">Troubleshooting</h2><section class="chapter"><h3 id="migration-failed" data-toc="migration-failed">Migration Failed</h3><p id="kvqxht_206">If a migration fails midway:</p><ol class="list _decimal" id="kvqxht_207" type="1"><li class="list__item" id="kvqxht_208"><p id="kvqxht_213">Check the error message for details</p></li><li class="list__item" id="kvqxht_209"><p id="kvqxht_214">Review the migration code</p></li><li class="list__item" id="kvqxht_210"><p id="kvqxht_215">Fix the issue</p></li><li class="list__item" id="kvqxht_211"><p id="kvqxht_216">Rollback if necessary: <code class="code" id="kvqxht_217">elegant migrate:rollback</code></p></li><li class="list__item" id="kvqxht_212"><p id="kvqxht_218">Re-run the migration: <code class="code" id="kvqxht_219">elegant migrate</code></p></li></ol></section><section class="chapter"><h3 id="multiple-connections" data-toc="multiple-connections">Multiple Connections</h3><p id="kvqxht_220">Specify which connection to use:</p><div class="code-block" data-lang="ts">
+export class CreateAnalyticsEvents extends Migration {
+  connection = 'analytics';
+  
+  async up() {
+    await this.schema.create('events', (table) =&gt; {
+      table.id();
+      table.string('event_name');
+      table.timestamps();
+    });
+  }
+  
+  async down() {
+    await this.schema.drop('events');
+  }
+}
+</div><p id="kvqxht_222">Run migrations for a specific connection:</p><div class="code-block" data-lang="bash">
+elegant migrate --connection=analytics
+</div></section></section><section class="chapter"><h2 id="next-steps" data-toc="next-steps">Next Steps</h2><ul class="list _bullet" id="kvqxht_224"><li class="list__item" id="kvqxht_225"><p id="kvqxht_228">Learn about <a href="query-builder.html" id="kvqxht_229" data-tooltip="Elegant's query builder provides an intuitive, fluent interface for constructing and executing database queries. Rather than writing raw SQL strings throughout your application, the query builder offers a chainable API that's both readable and maintainable.">Query Builder</a> to interact with your database</p></li><li class="list__item" id="kvqxht_226"><p id="kvqxht_230">Explore <a href="elegant-getting-started.html" id="kvqxht_231" data-tooltip="The Elegant ORM (Object-Relational Mapper) transforms database tables into intuitive TypeScript classes, letting you work with database records as objects rather than writing raw SQL. This object-oriented approach makes your code more maintainable, readable, and enjoyable to write.">Elegant ORM</a> for model-based interactions</p></li><li class="list__item" id="kvqxht_227"><p id="kvqxht_232">Review <a href="getting-started.html" id="kvqxht_233" data-tooltip="Modern applications depend on reliable, efficient database interactions. Elegant simplifies this process by providing a clean, expressive interface for working with databases. Whether you need raw SQL power, a fluent query builder, or an elegant ORM, this toolkit has you covered.">database configuration</a> options</p></li></ul></section><div class="last-modified">14 October 2025</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="query-builder.html" class="navigation-links__prev">Database: Query Builder</a><a href="elegant-getting-started.html" class="navigation-links__next">Elegant ORM: Getting Started</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="https://resources.jetbrains.com/writerside/apidoc/6.22.0-b776/app.js"></script></body></html>

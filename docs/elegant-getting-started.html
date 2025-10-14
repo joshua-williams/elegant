@@ -1,0 +1,178 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="built-on" content="2025-10-14T17:55:06.623914"><title>Elegant ORM: Getting Started | Elegant</title><script type="application/json" id="virtual-toc-data">[{"id":"introduction","level":0,"title":"Introduction","anchor":"#introduction"},{"id":"why-use-an-orm","level":0,"title":"Why Use an ORM?","anchor":"#why-use-an-orm"},{"id":"configuration","level":0,"title":"Configuration","anchor":"#configuration"},{"id":"defining-models","level":0,"title":"Defining Models","anchor":"#defining-models"},{"id":"retrieving-models","level":0,"title":"Retrieving Models","anchor":"#retrieving-models"},{"id":"creating-and-updating-models","level":0,"title":"Creating and Updating Models","anchor":"#creating-and-updating-models"},{"id":"deleting-models","level":0,"title":"Deleting Models","anchor":"#deleting-models"},{"id":"relationships","level":0,"title":"Relationships","anchor":"#relationships"},{"id":"working-with-timestamps","level":0,"title":"Working with Timestamps","anchor":"#working-with-timestamps"},{"id":"best-practices","level":0,"title":"Best Practices","anchor":"#best-practices"},{"id":"next-steps","level":0,"title":"Next Steps","anchor":"#next-steps"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="https://resources.jetbrains.com/writerside/apidoc/6.22.0-b776/app.css" rel="stylesheet"><meta name="msapplication-TileColor" content="#000000"><link rel="apple-touch-icon" sizes="180x180" href="https://jetbrains.com/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="https://jetbrains.com/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="https://jetbrains.com/favicon-16x16.png"><meta name="msapplication-TileImage" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-144x144.png"><meta name="msapplication-square70x70logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-70x70.png"><meta name="msapplication-square150x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-150x150.png"><meta name="msapplication-wide310x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x150.png"><meta name="msapplication-square310x310logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x310.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Elegant ORM: Getting Started | Elegant"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Elegant Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/elegant-getting-started.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Elegant ORM: Getting Started | Elegant"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    "@id": "writerside-documentation/elegant-getting-started.html#webpage",
+    "url": "writerside-documentation/elegant-getting-started.html",
+    "name": "Elegant ORM: Getting Started | Elegant",
+    "description": "",
+    "image": "",
+    "inLanguage":"en-US"
+}</script><!-- End Schema.org --><!-- Schema.org WebSite --><script type="application/ld+json">{
+    "@type": "WebSite",
+    "@id": "writerside-documentation/#website",
+    "url": "writerside-documentation/",
+    "name": "Elegant Help"
+}</script><!-- End Schema.org --></head><body data-id="Elegant-Getting-Started" data-main-title="Elegant ORM: Getting Started" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Elegant ORM"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Elegant  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="Elegant-Getting-Started" id="Elegant-Getting-Started.md">Elegant ORM: Getting Started</h1><section class="chapter"><h2 id="introduction" data-toc="introduction">Introduction</h2><p id="z9mkmyz_14">The Elegant ORM (Object-Relational Mapper) transforms database tables into intuitive TypeScript classes, letting you work with database records as objects rather than writing raw SQL. This object-oriented approach makes your code more maintainable, readable, and enjoyable to write.</p><p id="z9mkmyz_15">With Elegant ORM, each database table is represented by a Model class. These models provide methods to query, insert, update, and delete records while maintaining type safety and providing a clean, expressive API.</p></section><section class="chapter"><h2 id="why-use-an-orm" data-toc="why-use-an-orm">Why Use an ORM?</h2><p id="z9mkmyz_16"><span class="control" id="z9mkmyz_20">Type Safety</span> - Define your data structures once, and TypeScript ensures you're always working with the correct types.</p><p id="z9mkmyz_17"><span class="control" id="z9mkmyz_21">Productivity</span> - Write less code. Instead of crafting SQL for every operation, use intuitive methods that handle the heavy lifting.</p><p id="z9mkmyz_18"><span class="control" id="z9mkmyz_22">Maintainability</span> - Business logic stays in your application code, not scattered across SQL strings throughout your codebase.</p><p id="z9mkmyz_19"><span class="control" id="z9mkmyz_23">Flexibility</span> - When you need raw SQL power, it's always available. Elegant ORM complements rather than replaces SQL.</p></section><section class="chapter"><h2 id="configuration" data-toc="configuration">Configuration</h2><p id="z9mkmyz_24">Before using Elegant models, ensure your database connection is properly configured in your <code class="code" id="z9mkmyz_27">elegant.config.js</code> file:</p><div class="code-block" data-lang="javascript">
+export default {
+  default: 'mysql',
+  connections: {
+    mysql: {
+      dialect: 'mysql',
+      host: process.env.DB_HOST,
+      port: parseInt(process.env.DB_PORT) || 3306,
+      database: process.env.DB_DATABASE,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD
+    }
+  }
+}
+</div><p id="z9mkmyz_26">For detailed configuration options, see the <a href="getting-started.html#configuration" id="z9mkmyz_28" data-tooltip="Database configuration is managed through the elegant.config.js file in your project root. This file defines your database connections and specifies which one to use by default.">database configuration guide</a>.</p></section><section class="chapter"><h2 id="defining-models" data-toc="defining-models">Defining Models</h2><p id="z9mkmyz_29">Models are TypeScript classes that extend the <code class="code" id="z9mkmyz_32">Elegant</code> base class. Each model corresponds to a database table.</p><section class="chapter"><h3 id="basic-model-structure" data-toc="basic-model-structure">Basic Model Structure</h3><div class="code-block" data-lang="ts">
+import { Model } from '@pristine/elegant';
+export class User extends Model { // The table associated with the model
+  protected table = 'users';
+  // The primary key for the table protected 
+  primaryKey = 'id';
+  // Type definitions for your model 
+  id!: number; 
+  name!: string;
+  email!: string;
+  created_at!: Date; 
+  updated_at!: Date; 
+}
+
+</div></section><section class="chapter"><h3 id="model-conventions" data-toc="model-conventions">Model Conventions</h3><p id="z9mkmyz_34">Elegant follows sensible conventions to minimize configuration:</p><ul class="list _bullet" id="z9mkmyz_35"><li class="list__item" id="z9mkmyz_38"><p id="z9mkmyz_41"><span class="control" id="z9mkmyz_42">Table Names</span> - By default, the model class name is converted to snake_case and pluralized (e.g., <code class="code" id="z9mkmyz_43">UserProfile</code> &rarr; <code class="code" id="z9mkmyz_44">user_profiles</code>)</p></li><li class="list__item" id="z9mkmyz_39"><p id="z9mkmyz_45"><span class="control" id="z9mkmyz_46">Primary Keys</span> - Assumes an auto-incrementing column named <code class="code" id="z9mkmyz_47">id</code></p></li><li class="list__item" id="z9mkmyz_40"><p id="z9mkmyz_48"><span class="control" id="z9mkmyz_49">Timestamps</span> - Automatically manages <code class="code" id="z9mkmyz_50">created_at</code> and <code class="code" id="z9mkmyz_51">updated_at</code> columns</p></li></ul><p id="z9mkmyz_36">You can override these conventions as needed:</p><div class="code-block" data-lang="ts">
+export class Account extends Model {
+  protected table = 'account_records'; // Custom table name protected
+  primaryKey = 'account_id'; // Custom primary key
+  public timestamps = false; // Disable timestamp management
+}
+</div></section></section><section class="chapter"><h2 id="retrieving-models" data-toc="retrieving-models">Retrieving Models</h2><p id="z9mkmyz_52">Once you've defined a model, you can start querying your database:</p><section class="chapter"><h3 id="retrieving-all-records" data-toc="retrieving-all-records">Retrieving All Records</h3><div class="code-block" data-lang="ts">
+import { User } from './models/User';
+const users = await User.all();
+users.forEach(user =&gt; { console.log(user.name); });
+</div></section><section class="chapter"><h3 id="finding-by-primary-key" data-toc="finding-by-primary-key">Finding by Primary Key</h3><div class="code-block" data-lang="ts">
+// Find user with ID 1 
+const user = await User.find(1);
+if (user) { console.log(user.email); }
+</div><div class="code-block" data-lang="ts">
+// Find or throw an error if not found 
+const user = await User.findOrFail(1);
+</div></section><section class="chapter"><h3 id="adding-constraints" data-toc="adding-constraints">Adding Constraints</h3><div class="code-block" data-lang="ts">
+// Find all active 
+users const activeUsers = await User.where('active', true).get();
+</div><div class="code-block" data-lang="ts">
+// Find users with complex conditions 
+const vipUsers = await User
+  .where('subscription_type', 'premium') 
+  .where('status', 'active') 
+  .orderBy('created_at', 'desc') 
+  .limit(10) 
+  .get();
+</div></section></section><section class="chapter"><h2 id="creating-and-updating-models" data-toc="creating-and-updating-models">Creating and Updating Models</h2><section class="chapter"><h3 id="creating-new-records" data-toc="creating-new-records">Creating New Records</h3><p id="z9mkmyz_63">There are several ways to create new model instances:</p><section class="chapter"><h4 id="method-1-create-and-save" data-toc="method-1-create-and-save">Method 1: Create and save</h4><div class="code-block" data-lang="ts">
+
+const user = new User(); 
+user.name = 'Jane Doe'; 
+user.email = 'jane@example.com'; 
+await user.save();
+</div></section><section class="chapter"><h4 id="method-2-create-with-attributes" data-toc="method-2-create-with-attributes">Method 2: Create with attributes</h4><div class="code-block" data-lang="ts">
+const user = await User.create({ 
+  name: 'John Smith', 
+  email: 'john@example.com' 
+});
+</div></section><section class="chapter"><h4 id="method-3-mass-assignment" data-toc="method-3-mass-assignment">Method 3: Mass assignment</h4><div class="code-block" data-lang="ts">
+const users = await User.createMany([ 
+  { name: 'Alice', email: 'alice@example.com' }, 
+  { name: 'Bob', email: 'bob@example.com' } 
+]);
+
+</div></section></section><section class="chapter"><h3 id="updating-records" data-toc="updating-records">Updating Records</h3><section class="chapter"><h4 id="update-a-single-model" data-toc="update-a-single-model">Update a single model</h4><div class="code-block" data-lang="ts">
+const user = await User.find(1); 
+user.name = 'Updated Name'; 
+await user.save();
+</div></section><section class="chapter"><h4 id="update-using-query" data-toc="update-using-query">Update using query</h4><div class="code-block" data-lang="ts">
+await User 
+  .where('status', 'inactive') 
+  .update({ status: 'archived' });
+</div></section><section class="chapter"><h4 id="update-or-create" data-toc="update-or-create">Update or create</h4><div class="code-block" data-lang="ts">
+const user = await User.updateOrCreate( 
+  { email: 'user@example.com' }, 
+  // Search criteria 
+  { name: 'User Name', active: true } 
+  // Values to update/create 
+);
+</div></section></section></section><section class="chapter"><h2 id="deleting-models" data-toc="deleting-models">Deleting Models</h2><section class="chapter"><h3 id="delete-single-records" data-toc="delete-single-records">Delete Single Records</h3><section class="chapter"><h4 id="delete-after-retrieving" data-toc="delete-after-retrieving">Delete after retrieving</h4><div class="code-block" data-lang="ts">
+const user = await User.find(1); 
+await user.delete();
+</div></section><section class="chapter"><h4 id="delete-by-primary-key" data-toc="delete-by-primary-key">Delete by primary key</h4><div class="code-block" data-lang="ts">
+await User.destroy(1);
+</div></section><section class="chapter"><h4 id="delete-multiple-by-ids" data-toc="delete-multiple-by-ids">Delete multiple by IDs</h4><div class="code-block" data-lang="ts">
+await User.destroy([1, 2, 3]);
+</div></section></section><section class="chapter"><h3 id="delete-with-constraints" data-toc="delete-with-constraints">Delete with Constraints</h3><section class="chapter"><h4 id="delete-all-inactive" data-toc="delete-all-inactive">Delete all inactive</h4><div class="code-block" data-lang="ts">
+users await User.where('active', false).delete();
+</div></section><section class="chapter"><h4 id="delete-with-conditions" data-toc="delete-with-conditions">Delete with conditions</h4><div class="code-block" data-lang="ts">
+await User 
+  .where('created_at', '&lt;', oldDate) 
+  .where('verified', false) 
+  .delete();
+</div></section></section></section><section class="chapter"><h2 id="relationships" data-toc="relationships">Relationships</h2><p id="z9mkmyz_88">Define relationships between models to work with related data:</p><div class="code-block" data-lang="ts">
+export class User extends Model { 
+  // One-to-many relationship 
+  posts() { 
+    return this.hasMany(Post, 'user_id'); 
+  }
+  // One-to-one relationship 
+  profile() { 
+    return this.hasOne(Profile, 'user_id'); 
+  }
+  // Many-to-many relationship
+  roles() { 
+    return this.belongsToMany(Role, 'user_roles'); 
+  }
+}
+// Access relationships 
+const user = await User.find(1);
+const posts = await user.posts().get(); 
+const profile = await user.profile().first();
+</div></section><section class="chapter"><h2 id="working-with-timestamps" data-toc="working-with-timestamps">Working with Timestamps</h2><p id="z9mkmyz_90">Elegant automatically manages <code class="code" id="z9mkmyz_97">created_at</code> and <code class="code" id="z9mkmyz_98">updated_at</code> timestamps:</p><div class="code-block" data-lang="ts">
+const user = await User.create({
+  name: 'Jane Doe',
+  email: 'jane@example.com'
+});
+
+console.log(user.created_at); // Current timestamp
+console.log(user.updated_at); // Current timestamp
+
+// Update the model
+user.name = 'Jane Smith';
+await user.save();
+
+console.log(user.updated_at); // Updated to current timestamp
+</div><p id="z9mkmyz_92">Disable timestamps if your table doesn't use them:</p><div class="code-block" data-lang="ts">
+export class Log extends Model {
+  protected table = 'logs';
+  public timestamps = false;
+}
+</div><section class="chapter"><h3 id="advanced-features" data-toc="advanced-features">Advanced Features</h3><section class="chapter"><h4 id="using-different-conections" data-toc="using-different-conections">Using Different Conections</h4><p id="z9mkmyz_100">Specify which database connection a model should use:</p><div class="code-block" data-lang="ts">
+export class AnalyticsEvent extends Model {
+  protected connection = 'analytics';
+  protected table = 'events';
+}
+</div></section></section><section class="chapter"><h3 id="custom-queries" data-toc="custom-queries">Custom Queries</h3><p id="z9mkmyz_102">Drop down to raw SQL when needed:</p><div class="code-block" data-lang="ts">
+const users = await User.raw(
+  'SELECT * FROM users WHERE created_at &gt; ?',
+  [lastWeek]
+);
+</div></section><section class="chapter"><h3 id="eager-loading" data-toc="eager-loading">Eager Loading</h3><p id="z9mkmyz_104">Optimize queries by loading relationships upfront:</p><div class="code-block" data-lang="ts">
+// N+1 problem - makes many queries
+const users = await User.all();
+for (const user of users) {
+  const posts = await user.posts().get(); // Query per user
+}
+
+// Eager loading - single query
+const users = await User.with('posts').get();
+for (const user of users) {
+  console.log(user.posts); // Already loaded
+}
+</div></section></section><section class="chapter"><h2 id="best-practices" data-toc="best-practices">Best Practices</h2><ol class="list _decimal" id="z9mkmyz_106" type="1"><li class="list__item" id="z9mkmyz_107"><p id="z9mkmyz_111"><span class="control" id="z9mkmyz_112">Use Type Definitions</span> - Define all model properties with TypeScript types for better IDE support</p></li><li class="list__item" id="z9mkmyz_108"><p id="z9mkmyz_113"><span class="control" id="z9mkmyz_114">Eager Load Relationships</span> - Avoid N+1 query problems by using eager loading</p></li><li class="list__item" id="z9mkmyz_109"><p id="z9mkmyz_115"><span class="control" id="z9mkmyz_116">Validate Data</span> - Implement validation in your models before saving</p></li><li class="list__item" id="z9mkmyz_110"><p id="z9mkmyz_117"><span class="control" id="z9mkmyz_118">Use Transactions</span> - Wrap related operations in transactions to maintain data integrity</p></li></ol></section><section class="chapter"><h2 id="next-steps" data-toc="next-steps">Next Steps</h2><ul class="list _bullet" id="z9mkmyz_119"><li class="list__item" id="z9mkmyz_120"><p id="z9mkmyz_123">Explore the <a href="query-builder.html" id="z9mkmyz_124" data-tooltip="Elegant's query builder provides an intuitive, fluent interface for constructing and executing database queries. Rather than writing raw SQL strings throughout your application, the query builder offers a chainable API that's both readable and maintainable.">Query Builder</a> for more complex queries</p></li><li class="list__item" id="z9mkmyz_121"><p id="z9mkmyz_125">Learn about <a href="migrations.html" id="z9mkmyz_126" data-tooltip="Database migrations are version control for your database schema. They allow your team to define, share, and track changes to the database structure over time. With migrations, you can:">Migrations</a> to manage your database schema</p></li><li class="list__item" id="z9mkmyz_122"><p id="z9mkmyz_127">Review <a href="getting-started.html" id="z9mkmyz_128" data-tooltip="Modern applications depend on reliable, efficient database interactions. Elegant simplifies this process by providing a clean, expressive interface for working with databases. Whether you need raw SQL power, a fluent query builder, or an elegant ORM, this toolkit has you covered.">database configuration</a> options</p></li></ul></section><div class="last-modified">14 October 2025</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="migrations.html" class="navigation-links__prev">Database: Migrations</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="https://resources.jetbrains.com/writerside/apidoc/6.22.0-b776/app.js"></script></body></html>

@@ -16,6 +16,5 @@
     </toc-element>
     <toc-element toc-title="Elegant ORM">
         <toc-element toc-title="Getting Started" topic="Elegant-Getting-Started.md"/>
-        <toc-element topic="How-to.md"/>
     </toc-element>
 </instance-profile>
