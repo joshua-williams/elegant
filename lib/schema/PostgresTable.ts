@@ -45,9 +45,6 @@ export default class PostgresTable extends ElegantTable {
       sql += (column.$.key) ? ' UNIQUE KEY' : ' UNIQUE'
     }
     if (column.$.default) sql += ` DEFAULT ${column.$.default}`
-    if (column instanceof TimestampColumnDefinition) {
-      if (column.$.onUpdate) sql += ` ON UPDATE ${column.$.onUpdate}`
-    }
     if (column.$.key) sql += ` KEY ${column.$.key}`
     if (column.$.comment) sql += ` COMMENT '${column.$.comment}'`
     return sql

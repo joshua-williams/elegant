@@ -1,4 +1,4 @@
-import MigrationRunner from '../lib/MigrationRunner.js';
+import MigrationRunner from '../lib/migration/MigrationRunner.js';
 
 describe('migration', async () => {
   let runner:MigrationRunner = new MigrationRunner();
@@ -6,11 +6,13 @@ describe('migration', async () => {
 
   describe('run', () => {
     it('should run migrations', async () => {
-      await runner.run('up')
+      const results = await runner.run()
+      expect(results).toBeInstanceOf(Array)
 
     })
     it('should rollback migrations', async () => {
-      await runner.run('down')
+      const results = await runner.rollback()
+      expect(results).toBeInstanceOf(Array)
     })
   })
 });

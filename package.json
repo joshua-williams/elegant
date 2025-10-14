@@ -31,6 +31,10 @@
   "author": "Joshua D. Williams",
   "license": "ISC",
   "description": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joshua-williams/elegant.git"
+  },
   "dependencies": {
     "ascii-table": "^0.0.9",
     "commander": "^14.0.1",

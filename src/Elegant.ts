@@ -2,6 +2,11 @@ import QueryBuilder from './QueryBuilder.js';
 import path from 'node:path';
 import { Scalar, ConnectionConfig} from '../types.js';
 import {getAppConfig} from '../lib/config.js';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 
 export default abstract class Elegant{
   public connection:any;
@@ -53,19 +58,19 @@ export default abstract class Elegant{
     let elegant:Elegant;
     switch (dialect) {
       case 'mariadb':
-        const MariaDb = ( await import(path.resolve(__filename, '../../lib/elegant/MariaDB'))).default;
+        const MariaDb = ( await import(path.resolve(__filename, '../../lib/elegant/MariaDB.js'))).default;
         elegant = new MariaDb();
         break;
       case 'mysql':
-        const MySql = ( await import(path.resolve(__filename, '../../lib/elegant/Mysql'))).default;
+        const MySql = ( await import(path.resolve(__filename, '../../lib/elegant/Mysql.js'))).default;
         elegant = new MySql();
         break;
       case 'postgres':
-        const Postgres = ( await import(path.resolve(__filename, '../../lib/elegant/Postgres'))).default;
+        const Postgres = ( await import(path.resolve(__filename, '../../lib/elegant/Postgres.js'))).default;
         elegant = new Postgres();
         break
       case 'sqlite':
-        const Sqlite = ( await import(path.resolve(__filename, '../../lib/elegant/Sqlite'))).default;
+        const Sqlite = ( await import(path.resolve(__filename, '../../lib/elegant/Sqlite.js'))).default;
         elegant = new Sqlite();
         break;
       default:

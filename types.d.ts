@@ -1,7 +1,6 @@
 import Elegant, {Migration} from './index.js';
 import ElegantTable from './lib/schema/ElegantTable.js';
 import {DropTable} from './lib/schema/DropTable.js';
-import Schema from './src/Schema.js';
 
 type ElegantConfig = {
   default: string,
@@ -37,7 +36,6 @@ type DropSchemaClosure = (table:DropTable) => void;
 type MigrationMeta = {
   config:ElegantConfig,
   tables:ElegantTable[],
-  schema:Schema,
 }
 
 type NumericDataType =  'TINYINT'| 'SMALLINT' | 'MEDIUMINT' | 'INT' | 'INTEGER' | 'BIGINT' | 'DECIMAL' | 'FLOAT' | 'DOUBLE'
@@ -68,7 +66,7 @@ type MigrationFile = {
 }
 
 type MigrationFileMap = {
-  constructor:Migration
+  migration:Migration
   file:MigrationFile
 }
 

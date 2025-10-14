@@ -1,5 +1,5 @@
 export default{
-  default: 'postgres',
+  default: 'mysql',
   connections: {
     sqlite: {
       schema: 'elegant',

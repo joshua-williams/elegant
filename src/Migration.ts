@@ -5,10 +5,8 @@ import {ElegantConfig, MigrationMeta} from '../types.js';
 
 export default abstract class Migration {
   protected connection:string;
-  public schema:Schema;
 
   $:MigrationMeta = {
-      schema:undefined,
       config: undefined,
       tables: []
     }
@@ -18,10 +16,7 @@ export default abstract class Migration {
    * @param {Schema} schema - The schema instance associated with the migration.
    * @returns {void}
    */
-  constructor(schema:Schema) {
-    (schema as any).$.autoExecute = false;
-    this.schema = schema;
-  }
+  constructor(public schema?:Schema) {}
 
   /**
    * Abstract method to handle an upward operation or transition.
@@ -29,7 +24,7 @@ export default abstract class Migration {
    *
    * @return {Promise<void>} A promise that resolves when the operation is complete.
    */
-  public abstract up():Promise<void>
+  public abstract up():Promise<any>
 
   /**
    * Executes an abstract operation to move or shift something downward or to a lower state.
@@ -37,15 +32,12 @@ export default abstract class Migration {
    *
    * @return {Promise<void>} A promise that resolves when the operation is completed.
    */
-  public abstract down():Promise<void>
+  public abstract down():Promise<any>
 
   public shouldRun():boolean {
     return true
   }
 
-  getConnection():string {
-    return this.connection
-  }
   get config():ElegantConfig {
     return this.$.config
   }

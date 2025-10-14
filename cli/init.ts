@@ -37,7 +37,7 @@ const initializeResourceDirectory = (options, config) => {
   if (!fs.existsSync(migrationDir)) {
     fs.mkdirSync(migrationDir, {recursive: true})
   }
-  let sourcePath = resourcePath('database/migrations/CreateMigrationsTable') + (isTypescript() ? '.ts' : '.js')
+  let sourcePath = resourcePath('database/migrations/CreateElegantMigrationTable') + (isTypescript() ? '.ts' : '.js')
   let targetPath =  path.join(migrationDir, basename(sourcePath))
   fs.copyFileSync(sourcePath, targetPath)
 

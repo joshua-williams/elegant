@@ -3,20 +3,22 @@ import { Migration } from '@pristine/elegant'
 export default class MigrationClass extends Migration {
 
   /**
-   * Performs the migration or schema update using tgiven database instance.
+   * Performs the migration "up" process, applying necessary changes to the database or system state.
+   * This method is typically used to implement the forward migration logic, such as creating or altering tables, adding indexes, etc.
    *
-   * @return {void} This method does not return a value.
+   * @return {Promise<void>} A promise that resolves when the migration process completes successfully.
    */
-  up() {
+  async up() {
 
   }
 
   /**
-   * Reverts the migration or schema update performed by the up() method.
-   * This method should undo the changes made by the up() method.
-   * @return {void} This method does not return a value.
+   * Reverts changes made by the `up` method in database migrations.
+   * This method is used to define the rollback logic for undoing the applied migration.
+   *
+   * @return {Promise<void>} A promise that resolves when the rollback operation is complete.
    */
-  down() {
+  async down() {
 
   }
 }

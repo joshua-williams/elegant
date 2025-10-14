@@ -36,7 +36,7 @@ export default class Schema {
    * @param {SchemaClosure} closure - A closure that defines the schema of the table.
    * @return {Promise<void>} A promise that resolves when the table creation process is completed.
    */
-  public async create(tableName:string, closure:SchemaClosure):Promise<void> {
+  public async create(tableName:string, closure:SchemaClosure):Promise<any> {
     let table:ElegantTable;
     switch(this.$.db.constructor.name.toLowerCase()) {
       case 'mysql': table = new MysqlTable(tableName, 'create', this.$.db); break;
@@ -50,6 +50,7 @@ export default class Schema {
       const statement = await table.toStatement()
       await this.$.db.statement(statement)
     }
+    return Promise.resolve(true)
   }
 
   /**

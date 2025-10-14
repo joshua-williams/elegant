@@ -1,15 +1,15 @@
 import { Migration } from '@pristine/elegant'
 
-class ElegantMigration extends Migration {
+export default class CreateElegantMigrationTable extends Migration {
   async up() {
     await this.schema.create('elegant_migrations', (table) => {
       table.id()
+      table.integer('batchId')
+      table.char('action', 20)
+      table.bigInteger('duration')
       table.string('name')
-      table.string('description')
-      table.json('batch')
       table.timestamp('created_at')
         .default('CURRENT_TIMESTAMP')
-        .onUpdate('CURRENT_TIMESTAMP')
     })
   }
   async down() {

@@ -82,7 +82,7 @@ export class TimestampColumnDefinition extends ColumnDefinition {
     if (value instanceof Date) {
       this.$.onUpdate = `'${value.toISOString()}'`
     } else if (value === 'CURRENT_TIMESTAMP') {
-      this.$.onUpdate = 'CURRENT_TIMESTAMP'
+      this.$.onUpdate = 'CURRENT_TIMESTAMP()'
     } else {
       this.$.onUpdate = `'${value}'`
     }
