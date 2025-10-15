@@ -102,8 +102,8 @@ export default {
 
 Now that Elegant is installed, you're ready to:
 
-1. [Configure your database connection](Getting-Started.md#configuration)
-2. [Run your first query](Getting-Started.md#running-sql-queries)
-3. [Create database migrations](Migrations.md)
-4. [Build queries with the Query Builder](Query-Builder.md)
-5. [Define models with Elegant ORM](Elegant-Getting-Started.md)
+1. [Configure your database connection](https://elegant.pristine.technology/getting-started.html#configuration)
+2. [Run your first query](https://elegant.pristine.technology/getting-started.html)
+3. [Create database migrations](https://elegant.pristine.technology/migrations.html)
+4. [Build queries with the Query Builder](https://elegant.pristine.technology/query-builder.html)
+5. [Define models with Elegant ORM](https://elegant.pristine.technology/elegant-getting-started.html)
