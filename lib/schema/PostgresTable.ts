@@ -1,7 +1,7 @@
 import ColumnDefinition from 'lib/schema/ColumnDefinition.js';
 import ElegantTable from "./ElegantTable.js";
 import {
-  BooleanColumnDefinition,
+  BooleanColumnDefinition, ConstraintColumnDefinition,
   GeneralColumnDefinition,
   NumberColumnDefinition,
   TimestampColumnDefinition
@@ -31,13 +31,14 @@ export default class PostgresTable extends ElegantTable {
   }
 
   protected columnsToSql() {
-    let sql = this.columns.map(column => {
-      return '  ' + this.columnToSql(column)
-    }).join(',\n')
+    let sql = '  ' + this.columns
+      .filter(column => !(column instanceof ConstraintColumnDefinition))
+      .map(column => {
+        return this.columnToSql(column)
+      }).join(',\n  ')
     if (this.hasMultiplePrimaryKeys()) {
       sql += `,\nPRIMARY KEY("${this.getPrimaryKeyColumns().map(c => c.name).join('", "')}")`
     }
-
     return sql;
   }
   protected columnToSql(column: ColumnDefinition): string {

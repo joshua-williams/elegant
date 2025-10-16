@@ -1,6 +1,7 @@
 import ColumnDefinition from 'lib/schema/ColumnDefinition.js';
 import ElegantTable from "./ElegantTable.js";
 import {
+  ConstraintColumnDefinition,
   GeneralColumnDefinition, JsonColumnDefinition,
   NumberColumnDefinition,
   StringColumnDefinition,
@@ -69,6 +70,7 @@ export default class MysqlTable extends ElegantTable {
 
   protected columnsToSql() {
     let sql = '  ' + this.columns
+      .filter(column => !(column instanceof ConstraintColumnDefinition))
       .map(column => this.columnToSql(column))
       .join(',\n  ')
     if (this.hasMultiplePrimaryKeys()) {

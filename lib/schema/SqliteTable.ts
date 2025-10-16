@@ -1,6 +1,11 @@
 import ColumnDefinition from './ColumnDefinition.js';
 import ElegantTable from './ElegantTable.js';
-import {GeneralColumnDefinition, NumberColumnDefinition, TimestampColumnDefinition} from './ColumnDefinitions.js';
+import {
+  ConstraintColumnDefinition,
+  GeneralColumnDefinition,
+  NumberColumnDefinition,
+  TimestampColumnDefinition
+} from './ColumnDefinitions.js';
 
 export default class SqliteTable extends ElegantTable {
 
@@ -14,8 +19,10 @@ export default class SqliteTable extends ElegantTable {
   json(columnName: string, defaultValue?: any, nullable?: boolean): ColumnDefinition {
     throw new Error('Method not implemented.');
   }
+
   protected columnsToSql(): string {
     let sql = '  ' + this.columns
+      .filter(column => !(column instanceof ConstraintColumnDefinition))
       .map(column => this.columnToSql(column))
       .join(',\n  ')
     if (this.hasMultiplePrimaryKeys()) {

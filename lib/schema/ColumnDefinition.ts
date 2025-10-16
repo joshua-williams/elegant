@@ -15,7 +15,11 @@ export default abstract class ColumnDefinition {
     autoIncrement: false,
     comment: '',
     collate: '',
+    foreign: undefined,
+    table: undefined,
+    references: [],
     onUpdate: undefined,
+    onDelete: undefined,
   }
 
   constructor(public name:string) {}

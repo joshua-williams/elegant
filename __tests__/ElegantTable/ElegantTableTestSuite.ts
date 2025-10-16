@@ -5,8 +5,8 @@ import {beforeEach} from 'vitest';
 import Schema from '../../src/Schema.js'
 import ColumnDefinition from '../../lib/schema/ColumnDefinition.js';
 
-const enclose = (name:string, value:string) => {
-  switch(name.toLowerCase()) {
+const enclose = (dialect:string, value:string) => {
+  switch(dialect.toLowerCase()) {
     case 'mysql':
     case 'mariadb': return `\`${value}\``
     case 'mssql': return `[${value}]`
@@ -224,6 +224,82 @@ export const CreateTableTestSuite = (tableName:string, Table:ElegantTableConstru
       })
       afterEach(async () => {
         await db.close();
+      })
+      describe('primary key constraints', () => {
+        it('multiple primary keys', async () => {
+          table.integer('id').primary()
+          table.string('username').primary()
+          const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'id')} INT,\n  ${enclose(tableName, 'username')} VARCHAR(255),\nPRIMARY KEY(${enclose(tableName, 'id')}, ${enclose(tableName, 'username')})\n)`;
+          const sql = await table.toStatement()
+          expect(sql).toEqual(expected)
+        })
+        it('shorthand multiple primary keys', async () => {
+          table.integer('id')
+          table.string('username')
+          table.primary(['id', 'username'])
+          const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'id')} INT,\n  ${enclose(tableName, 'username')} VARCHAR(255),\nPRIMARY KEY(${enclose(tableName, 'id')}, ${enclose(tableName, 'username')})\n)`;
+          const sql = await table.toStatement()
+          expect(sql).toEqual(expected)
+        })
+      })
+
+      describe('foreign key constraint', () => {
+        it('foreign key constraint with single reference', async () => {
+          table.integer('id')
+          table.integer('image_id')
+          table.string('username').primary()
+          table.foreign('image_id').on('images').references('id')
+          const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'id')} INT,\n  ${enclose(tableName, 'image_id')} INT,\n  ${enclose(tableName, 'username')} VARCHAR(255) PRIMARY KEY,\n  CONSTRAINT ${enclose(tableName, 'fk_image_id')}\n    FOREIGN KEY (${enclose(tableName, 'image_id')})\n    REFERENCES ${enclose(tableName, 'images')}(${enclose(tableName, 'id')})\n)`;
+          const sql = await table.toStatement()
+          expect(sql).toEqual(expected)
+        })
+        it('foreign key constraint with multiple references', async () => {
+          table.integer('id')
+          table.integer('image_id')
+          table.string('image_name')
+          table.string('username').primary()
+          table.foreign(['image_id','image_name']).on('images').references(['id', 'name'])
+          const sql = await table.toStatement()
+          const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'id')} INT,\n  ${enclose(tableName, 'image_id')} INT,\n  ${enclose(tableName, 'image_name')} VARCHAR(255),\n  ${enclose(tableName, 'username')} VARCHAR(255) PRIMARY KEY,\n  CONSTRAINT ${enclose(tableName, 'fk_image_id_image_name')}\n    FOREIGN KEY (${enclose(tableName, 'image_id')}, ${enclose(tableName, 'image_name')})\n    REFERENCES ${enclose(tableName, 'images')}(${enclose(tableName, 'id')}, ${enclose(tableName, 'name')})\n)`;
+          expect(sql).toEqual(expected)
+        })
+        it('foreign key with onDelete action', async () => {
+          table.integer('id')
+          table.integer('image_id')
+          table.string('username')
+          table.foreign('image_id')
+            .on('images')
+            .references('id')
+            .onDelete('CASCADE')
+          const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'id')} INT,\n  ${enclose(tableName, 'image_id')} INT,\n  ${enclose(tableName, 'username')} VARCHAR(255),\n  CONSTRAINT ${enclose(tableName, 'fk_image_id')}\n    FOREIGN KEY (${enclose(tableName, 'image_id')})\n    REFERENCES ${enclose(tableName, 'images')}(${enclose(tableName, 'id')})\n    ON DELETE CASCADE\n)`;
+          const sql = await table.toStatement()
+          expect(sql).toEqual(expected)
+        })
+        it('foreign key with onUpdate action', async () => {
+          table.integer('id')
+          table.integer('image_id')
+          table.string('username')
+          table.foreign('image_name')
+            .on('images')
+            .references('name')
+            .onUpdate('CASCADE')
+          const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'id')} INT,\n  ${enclose(tableName, 'image_id')} INT,\n  ${enclose(tableName, 'username')} VARCHAR(255),\n  CONSTRAINT ${enclose(tableName, 'fk_image_name')}\n    FOREIGN KEY (${enclose(tableName, 'image_name')})\n    REFERENCES ${enclose(tableName, 'images')}(${enclose(tableName, 'name')})\n    ON UPDATE CASCADE\n)`;
+          const sql = await table.toStatement()
+          expect(sql).toEqual(expected)
+        })
+        it('foreign key with onUpdate and onDelete action', async () => {
+          table.integer('id')
+          table.integer('image_id')
+          table.string('username')
+          table.foreign('image_id')
+            .on('images')
+            .references('id')
+            .onUpdate('CASCADE')
+            .onDelete('CASCADE')
+          const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'id')} INT,\n  ${enclose(tableName, 'image_id')} INT,\n  ${enclose(tableName, 'username')} VARCHAR(255),\n  CONSTRAINT ${enclose(tableName, 'fk_image_id')}\n    FOREIGN KEY (${enclose(tableName, 'image_id')})\n    REFERENCES ${enclose(tableName, 'images')}(${enclose(tableName, 'id')})\n    ON UPDATE CASCADE\n    ON DELETE CASCADE\n)`;
+          const sql = await table.toStatement()
+          expect(sql).toEqual(expected)
+        })
       })
     })
   }

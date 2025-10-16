@@ -41,19 +41,5 @@ describe('SqliteTable', () => {
       expect(sql).toEqual(expected)
     })
   })
-  it('multiple primary keys', async () => {
-    table.integer('id', 255).autoIncrement().primary()
-    table.string('username').primary()
-    const expected = `CREATE TABLE "users" (\n  "id" INT,\n  "username" VARCHAR(255),\nPRIMARY KEY("id", "username")\n)`
-    const sql = await table.toStatement()
-    expect(sql).toEqual(expected)
-  })
-  it('shorthand multiple primary keys', async () => {
-    table.integer('id')
-    table.string('username')
-    table.primary(['id', 'username'])
-    const expected = `CREATE TABLE "users" (\n  "id" INT,\n  "username" VARCHAR(255),\nPRIMARY KEY("id", "username")\n)`
-    const sql = await table.toStatement()
-    expect(sql).toEqual(expected)
-  })
+
 });

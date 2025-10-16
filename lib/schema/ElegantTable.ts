@@ -1,6 +1,7 @@
 import {Charset, Collation, ElegantTableAction} from '../../types.js';
 import ColumnDefinition from './ColumnDefinition.js';
 import {
+  ConstraintColumnDefinition,
   DateTimeColumnDefinition, NumberColumnDefinition,
   StringColumnDefinition, TimeColumnDefinition,
   TimestampColumnDefinition
@@ -119,8 +120,20 @@ export default abstract class ElegantTable {
     return this.columns.filter(column => column.$.primary).length > 1
   }
 
+  protected hasConstraint() {
+    return this.columns.some(column => column instanceof ConstraintColumnDefinition)
+  }
+
   protected getPrimaryKeyColumns() {
     return this.columns.filter(column => column.$.primary)
+  }
+
+  foreign(columnName:string|string[], tableName?:string, references?:string|string[]):ConstraintColumnDefinition {
+    const keyName = Array.isArray(columnName) ? `fk_${columnName.join('_')}` : `fk_${columnName}`
+    const column = new ConstraintColumnDefinition(keyName)
+    column.foreign(columnName).on(tableName).references(references)
+    this.columns.push(column)
+    return column
   }
 
   primary(columns:string[]) {
@@ -184,6 +197,26 @@ export default abstract class ElegantTable {
     return column
   }
 
+  protected abstract getDatabaseColumns():Promise<any[]>
+
+  protected abstract columnsToSql():string
+
+  protected constraintsToSql(): string {
+    return this.columns
+      .filter(column => (column instanceof ConstraintColumnDefinition))
+      .map(column => {
+        let sql = `CONSTRAINT ${this.enclose(column.name)}\n`
+        if (column.$.foreign) {
+          const columns = column.$.foreign.map(c => this.enclose(c)).join(', ')
+          sql += `    FOREIGN KEY (${columns})`
+          const references = column.$.references.map(c => this.enclose(c)).join(', ')
+          sql+= `\n    REFERENCES ${this.enclose(column.$.table)}(${references})`
+          if (column.$.onUpdate) sql += `\n    ON UPDATE ${column.$.onUpdate}`
+          if (column.$.onDelete) sql += `\n    ON DELETE ${column.$.onDelete}`
+        }
+        return sql
+      }).join(',  \n')
+  }
   abstract boolean(columnName:string, defaultValue?:boolean, nullable?:boolean):ColumnDefinition
 
   abstract json(columnName:string, defaultValue?: any, nullable?:boolean):ColumnDefinition
@@ -191,6 +224,7 @@ export default abstract class ElegantTable {
     this.$.charset = charset
     return this
   }
+
 
   collation(collation:Collation):ElegantTable {
     this.$.collation = collation
@@ -226,7 +260,7 @@ export default abstract class ElegantTable {
     return `${this.enclosure}${value}${this.enclosure}`
   }
 
-  protected abstract columnsToSql():string
+
   protected columnToSql(column:ColumnDefinition):string { return }
 
   public async toStatement():Promise<string> {
@@ -240,6 +274,7 @@ export default abstract class ElegantTable {
         if (this.schema) sql += ` ${this.enclose(this.schema)}`
         sql += `${this.enclose(this.tableName)} (\n`
         sql += this.columnsToSql()
+        if (this.hasConstraint()) sql += ',\n  ' + this.constraintsToSql()
         sql += '\n)'
         const tableOptions:string[] = []
         if (this.$.engine) tableOptions.push(`ENGINE=${this.$.engine}`)
@@ -263,7 +298,5 @@ export default abstract class ElegantTable {
     }
     return
   }
-
-  protected abstract getDatabaseColumns():Promise<any[]>
 
 }

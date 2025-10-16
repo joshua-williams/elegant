@@ -1,5 +1,5 @@
 import ColumnDefinition from './ColumnDefinition.js';
-import {NumericDataType, Scalar} from '../../types.js';
+import {NumericDataType, ReferenceOption, Scalar} from '../../types.js';
 
 export class GeneralColumnDefinition extends ColumnDefinition {
 
@@ -7,6 +7,41 @@ export class GeneralColumnDefinition extends ColumnDefinition {
     super(name);
     if (type) this.type = type;
     if (length) this.$.length = length;
+  }
+}
+
+export class ConstraintColumnDefinition extends ColumnDefinition {
+  type:string = 'CONSTRAINT'
+  constructor(name:string) {
+    super(name);
+  }
+  foreign(name:string|string[]) {
+    if (Array.isArray(name)) {
+      this.$.foreign = name;
+    } else {
+      this.$.foreign = [name]
+    }
+    return this
+  }
+  references(name:string|string[]) {
+    if (Array.isArray(name)) {
+      this.$.references = name;
+    } else {
+      this.$.references = [name]
+    }
+    return this
+  }
+  on(tableName:string) {
+    this.$.table = tableName
+    return this
+  }
+  onUpdate(value:ReferenceOption) {
+    this.$.onUpdate = value;
+    return this
+  }
+  onDelete(value:ReferenceOption) {
+    this.$.onDelete = value;
+    return this
   }
 }
 
