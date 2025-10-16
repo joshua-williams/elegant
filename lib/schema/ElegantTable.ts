@@ -114,6 +114,25 @@ export default abstract class ElegantTable {
     this.columns.push(column)
     return column
   }
+
+  protected hasMultiplePrimaryKeys() {
+    return this.columns.filter(column => column.$.primary).length > 1
+  }
+
+  protected getPrimaryKeyColumns() {
+    return this.columns.filter(column => column.$.primary)
+  }
+
+  primaryKey(columns:string[]) {
+    columns.forEach((columnName:string) => {
+      let column = this.columns.find((c:ColumnDefinition) => c.name === columnName)
+      if(!column) {
+        throw new Error(`Column '${columnName}' does not exist in table '${this.tableName}'`)
+      }
+      column.primary()
+    })
+  }
+
   smallInteger(columnName:string, length?:number, nullable?:boolean):ColumnDefinition {
     const column = new NumberColumnDefinition(columnName, 'SMALLINT', length, undefined, nullable)
     this.columns.push(column)
@@ -207,6 +226,7 @@ export default abstract class ElegantTable {
     return `${this.enclosure}${value}${this.enclosure}`
   }
 
+  protected abstract columnsToSql():string
   protected columnToSql(column:ColumnDefinition):string { return }
 
   public async toStatement():Promise<string> {
@@ -219,9 +239,7 @@ export default abstract class ElegantTable {
         if (this.$.ifNotExists) sql += 'IF NOT EXISTS '
         if (this.schema) sql += ` ${this.enclose(this.schema)}`
         sql += `${this.enclose(this.tableName)} (\n`
-        sql += this.columns.map(column => {
-          return '  ' + this.columnToSql(column)
-        }).join(',\n')
+        sql += this.columnsToSql()
         sql += '\n)'
         const tableOptions:string[] = []
         if (this.$.engine) tableOptions.push(`ENGINE=${this.$.engine}`)

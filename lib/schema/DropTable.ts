@@ -17,7 +17,6 @@ export class DropTable extends ElegantTable {
   }
   json(columnName: string, defaultValue?: any, nullable?: boolean): ColumnDefinition { return }
 
-  protected getDatabaseColumns(): Promise<any[]> {
-    throw new Error('Method not implemented.');
-  }
+  protected getDatabaseColumns(): Promise<any[]> { return }
+  protected columnsToSql(): string { return }
 }

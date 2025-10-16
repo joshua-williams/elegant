@@ -14,6 +14,15 @@ export default class SqliteTable extends ElegantTable {
   json(columnName: string, defaultValue?: any, nullable?: boolean): ColumnDefinition {
     throw new Error('Method not implemented.');
   }
+  protected columnsToSql(): string {
+    let sql = '  ' + this.columns
+      .map(column => this.columnToSql(column))
+      .join(',\n  ')
+    if (this.hasMultiplePrimaryKeys()) {
+      sql += `,\nPRIMARY KEY(${this.getPrimaryKeyColumns().map(c => this.enclose(c.name)).join(', ')})`
+    }
+    return sql
+  }
 
   protected columnToSql(column: ColumnDefinition): string {
     let type = column.type.toUpperCase();
@@ -23,12 +32,11 @@ export default class SqliteTable extends ElegantTable {
     }
     let sql = `${this.enclose(column.name)} ${type}`;
     if (column.$.nullable !== undefined) sql += column.$.nullable ? ' NULL' : ' NOT NULL'
-    if (column.$.primary) {
+    if (column.$.primary && !this.hasMultiplePrimaryKeys()) {
       sql += ' PRIMARY KEY'
     } else if (column.$.unique) {
       sql += (column.$.key) ? ' UNIQUE KEY' : ' UNIQUE'
     }
-    if (column.$.autoIncrement) sql += ' AUTOINCREMENT'
     if (column.$.default) sql += ` DEFAULT ${column.$.default}`
     if (column.$.key) sql += ` KEY ${column.$.key}`
     return sql

@@ -67,12 +67,21 @@ export default class MysqlTable extends ElegantTable {
     return column
   }
 
+  protected columnsToSql() {
+    let sql = '  ' + this.columns
+      .map(column => this.columnToSql(column))
+      .join(',\n  ')
+    if (this.hasMultiplePrimaryKeys()) {
+      sql += `,\nPRIMARY KEY(\`${this.getPrimaryKeyColumns().map(c => c.name).join('`, `')}\`)`
+    }
+    return sql
+  }
   protected columnToSql(column: ColumnDefinition): string {
     let sql = `${this.enclose(column.name)} ${column.type}`;
     if (column.$.unsigned) sql += ' UNSIGNED'
     if (column.$.nullable !== undefined) sql += column.$.nullable ? ' NULL' : ' NOT NULL'
     if (column.$.autoIncrement) sql += ' AUTO_INCREMENT'
-    if (column.$.primary) {
+    if (column.$.primary && !this.hasMultiplePrimaryKeys()) {
       sql += ' PRIMARY KEY'
     } else if (column.$.unique) {
       sql += (column.$.key) ? ' UNIQUE KEY' : ' UNIQUE'

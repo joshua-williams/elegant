@@ -122,7 +122,7 @@ describe('MysqlTable', () => {
       table.timestamp('created_at', 'CURRENT_TIMESTAMP')
         .onUpdate('CURRENT_TIMESTAMP')
       const sql = await table.toStatement()
-      const expected = `CREATE TABLE \`users\` (\n  \`created_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP\n)`
+      const expected = `CREATE TABLE \`users\` (\n  \`created_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP()\n)`
       expect(sql).toEqual(expected)
     })
     it('timestamp with onUpdate Date', async () => {
@@ -131,6 +131,23 @@ describe('MysqlTable', () => {
         .onUpdate(date)
       const sql = await table.toStatement()
       const expected = `CREATE TABLE \`users\` (\n  \`created_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE '${date.toISOString()}'\n)`
+      expect(sql).toEqual(expected)
+    })
+
+    it('multiple primary keys', async () => {
+      table.integer('id', 255).autoIncrement().primary()
+      table.string('username').primary()
+      const expected = `CREATE TABLE \`users\` (\n  \`id\` INT(255) AUTO_INCREMENT,\n  \`username\` VARCHAR(255),\nPRIMARY KEY(\`id\`, \`username\`)\n)`
+      const sql = await table.toStatement()
+      expect(sql).toEqual(expected)
+    })
+
+    it('shorthand multiple primary keys', async () => {
+      table.integer('id')
+      table.string('username')
+      table.primaryKey(['id', 'username'])
+      const expected = `CREATE TABLE \`users\` (\n  \`id\` INT,\n  \`username\` VARCHAR(255),\nPRIMARY KEY(\`id\`, \`username\`)\n)`
+      const sql = await table.toStatement()
       expect(sql).toEqual(expected)
     })
   })

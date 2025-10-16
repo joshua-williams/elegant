@@ -214,9 +214,23 @@ export const CreateTableTestSuite = (tableName:string, Table:ElegantTableConstru
 
     })
   }
+  const runConstraintTestSuite = (Table:ElegantTableConstructor) => {
+    describe(`${tableName} constraints`, () => {
+      let table:ElegantTable;
+      let db:Elegant;
+      beforeEach(async () => {
+        db = await Elegant.connection(tableName)
+        table = new Table('users', 'create', db)
+      })
+      afterEach(async () => {
+        await db.close();
+      })
+    })
+  }
   runStringTestSuite(Table)
   runNumberTestSuite(Table)
   runDateTimeTestSuite(Table)
+  runConstraintTestSuite(Table)
 }
 
 export const AlterTableTestSuite = (tableName:string, Table:ElegantTableConstructor) => {
@@ -269,8 +283,8 @@ export const AlterTableTestSuite = (tableName:string, Table:ElegantTableConstruc
   const runNumberTestSuite = (Table:ElegantTableConstructor) => {}
   const runDateTimeTestSuite = (Table:ElegantTableConstructor) => {}
   runStringTestSuite(Table)
-  // runNumberTestSuite(Table)
-  // runDateTimeTestSuite(Table)
+  runNumberTestSuite(Table)
+  runDateTimeTestSuite(Table)
 }
 
 export const GetDatabaseColumnsTestSuite = (connection:string, Table:ElegantTableConstructor) => {
