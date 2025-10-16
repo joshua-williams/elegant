@@ -145,7 +145,7 @@ describe('MysqlTable', () => {
     it('shorthand multiple primary keys', async () => {
       table.integer('id')
       table.string('username')
-      table.primaryKey(['id', 'username'])
+      table.primary(['id', 'username'])
       const expected = `CREATE TABLE \`users\` (\n  \`id\` INT,\n  \`username\` VARCHAR(255),\nPRIMARY KEY(\`id\`, \`username\`)\n)`
       const sql = await table.toStatement()
       expect(sql).toEqual(expected)

@@ -123,7 +123,7 @@ export default abstract class ElegantTable {
     return this.columns.filter(column => column.$.primary)
   }
 
-  primaryKey(columns:string[]) {
+  primary(columns:string[]) {
     columns.forEach((columnName:string) => {
       let column = this.columns.find((c:ColumnDefinition) => c.name === columnName)
       if(!column) {
