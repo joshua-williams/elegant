@@ -43,6 +43,9 @@ type SchemaDialect = 'mysql' | 'mariadb' | 'postgres' | 'mssql' | 'sqlite'
 type ReferenceOption = 'RESTRICT'|'CASCADE'|'SET NULL'|'NO ACTION'|'SET DEFAULT'|'restrict'|'cascade'|'set null'|'no action'|'set default'
 type ColumnDefinitionProperties = {
   length:number,
+  column?:string,
+  value?: Scalar|Scalar[],
+  condition?:QueryCondition,
   default:Scalar,
   nullable:boolean,
   primary:boolean,
@@ -54,7 +57,7 @@ type ColumnDefinitionProperties = {
   collate:string,
   foreign:string[],
   table: string,
-  references:string[],
+  references:Scalar[],
   onUpdate?:string,
   onDelete?:string,
 }
@@ -87,3 +90,9 @@ declare module 'ascii-table' {
 
 type ElegantTableConstructor = new (tableName:string, action:ElegantTableAction, db:Elegant) => ElegantTable
 type ElegantTableAction = 'create'|'alter'|'drop'
+type ComparisonOperator = '=' | '<>' | '!=' | '<' | '>' | '<=' | '>=' | 'IN' | 'NOT IN' | 'LIKE' | 'BETWEEN' | 'IS NULL' | 'IS NOT NULL'
+type QueryCondition = {
+  column:string
+  operator:ComparisonOperator
+  value:Scalar|Scalar[]
+}

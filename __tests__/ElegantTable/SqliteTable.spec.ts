@@ -49,5 +49,4 @@ describe('SqliteTable', () => {
       expect(sql).toEqual(expected)
     })
   })
-
 });

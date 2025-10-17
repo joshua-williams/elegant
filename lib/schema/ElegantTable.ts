@@ -1,8 +1,9 @@
-import {Charset, Collation, ElegantTableAction} from '../../types.js';
+import {Charset, Collation, ElegantTableAction, Scalar} from '../../types.js';
 import ColumnDefinition from './ColumnDefinition.js';
 import {
+  CheckColumnDefinition,
   ConstraintColumnDefinition,
-  DateTimeColumnDefinition, NumberColumnDefinition,
+  DateTimeColumnDefinition, ForeignKeyConstraintColumnDefinition, NumberColumnDefinition,
   StringColumnDefinition, TimeColumnDefinition,
   TimestampColumnDefinition
 } from './ColumnDefinitions.js';
@@ -25,7 +26,6 @@ export default abstract class ElegantTable {
   protected tableName:string
   protected schema:string
   protected db:Elegant
-
   $:SchemaTableMeta ={
     charset:undefined,
     collation:undefined,
@@ -35,6 +35,7 @@ export default abstract class ElegantTable {
     ifExists:false,
     ifNotExists:false
   }
+
   constructor(tableName:string, action:ElegantTableAction, db:Elegant) {
     this.tableName = tableName
     this.action = action;
@@ -57,6 +58,11 @@ export default abstract class ElegantTable {
     const column = new StringColumnDefinition(columnName, length, 'CHAR')
     this.columns.push(column)
     return column
+  }
+
+  charset(charset:Charset):ElegantTable {
+    this.$.charset = charset
+    return this
   }
 
   string(columnName:string, length:number = 255):ColumnDefinition {
@@ -132,9 +138,9 @@ export default abstract class ElegantTable {
     return this.columns.filter(column => column.$.primary)
   }
 
-  foreign(columnName:string|string[], tableName?:string, references?:string|string[]):ConstraintColumnDefinition {
+  foreign(columnName:string|string[], tableName?:string, references?:string|string[]):ForeignKeyConstraintColumnDefinition {
     const keyName = Array.isArray(columnName) ? `fk_${columnName.join('_')}` : `fk_${columnName}`
-    const column = new ConstraintColumnDefinition(keyName)
+    const column = new ForeignKeyConstraintColumnDefinition(keyName)
     column.foreign(columnName).on(tableName).references(references)
     this.columns.push(column)
     return column
@@ -201,34 +207,22 @@ export default abstract class ElegantTable {
     return column
   }
 
+  enum(name:string, values:Scalar[]):CheckColumnDefinition {
+    let column = new StringColumnDefinition(name, 0)
+    this.columns.push(column)
+    const constraint = new CheckColumnDefinition(`${name}_chk`, values)
+    constraint.where(name, 'IN', values)
+    this.columns.push(constraint)
+    return constraint
+  }
+
   protected abstract getDatabaseColumns():Promise<any[]>
 
   protected abstract columnsToSql():string
 
-  protected constraintsToSql(): string {
-    return this.columns
-      .filter(column => (column instanceof ConstraintColumnDefinition))
-      .map(column => {
-        let sql = `CONSTRAINT ${this.enclose(column.name)}\n`
-        if (column.$.foreign) {
-          const columns = column.$.foreign.map(c => this.enclose(c)).join(', ')
-          sql += `    FOREIGN KEY (${columns})`
-          const references = column.$.references.map(c => this.enclose(c)).join(', ')
-          sql+= `\n    REFERENCES ${this.enclose(column.$.table)}(${references})`
-          if (column.$.onUpdate) sql += `\n    ON UPDATE ${column.$.onUpdate}`
-          if (column.$.onDelete) sql += `\n    ON DELETE ${column.$.onDelete}`
-        }
-        return sql
-      }).join(',  \n')
-  }
   abstract boolean(columnName:string, defaultValue?:boolean, nullable?:boolean):ColumnDefinition
 
   abstract json(columnName:string, defaultValue?: any, nullable?:boolean):ColumnDefinition
-  charset(charset:Charset):ElegantTable {
-    this.$.charset = charset
-    return this
-  }
-
 
   collation(collation:Collation):ElegantTable {
     this.$.collation = collation
@@ -260,12 +254,44 @@ export default abstract class ElegantTable {
     return this
   }
 
-  protected enclose(value:string):string {
-    return `${this.enclosure}${value}${this.enclosure}`
+  protected enclose(value:Scalar):Scalar {
+    if (typeof value === 'string') {
+      return `${this.enclosure}${value}${this.enclosure}`
+    } else {
+      return value
+    }
   }
 
 
   protected columnToSql(column:ColumnDefinition):string { return }
+
+  protected constraintsToSql(): string {
+    return this.columns
+      .filter(column => (column instanceof ConstraintColumnDefinition))
+      .map(column => {
+        let sql = `CONSTRAINT ${this.enclose(column.name)}`
+
+        if (column instanceof ForeignKeyConstraintColumnDefinition) {
+          const columns = column.$.foreign.map(c => this.enclose(c)).join(', ')
+          sql += `\n    FOREIGN KEY (${columns})`
+          const references = column.$.references.map(c => this.enclose(c)).join(', ')
+          sql+= `\n    REFERENCES ${this.enclose(column.$.table)}(${references})`
+          if (column.$.onUpdate) sql += `\n    ON UPDATE ${column.$.onUpdate}`
+          if (column.$.onDelete) sql += `\n    ON DELETE ${column.$.onDelete}`
+        } else if (column instanceof CheckColumnDefinition) {
+          sql += ` CHECK (${this.enclose(column.$.condition.column)} ${column.$.condition.operator} `
+          if (['IN', 'BETWEEN'].includes(column.$.condition.operator.toUpperCase())) {
+            if (Array.isArray(column.$.condition.value)) {
+              const values = column.$.condition.value
+                .map(value => (typeof value === 'string') ?`'${value}'` : value)
+                .join(', ')
+              sql += `(${values}))`
+            }
+          }
+        }
+        return sql
+      }).join(',  \n')
+  }
 
   public async toStatement():Promise<string> {
     let sql = ''

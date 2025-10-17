@@ -55,13 +55,11 @@ export default class MysqlTable extends ElegantTable {
     this.columns.push(column)
     return column
   }
-
   year(columnName:string, defaultValue?:number, nullable?:boolean):ColumnDefinition {
     const column = new YearColumnDefinition(columnName, defaultValue, nullable)
     this.columns.push(column)
     return column
   }
-
   json(columnName:string, defaultValue?:any, nullable?:boolean):ColumnDefinition {
     const column = new JsonColumnDefinition(columnName, defaultValue, nullable)
     this.columns.push(column)
@@ -79,6 +77,7 @@ export default class MysqlTable extends ElegantTable {
     return sql
   }
   protected columnToSql(column: ColumnDefinition): string {
+    if (column instanceof ConstraintColumnDefinition) return
     let sql = `${this.enclose(column.name)} ${column.type}`;
     if (column.$.unsigned) sql += ' UNSIGNED'
     if (column.$.nullable !== undefined) sql += column.$.nullable ? ' NULL' : ' NOT NULL'

@@ -1,7 +1,6 @@
 import ElegantTable from '../../lib/schema/ElegantTable.js';
 import {ElegantTableConstructor} from '../../types.js';
 import Elegant from '../../src/Elegant.js';
-import {beforeEach} from 'vitest';
 import Schema from '../../src/Schema.js'
 import ColumnDefinition from '../../lib/schema/ColumnDefinition.js';
 
@@ -296,6 +295,21 @@ export const CreateTableTestSuite = (tableName:string, Table:ElegantTableConstru
             .onUpdate('CASCADE')
             .onDelete('CASCADE')
           const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'id')} INT,\n  ${enclose(tableName, 'image_id')} INT,\n  ${enclose(tableName, 'username')} VARCHAR(255),\n  CONSTRAINT ${enclose(tableName, 'fk_image_id')}\n    FOREIGN KEY (${enclose(tableName, 'image_id')})\n    REFERENCES ${enclose(tableName, 'images')}(${enclose(tableName, 'id')})\n    ON UPDATE CASCADE\n    ON DELETE CASCADE\n)`;
+          const sql = await table.toStatement()
+          expect(sql).toEqual(expected)
+        })
+      })
+
+      describe('enum', () => {
+        it('check string values', async () => {
+          table.enum('role', ['admin', 'user', 'guest'])
+          const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'role')} VARCHAR,\n  CONSTRAINT ${enclose(tableName, 'role_chk')} CHECK (${enclose(tableName, 'role')} IN ('admin', 'user', 'guest'))\n)`;
+          const sql = await table.toStatement()
+          expect(sql).toEqual(expected)
+        })
+        it('check numeric values', async () => {
+          table.enum('product_id', [2011, 2006, 2004])
+          const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'product_id')} VARCHAR,\n  CONSTRAINT ${enclose(tableName, 'product_id_chk')} CHECK (${enclose(tableName, 'product_id')} IN (2011, 2006, 2004))\n)`;
           const sql = await table.toStatement()
           expect(sql).toEqual(expected)
         })

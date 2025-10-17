@@ -1,5 +1,5 @@
 import ColumnDefinition from './ColumnDefinition.js';
-import {NumericDataType, ReferenceOption, Scalar} from '../../types.js';
+import {ComparisonOperator, NumericDataType, QueryCondition, ReferenceOption, Scalar} from '../../types.js';
 
 export class GeneralColumnDefinition extends ColumnDefinition {
 
@@ -9,8 +9,10 @@ export class GeneralColumnDefinition extends ColumnDefinition {
     if (length) this.$.length = length;
   }
 }
-
 export class ConstraintColumnDefinition extends ColumnDefinition {
+  type = 'CONSTRAINT'
+}
+export class ForeignKeyConstraintColumnDefinition extends ConstraintColumnDefinition {
   type:string = 'CONSTRAINT'
   constructor(name:string) {
     super(name);
@@ -42,6 +44,21 @@ export class ConstraintColumnDefinition extends ColumnDefinition {
   onDelete(value:ReferenceOption) {
     this.$.onDelete = value;
     return this
+  }
+}
+
+export class CheckColumnDefinition extends ConstraintColumnDefinition {
+  constructor(name:string, values:Scalar[]) {
+    super(name);
+    this.$.value = values;
+  }
+  where(columnName:string, operator:ComparisonOperator, value:Scalar|Scalar[]) {
+    const condition:QueryCondition = {
+      column: columnName,
+      operator,
+      value
+    }
+    this.$.condition = condition
   }
 }
 

@@ -6,6 +6,9 @@ export default abstract class ColumnDefinition {
   private action: 'drop' | 'add' | 'change' = 'add'
   $:ColumnDefinitionProperties = {
     length:0,
+    column: undefined,
+    value: undefined,
+    condition: undefined,
     default: false,
     nullable: undefined,
     primary: false,

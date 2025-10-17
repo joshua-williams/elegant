@@ -67,5 +67,4 @@ describe('PostgresTable', () => {
       expect(sql).toEqual(expected)
     })
   })
-
 });

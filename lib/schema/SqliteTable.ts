@@ -31,6 +31,7 @@ export default class SqliteTable extends ElegantTable {
   }
 
   protected columnToSql(column: ColumnDefinition): string {
+    if (column instanceof ConstraintColumnDefinition) return
     let type = column.type.toUpperCase();
     if (column instanceof NumberColumnDefinition) {
       if (column.type.includes('INT'))
