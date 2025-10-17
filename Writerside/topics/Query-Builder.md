@@ -181,14 +181,6 @@ const nonAdmins = await db
   .get();
 ```
 
-#### Like pattern
-```typescript
-const smiths = await db 
-  .table('users') 
-  .where('name', 'LIKE', '%Smith%') 
-  .get();
-```
-
 ### Logical Operators
 
 Combine conditions using logical operators:

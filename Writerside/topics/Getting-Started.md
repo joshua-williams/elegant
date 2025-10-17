@@ -1,5 +1,5 @@
 # Database: Getting Started
-<show-structure depth="3"/>
+<show-structure depth="1"/>
 
 ## Introduction
 

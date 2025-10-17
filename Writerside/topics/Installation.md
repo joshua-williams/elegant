@@ -103,7 +103,7 @@ export default {
 Now that Elegant is installed, you're ready to:
 
 1. [Configure your database connection](Getting-Started.md#configuration)
-2. [Run your first query](Getting-Started.md#running-sql-queries)
+2. [Run your first query](Getting-Started.md#delete-queries)
 3. [Create database migrations](Migrations.md)
 4. [Build queries with the Query Builder](Query-Builder.md)
 5. [Define models with Elegant ORM](Elegant-Getting-Started.md)
