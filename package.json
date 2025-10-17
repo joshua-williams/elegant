@@ -4,6 +4,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
+  "homepage": "https://elegant.pristine.technology",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -12,7 +13,8 @@
     }
   },
   "files": [
-    "/dist"
+    "/dist",
+    "/resources"
   ],
   "bin": {
     "elegant": "./dist/cli/elegant-cli.js"
@@ -22,12 +24,13 @@
     "test:watch": "vitest watch",
     "test:coverage": "vitest run --coverage",
     "build": "tsc",
-    "watch": "tsc --watch",
+    "watch": "tsx devops/tsc-watch.ts",
     "local:start": "cd ./__tests__/app && docker compose up -d",
     "local:stop": "cd ./__tests__/app && docker compose down",
     "local:migrate": "npm run migrate --prefix ./__tests__/app",
-    "docs:extract": "unzip -o docs/webHelpE2-all.zip -d docs && rm -rf docs/webHelpE2-all.zip",
-    "prepublishOnly": "npm run build"
+    "docs:build": "rm -rf docs/* && docker compose down && docker compose up && npm run docs:extract",
+    "docs:extract": "unzip -o docs/webHelpElegant2-all.zip -d docs && rm -rf docs/webHelpELEGANT2-all.zip docs/algolia-indexes-ELEGANT.zip && echo 'elegant.pristine.technology' > docs/CNAME",
+    "prepublishOnly": "npm run build && cp -r ./resources ./dist"
   },
   "author": "Joshua D. Williams",
   "license": "ISC",

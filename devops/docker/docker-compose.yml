@@ -1,0 +1,11 @@
+services:
+  writerside:
+    container_name: elegant-writerside
+    image: jetbrains/writerside-builder:latest
+    environment:
+      SOURCE_DIR: /opt/sources
+      MODULE_INSTANCE: Writerside/elegant
+      OUTPUT_DIR: /opt/sources/docs
+      RUNNER: other
+    volumes:
+      - ./:/opt/sources

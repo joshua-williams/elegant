@@ -1,6 +1,7 @@
 import * as path from 'node:path';
 import fs from 'node:fs';
 import { fileURLToPath } from 'url';
+import {spawn} from 'node:child_process';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -13,8 +14,21 @@ const __dirname = path.dirname(__filename);
  * @returns {string} The full base path, with or without the appended subPath.
  * */
 export const basePath = (subPath?:string): string => {
-  let basePath = path.resolve(__dirname, '../../');
+  let basePath = path.resolve(__dirname, '..');
   return subPath ? path.join(basePath, subPath) : basePath;
+}
+
+export const runCommand = (command:string) => {
+  return new Promise((resolve, reject) => {
+    const child = spawn(command, {
+      shell:true,
+      stdio:'pipe'
+    });
+    child.stdout.on('data', data => console.log(data.toString()))
+    child.stderr.on('data', data => console.log(data.toString()));
+    child.on('error', error => reject(error))
+    child.on('close', code => resolve(code));
+  })
 }
 /**
  * Constructs a resource path based on the provided subPath.

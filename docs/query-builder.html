@@ -1,5 +1,5 @@
 <!DOCTYPE html SYSTEM "about:legacy-compat">
-<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="built-on" content="2025-10-17T05:05:41.772414"><title>Database: Query Builder | Elegant</title><script type="application/json" id="virtual-toc-data">[{"id":"introduction","level":0,"title":"Introduction","anchor":"#introduction"},{"id":"why-use-the-query-builder","level":0,"title":"Why Use the Query Builder?","anchor":"#why-use-the-query-builder"},{"id":"basic-query-execution","level":0,"title":"Basic Query Execution","anchor":"#basic-query-execution"},{"id":"selecting-specific-columns","level":0,"title":"Selecting Specific Columns","anchor":"#selecting-specific-columns"},{"id":"filtering-results","level":0,"title":"Filtering Results","anchor":"#filtering-results"},{"id":"ordering-results","level":0,"title":"Ordering Results","anchor":"#ordering-results"},{"id":"limiting-results","level":0,"title":"Limiting Results","anchor":"#limiting-results"},{"id":"retrieving-single-records","level":0,"title":"Retrieving Single Records","anchor":"#retrieving-single-records"},{"id":"aggregate-methods","level":0,"title":"Aggregate Methods","anchor":"#aggregate-methods"},{"id":"joins","level":0,"title":"Joins","anchor":"#joins"},{"id":"grouping-results","level":0,"title":"Grouping Results","anchor":"#grouping-results"},{"id":"insert-operations","level":0,"title":"Insert Operations","anchor":"#insert-operations"},{"id":"update-operations","level":0,"title":"Update Operations","anchor":"#update-operations"},{"id":"delete-operations","level":0,"title":"Delete Operations","anchor":"#delete-operations"},{"id":"raw-expressions","level":0,"title":"Raw Expressions","anchor":"#raw-expressions"},{"id":"query-debugging","level":0,"title":"Query Debugging","anchor":"#query-debugging"},{"id":"best-practices","level":0,"title":"Best Practices","anchor":"#best-practices"},{"id":"next-steps","level":0,"title":"Next Steps","anchor":"#next-steps"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="https://resources.jetbrains.com/writerside/apidoc/6.22.0-b776/app.css" rel="stylesheet"><meta name="msapplication-TileColor" content="#000000"><link rel="apple-touch-icon" sizes="180x180" href="https://jetbrains.com/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="https://jetbrains.com/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="https://jetbrains.com/favicon-16x16.png"><meta name="msapplication-TileImage" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-144x144.png"><meta name="msapplication-square70x70logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-70x70.png"><meta name="msapplication-square150x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-150x150.png"><meta name="msapplication-wide310x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x150.png"><meta name="msapplication-square310x310logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x310.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Database: Query Builder | Elegant"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Elegant Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/query-builder.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Database: Query Builder | Elegant"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="built-on" content="2025-10-17T22:33:04.618850255"><title>Database: Query Builder | Elegant</title><script type="application/json" id="virtual-toc-data">[{"id":"introduction","level":0,"title":"Introduction","anchor":"#introduction"},{"id":"why-use-the-query-builder","level":0,"title":"Why Use the Query Builder?","anchor":"#why-use-the-query-builder"},{"id":"basic-query-execution","level":0,"title":"Basic Query Execution","anchor":"#basic-query-execution"},{"id":"selecting-specific-columns","level":0,"title":"Selecting Specific Columns","anchor":"#selecting-specific-columns"},{"id":"filtering-results","level":0,"title":"Filtering Results","anchor":"#filtering-results"},{"id":"ordering-results","level":0,"title":"Ordering Results","anchor":"#ordering-results"},{"id":"limiting-results","level":0,"title":"Limiting Results","anchor":"#limiting-results"},{"id":"retrieving-single-records","level":0,"title":"Retrieving Single Records","anchor":"#retrieving-single-records"},{"id":"aggregate-methods","level":0,"title":"Aggregate Methods","anchor":"#aggregate-methods"},{"id":"joins","level":0,"title":"Joins","anchor":"#joins"},{"id":"grouping-results","level":0,"title":"Grouping Results","anchor":"#grouping-results"},{"id":"insert-operations","level":0,"title":"Insert Operations","anchor":"#insert-operations"},{"id":"update-operations","level":0,"title":"Update Operations","anchor":"#update-operations"},{"id":"delete-operations","level":0,"title":"Delete Operations","anchor":"#delete-operations"},{"id":"raw-expressions","level":0,"title":"Raw Expressions","anchor":"#raw-expressions"},{"id":"query-debugging","level":0,"title":"Query Debugging","anchor":"#query-debugging"},{"id":"best-practices","level":0,"title":"Best Practices","anchor":"#best-practices"},{"id":"next-steps","level":0,"title":"Next Steps","anchor":"#next-steps"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="https://resources.jetbrains.com/writerside/apidoc/6.22.0-b776/app.css" rel="stylesheet"><meta name="msapplication-TileColor" content="#000000"><link rel="apple-touch-icon" sizes="180x180" href="https://jetbrains.com/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="https://jetbrains.com/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="https://jetbrains.com/favicon-16x16.png"><meta name="msapplication-TileImage" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-144x144.png"><meta name="msapplication-square70x70logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-70x70.png"><meta name="msapplication-square150x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-150x150.png"><meta name="msapplication-wide310x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x150.png"><meta name="msapplication-square310x310logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x310.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Database: Query Builder | Elegant"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Elegant Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/query-builder.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Database: Query Builder | Elegant"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
     "@context": "http://schema.org",
     "@type": "WebPage",
     "@id": "writerside-documentation/query-builder.html#webpage",
@@ -13,15 +13,15 @@
     "@id": "writerside-documentation/#website",
     "url": "writerside-documentation/",
     "name": "Elegant Help"
-}</script><!-- End Schema.org --></head><body data-id="Query-Builder" data-main-title="Database: Query Builder" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Database"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Elegant  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="Query-Builder" id="Query-Builder.md">Database: Query Builder</h1><section class="chapter"><h2 id="introduction" data-toc="introduction">Introduction</h2><p id="-svbwf6_22">Elegant's query builder provides an intuitive, fluent interface for constructing and executing database queries. Rather than writing raw SQL strings throughout your application, the query builder offers a chainable API that's both readable and maintainable.</p><p id="-svbwf6_23">The query builder works seamlessly across all supported database systems (MySQL, MariaDB, PostgreSQL, and SQLite), allowing you to write database-agnostic code. All queries use parameter binding automatically, protecting your application from SQL injection vulnerabilities without any additional effort on your part.</p></section><section class="chapter"><h2 id="why-use-the-query-builder" data-toc="why-use-the-query-builder">Why Use the Query Builder?</h2><p id="-svbwf6_24"><span class="control" id="-svbwf6_29">Readability</span> - Queries read like natural language, making your code easier to understand and maintain.</p><p id="-svbwf6_25"><span class="control" id="-svbwf6_30">Safety</span> - Automatic parameter binding eliminates SQL injection risks.</p><p id="-svbwf6_26"><span class="control" id="-svbwf6_31">Database Agnostic</span> - Write once, run on any supported database system.</p><p id="-svbwf6_27"><span class="control" id="-svbwf6_32">Type Safety</span> - TypeScript integration provides autocomplete and type checking.</p><p id="-svbwf6_28"><span class="control" id="-svbwf6_33">Maintainability</span> - Changes to query logic are easier to implement and test.</p></section><section class="chapter"><h2 id="basic-query-execution" data-toc="basic-query-execution">Basic Query Execution</h2><section class="chapter"><h3 id="getting-started" data-toc="getting-started">Getting Started</h3><p id="-svbwf6_38">Begin building queries by calling the <code class="code" id="-svbwf6_40">table</code> method on your database connection:</p><div class="code-block" data-lang="ts">
+}</script><!-- End Schema.org --></head><body data-id="Query-Builder" data-main-title="Database: Query Builder" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Database"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Elegant  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="Query-Builder" id="Query-Builder.md">Database: Query Builder</h1><section class="chapter"><h2 id="introduction" data-toc="introduction">Introduction</h2><p id="-jpnc86_22">Elegant's query builder provides an intuitive, fluent interface for constructing and executing database queries. Rather than writing raw SQL strings throughout your application, the query builder offers a chainable API that's both readable and maintainable.</p><p id="-jpnc86_23">The query builder works seamlessly across all supported database systems (MySQL, MariaDB, PostgreSQL, and SQLite), allowing you to write database-agnostic code. All queries use parameter binding automatically, protecting your application from SQL injection vulnerabilities without any additional effort on your part.</p></section><section class="chapter"><h2 id="why-use-the-query-builder" data-toc="why-use-the-query-builder">Why Use the Query Builder?</h2><p id="-jpnc86_24"><span class="control" id="-jpnc86_29">Readability</span> - Queries read like natural language, making your code easier to understand and maintain.</p><p id="-jpnc86_25"><span class="control" id="-jpnc86_30">Safety</span> - Automatic parameter binding eliminates SQL injection risks.</p><p id="-jpnc86_26"><span class="control" id="-jpnc86_31">Database Agnostic</span> - Write once, run on any supported database system.</p><p id="-jpnc86_27"><span class="control" id="-jpnc86_32">Type Safety</span> - TypeScript integration provides autocomplete and type checking.</p><p id="-jpnc86_28"><span class="control" id="-jpnc86_33">Maintainability</span> - Changes to query logic are easier to implement and test.</p></section><section class="chapter"><h2 id="basic-query-execution" data-toc="basic-query-execution">Basic Query Execution</h2><section class="chapter"><h3 id="getting-started" data-toc="getting-started">Getting Started</h3><p id="-jpnc86_38">Begin building queries by calling the <code class="code" id="-jpnc86_40">table</code> method on your database connection:</p><div class="code-block" data-lang="ts">
 import Elegant from '@pristine/elegant';
 const db = await Elegant.connection(); 
 const queryBuilder = db.table('users')
-</div></section><section class="chapter"><h3 id="retrieving-all-records" data-toc="retrieving-all-records">Retrieving All Records</h3><p id="-svbwf6_41">Use the <code class="code" id="-svbwf6_44">get</code> method to fetch all rows from a table:</p><div class="code-block" data-lang="ts">
+</div></section><section class="chapter"><h3 id="retrieving-all-records" data-toc="retrieving-all-records">Retrieving All Records</h3><p id="-jpnc86_41">Use the <code class="code" id="-jpnc86_44">get</code> method to fetch all rows from a table:</p><div class="code-block" data-lang="ts">
 const db = await Elegant.connection(); 
 const users = await db.table('users').get();
 console.log(`Found ${users.length} users`);
-</div><p id="-svbwf6_43">The <code class="code" id="-svbwf6_45">get</code> method returns a <code class="code" id="-svbwf6_46">Collection</code> instance containing the query results. Each result is represented as a plain object.</p></section><section class="chapter"><h3 id="type-safe-results" data-toc="type-safe-results">Type-Safe Results</h3><p id="-svbwf6_47">Leverage TypeScript generics to add type safety to your queries:</p><div class="code-block" data-lang="ts">
+</div><p id="-jpnc86_43">The <code class="code" id="-jpnc86_45">get</code> method returns a <code class="code" id="-jpnc86_46">Collection</code> instance containing the query results. Each result is represented as a plain object.</p></section><section class="chapter"><h3 id="type-safe-results" data-toc="type-safe-results">Type-Safe Results</h3><p id="-jpnc86_47">Leverage TypeScript generics to add type safety to your queries:</p><div class="code-block" data-lang="ts">
 interface User { 
   id: number; 
   name: string; 
@@ -35,13 +35,13 @@ users.forEach(user =&gt; {
   console.log(user.name); 
   // Type-safe property access 
 });
-</div></section><section class="chapter"><h3 id="accessing-result-data" data-toc="accessing-result-data">Accessing Result Data</h3><p id="-svbwf6_49">Query results are plain objects with column names as properties:</p><div class="code-block" data-lang="ts">
+</div></section><section class="chapter"><h3 id="accessing-result-data" data-toc="accessing-result-data">Accessing Result Data</h3><p id="-jpnc86_49">Query results are plain objects with column names as properties:</p><div class="code-block" data-lang="ts">
 const users = await db.table('users').get();
 for (const user of users) { 
   console.log(`Name: ${user.name}`); 
   console.log(`Email: ${user.email}`); 
 }
-</div></section></section><section class="chapter"><h2 id="selecting-specific-columns" data-toc="selecting-specific-columns">Selecting Specific Columns</h2><section class="chapter"><h3 id="select-method" data-toc="select-method">Select Method</h3><p id="-svbwf6_54">By default, queries return all columns (<code class="code" id="-svbwf6_57">SELECT *</code>). Specify particular columns using the <code class="code" id="-svbwf6_58">select</code> method:</p><section class="chapter"><h4 id="select-specific-columns-as-an-array" data-toc="select-specific-columns-as-an-array">Select specific columns as an array</h4><div class="code-block" data-lang="ts">
+</div></section></section><section class="chapter"><h2 id="selecting-specific-columns" data-toc="selecting-specific-columns">Selecting Specific Columns</h2><section class="chapter"><h3 id="select-method" data-toc="select-method">Select Method</h3><p id="-jpnc86_54">By default, queries return all columns (<code class="code" id="-jpnc86_57">SELECT *</code>). Specify particular columns using the <code class="code" id="-jpnc86_58">select</code> method:</p><section class="chapter"><h4 id="select-specific-columns-as-an-array" data-toc="select-specific-columns-as-an-array">Select specific columns as an array</h4><div class="code-block" data-lang="ts">
 const users = await db 
   .table('users') 
   .select(['name', 'email']) 
@@ -52,7 +52,7 @@ const users = await db
   .table('users') 
   .select('name, email')
   .get();
-</div></section></section><section class="chapter"><h3 id="column-aliases" data-toc="column-aliases">Column Aliases</h3><p id="-svbwf6_61">Create column aliases in your queries:</p><div class="code-block" data-lang="ts">
+</div></section></section><section class="chapter"><h3 id="column-aliases" data-toc="column-aliases">Column Aliases</h3><p id="-jpnc86_61">Create column aliases in your queries:</p><div class="code-block" data-lang="ts">
 const users = await db .table('users') 
   .select(['name', 'email as user_email']) 
   .get();
@@ -60,7 +60,7 @@ const users = await db .table('users')
 users.forEach(user =&gt; { 
   console.log(user.user_email); 
 });
-</div></section><section class="chapter"><h3 id="aggregate-functions" data-toc="aggregate-functions">Aggregate Functions</h3><p id="-svbwf6_63">Perform calculations using SQL aggregate functions:</p><div class="code-block" data-lang="ts">
+</div></section><section class="chapter"><h3 id="aggregate-functions" data-toc="aggregate-functions">Aggregate Functions</h3><p id="-jpnc86_63">Perform calculations using SQL aggregate functions:</p><div class="code-block" data-lang="ts">
 // Count records const 
 count = await db .table('users') 
   .select('COUNT(*) as total') 
@@ -74,7 +74,7 @@ const revenue = await db .table('orders')
 const avgAge = await db .table('users') 
   .select('AVG(age) as average_age')
   .first();
-</div></section></section><section class="chapter"><h2 id="filtering-results" data-toc="filtering-results">Filtering Results</h2><section class="chapter"><h3 id="where-clauses" data-toc="where-clauses">Where Clauses</h3><p id="-svbwf6_71">Filter query results using <code class="code" id="-svbwf6_73">where</code> conditions:</p><div class="code-block" data-lang="ts">
+</div></section></section><section class="chapter"><h2 id="filtering-results" data-toc="filtering-results">Filtering Results</h2><section class="chapter"><h3 id="where-clauses" data-toc="where-clauses">Where Clauses</h3><p id="-jpnc86_71">Filter query results using <code class="code" id="-jpnc86_73">where</code> conditions:</p><div class="code-block" data-lang="ts">
 // Basic where clause 
 const activeUsers = await db
   .table('users') 
@@ -86,7 +86,7 @@ const results = await db
   .where('status', '=', 'active') 
   .where('subscription', '=', 'premium')
   .get();
-</div></section><section class="chapter"><h3 id="comparison-operators" data-toc="comparison-operators">Comparison Operators</h3><p id="-svbwf6_74">The query builder supports various comparison operators:</p><section class="chapter"><h4 id="greater-than" data-toc="greater-than">Greater than</h4><div class="code-block" data-lang="ts">
+</div></section><section class="chapter"><h3 id="comparison-operators" data-toc="comparison-operators">Comparison Operators</h3><p id="-jpnc86_74">The query builder supports various comparison operators:</p><section class="chapter"><h4 id="greater-than" data-toc="greater-than">Greater than</h4><div class="code-block" data-lang="ts">
 const seniors = await db 
   .table('users') 
   .where('age', '&gt;', 65) 
@@ -101,7 +101,7 @@ const nonAdmins = await db
   .table('users')
   .where('role', '!=', 'admin') 
   .get();
-</div></section></section><section class="chapter"><h3 id="logical-operators" data-toc="logical-operators">Logical Operators</h3><p id="-svbwf6_81">Combine conditions using logical operators:</p><section class="chapter"><h4 id="and-conditions-implicit" data-toc="and-conditions-implicit">AND conditions (implicit)</h4><div class="code-block" data-lang="ts">
+</div></section></section><section class="chapter"><h3 id="logical-operators" data-toc="logical-operators">Logical Operators</h3><p id="-jpnc86_81">Combine conditions using logical operators:</p><section class="chapter"><h4 id="and-conditions-implicit" data-toc="and-conditions-implicit">AND conditions (implicit)</h4><div class="code-block" data-lang="ts">
 const premiumActive = await db 
   .table('users') 
   .where('subscription', '=', 'premium') 
@@ -120,7 +120,7 @@ const filtered = await db
   .and('price', '&lt;', 1000) 
   .or('featured', '=', true) 
   .get();
-</div></section></section><section class="chapter"><h3 id="in-clauses" data-toc="in-clauses">IN Clauses</h3><p id="-svbwf6_88">Check if a column value exists in a set:</p><div class="code-block" data-lang="ts">
+</div></section></section><section class="chapter"><h3 id="in-clauses" data-toc="in-clauses">IN Clauses</h3><p id="-jpnc86_88">Check if a column value exists in a set:</p><div class="code-block" data-lang="ts">
 const users = await db 
   .table('users') 
   .where('status', 'IN', ['active', 'pending', 'trial']) 
@@ -129,7 +129,7 @@ const users = await db
 const posts = await db .table('posts') 
   .where('category_id', 'IN', [1, 3, 5, 7]) 
   .get();
-</div></section><section class="chapter"><h3 id="between-clauses" data-toc="between-clauses">BETWEEN Clauses</h3><p id="-svbwf6_90">Filter values within a range:</p><div class="code-block" data-lang="ts">
+</div></section><section class="chapter"><h3 id="between-clauses" data-toc="between-clauses">BETWEEN Clauses</h3><p id="-jpnc86_90">Filter values within a range:</p><div class="code-block" data-lang="ts">
 const recentOrders = await db 
   .table('orders') 
   .where('total', 'BETWEEN', [100, 500]) 
@@ -139,7 +139,7 @@ const thisMonth = await db
   .table('events') 
   .where('event_date', 'BETWEEN', [startDate, endDate]) 
   .get();
-</div></section><section class="chapter"><h3 id="null-checks" data-toc="null-checks">NULL Checks</h3><p id="-svbwf6_92">Check for NULL or NOT NULL values:</p><div class="code-block" data-lang="ts">
+</div></section><section class="chapter"><h3 id="null-checks" data-toc="null-checks">NULL Checks</h3><p id="-jpnc86_92">Check for NULL or NOT NULL values:</p><div class="code-block" data-lang="ts">
 // IS NULL 
 const unverified = await db 
   .table('users') 
@@ -150,7 +150,7 @@ const verified = await db
   .table('users') 
   .where('email_verified_at', 'IS NOT', null) 
   .get();
-</div></section></section><section class="chapter"><h2 id="ordering-results" data-toc="ordering-results">Ordering Results</h2><section class="chapter"><h3 id="order-by" data-toc="order-by">Order By</h3><p id="-svbwf6_96">Sort query results using <code class="code" id="-svbwf6_100">orderBy</code>:</p><section class="chapter"><h4 id="ascending-order-default" data-toc="ascending-order-default">Ascending order (default)</h4><div class="code-block" data-lang="ts">
+</div></section></section><section class="chapter"><h2 id="ordering-results" data-toc="ordering-results">Ordering Results</h2><section class="chapter"><h3 id="order-by" data-toc="order-by">Order By</h3><p id="-jpnc86_96">Sort query results using <code class="code" id="-jpnc86_100">orderBy</code>:</p><section class="chapter"><h4 id="ascending-order-default" data-toc="ascending-order-default">Ascending order (default)</h4><div class="code-block" data-lang="ts">
 const users = await db 
   .table('users') 
   .orderBy('name') 
@@ -166,13 +166,13 @@ const sorted = await db
   .orderBy('category') 
   .orderBy('price', 'DESC') 
   .get();
-</div></section></section><section class="chapter"><h3 id="random-ordering" data-toc="random-ordering">Random Ordering</h3><p id="-svbwf6_104">Retrieve records in random order:</p><div class="code-block" data-lang="ts">
+</div></section></section><section class="chapter"><h3 id="random-ordering" data-toc="random-ordering">Random Ordering</h3><p id="-jpnc86_104">Retrieve records in random order:</p><div class="code-block" data-lang="ts">
 const randomUsers = await db 
   .table('users') 
   .orderByRandom() 
   .limit(5) 
   .get();
-</div></section></section><section class="chapter"><h2 id="limiting-results" data-toc="limiting-results">Limiting Results</h2><section class="chapter"><h3 id="limit" data-toc="limit">Limit</h3><p id="-svbwf6_109">Restrict the number of records returned:</p><div class="code-block" data-lang="ts">
+</div></section></section><section class="chapter"><h2 id="limiting-results" data-toc="limiting-results">Limiting Results</h2><section class="chapter"><h3 id="limit" data-toc="limit">Limit</h3><p id="-jpnc86_109">Restrict the number of records returned:</p><div class="code-block" data-lang="ts">
 // Get first 10
 users const users = await db 
   .table('users') 
@@ -184,14 +184,14 @@ const expensive = await db
   .orderBy('price', 'DESC') 
   .limit(5) 
   .get();
-</div></section><section class="chapter"><h3 id="offset" data-toc="offset">Offset</h3><p id="-svbwf6_111">Skip a specified number of records:</p><div class="code-block" data-lang="ts">
+</div></section><section class="chapter"><h3 id="offset" data-toc="offset">Offset</h3><p id="-jpnc86_111">Skip a specified number of records:</p><div class="code-block" data-lang="ts">
 // Skip first 10, get next 10 
 const users = await db 
   .table('users') 
   .offset(10) 
   .limit(10) 
   .get();
-</div></section><section class="chapter"><h3 id="pagination" data-toc="pagination">Pagination</h3><p id="-svbwf6_113">Implement pagination using <code class="code" id="-svbwf6_115">limit</code> and <code class="code" id="-svbwf6_116">offset</code>:</p><div class="code-block" data-lang="ts">
+</div></section><section class="chapter"><h3 id="pagination" data-toc="pagination">Pagination</h3><p id="-jpnc86_113">Implement pagination using <code class="code" id="-jpnc86_115">limit</code> and <code class="code" id="-jpnc86_116">offset</code>:</p><div class="code-block" data-lang="ts">
 function paginate(page: number, perPage: number = 20) { 
   const offset = (page - 1) * perPage;
   return db .table('users') 
@@ -203,7 +203,7 @@ function paginate(page: number, perPage: number = 20) {
 const firstPage = await paginate(1, 20);
 // Get page 3 
 const thirdPage = await paginate(3, 20);
-</div></section></section><section class="chapter"><h2 id="retrieving-single-records" data-toc="retrieving-single-records">Retrieving Single Records</h2><section class="chapter"><h3 id="first" data-toc="first">First</h3><p id="-svbwf6_119">Get the first matching record:</p><div class="code-block" data-lang="ts">
+</div></section></section><section class="chapter"><h2 id="retrieving-single-records" data-toc="retrieving-single-records">Retrieving Single Records</h2><section class="chapter"><h3 id="first" data-toc="first">First</h3><p id="-jpnc86_119">Get the first matching record:</p><div class="code-block" data-lang="ts">
 const user = await db 
   .table('users') 
   .where('email', '=', 'john@example.com') 
@@ -213,7 +213,7 @@ if (user) {
 } else { 
   console.log('User not found'); 
 }
-</div></section><section class="chapter"><h3 id="find-by-primary-key" data-toc="find-by-primary-key">Find by Primary Key</h3><p id="-svbwf6_121">Retrieve a record by its primary key:</p><div class="code-block" data-lang="ts">
+</div></section><section class="chapter"><h3 id="find-by-primary-key" data-toc="find-by-primary-key">Find by Primary Key</h3><p id="-jpnc86_121">Retrieve a record by its primary key:</p><div class="code-block" data-lang="ts">
 const user = await db 
   .table('users') 
   .find(42);
@@ -221,7 +221,7 @@ const user = await db
 const product = await db 
   .table('products') 
   .find(100, 'product_id');
-</div></section></section><section class="chapter"><h2 id="aggregate-methods" data-toc="aggregate-methods">Aggregate Methods</h2><section class="chapter"><h3 id="count" data-toc="count">Count</h3><p id="-svbwf6_127">Count the number of records:</p><div class="code-block" data-lang="ts">
+</div></section></section><section class="chapter"><h2 id="aggregate-methods" data-toc="aggregate-methods">Aggregate Methods</h2><section class="chapter"><h3 id="count" data-toc="count">Count</h3><p id="-jpnc86_127">Count the number of records:</p><div class="code-block" data-lang="ts">
 const userCount = await db.table('users').count();
 console.log(`Total users: ${userCount}`);
 // Count with conditions
@@ -229,35 +229,35 @@ const activeCount = await db
   .table('users') 
   .where('status', '=', 'active') 
   .count();
-</div></section><section class="chapter"><h3 id="min-and-max" data-toc="min-and-max">Min and Max</h3><p id="-svbwf6_129">Find minimum and maximum values:</p><div class="code-block" data-lang="ts">
+</div></section><section class="chapter"><h3 id="min-and-max" data-toc="min-and-max">Min and Max</h3><p id="-jpnc86_129">Find minimum and maximum values:</p><div class="code-block" data-lang="ts">
 // Minimum price 
 const minPrice = await db.table('products').min('price');
 // Maximum age 
 const maxAge = await db.table('users').max('age');
-</div></section><section class="chapter"><h3 id="sum" data-toc="sum">Sum</h3><p id="-svbwf6_131">Calculate the sum of a column:</p><div class="code-block" data-lang="ts">
+</div></section><section class="chapter"><h3 id="sum" data-toc="sum">Sum</h3><p id="-jpnc86_131">Calculate the sum of a column:</p><div class="code-block" data-lang="ts">
 const totalRevenue = await db 
   .table('orders') 
   .where('status', '=', 'completed') 
   .sum('amount');
 console.log(`Revenue: $${totalRevenue}`);
-</div></section><section class="chapter"><h3 id="average" data-toc="average">Average</h3><p id="-svbwf6_133">Calculate the average value:</p><div class="code-block" data-lang="ts">
+</div></section><section class="chapter"><h3 id="average" data-toc="average">Average</h3><p id="-jpnc86_133">Calculate the average value:</p><div class="code-block" data-lang="ts">
 const avgRating = await db 
   .table('reviews') 
   .where('product_id', '=', 123) 
   .avg('rating');
-</div></section></section><section class="chapter"><h2 id="joins" data-toc="joins">Joins</h2><section class="chapter"><h3 id="inner-join" data-toc="inner-join">Inner Join</h3><p id="-svbwf6_138">Combine records from multiple tables:</p><div class="code-block" data-lang="ts">
+</div></section></section><section class="chapter"><h2 id="joins" data-toc="joins">Joins</h2><section class="chapter"><h3 id="inner-join" data-toc="inner-join">Inner Join</h3><p id="-jpnc86_138">Combine records from multiple tables:</p><div class="code-block" data-lang="ts">
 const usersWithOrders = await db 
   .table('users') 
   .select(['users.name', 'orders.total', 'orders.created_at'])
   .join('orders', 'users.id', '=', 'orders.user_id')
   .get();
-</div></section><section class="chapter"><h3 id="left-join" data-toc="left-join">Left Join</h3><p id="-svbwf6_140">Include all records from the left table:</p><div class="code-block" data-lang="ts">
+</div></section><section class="chapter"><h3 id="left-join" data-toc="left-join">Left Join</h3><p id="-jpnc86_140">Include all records from the left table:</p><div class="code-block" data-lang="ts">
 const allUsers = await db 
   .table('users')
   .select(['users.name', 'orders.total'])
   .leftJoin('orders', 'users.id', '=', 'orders.user_id') 
   .get();
-</div></section><section class="chapter"><h3 id="complex-joins" data-toc="complex-joins">Complex Joins</h3><p id="-svbwf6_142">Join multiple tables:</p><div class="code-block" data-lang="ts">
+</div></section><section class="chapter"><h3 id="complex-joins" data-toc="complex-joins">Complex Joins</h3><p id="-jpnc86_142">Join multiple tables:</p><div class="code-block" data-lang="ts">
 const data = await db 
   .table('users') 
   .select([ 
@@ -269,20 +269,20 @@ const data = await db
   .join('order_items', 'orders.id', '=', 'order_items.order_id') 
   .join('products', 'order_items.product_id', '=', 'products.id') 
   .get();
-</div></section></section><section class="chapter"><h2 id="grouping-results" data-toc="grouping-results">Grouping Results</h2><section class="chapter"><h3 id="group-by" data-toc="group-by">Group By</h3><p id="-svbwf6_146">Group records by column values:</p><div class="code-block" data-lang="ts">
+</div></section></section><section class="chapter"><h2 id="grouping-results" data-toc="grouping-results">Grouping Results</h2><section class="chapter"><h3 id="group-by" data-toc="group-by">Group By</h3><p id="-jpnc86_146">Group records by column values:</p><div class="code-block" data-lang="ts">
 const usersByCountry = await db 
   .table('users') 
   .select(['country', 'COUNT(*) as total']) 
   .groupBy('country') 
   .get();
-</div></section><section class="chapter"><h3 id="having" data-toc="having">Having</h3><p id="-svbwf6_148">Filter grouped results:</p><div class="code-block" data-lang="ts">
+</div></section><section class="chapter"><h3 id="having" data-toc="having">Having</h3><p id="-jpnc86_148">Filter grouped results:</p><div class="code-block" data-lang="ts">
 const popularCategories = await db 
   .table('products') 
   .select(['category', 'COUNT(*) as product_count']) 
   .groupBy('category') 
   .having('product_count', '&gt;', 10) 
   .get();
-</div></section></section><section class="chapter"><h2 id="insert-operations" data-toc="insert-operations">Insert Operations</h2><section class="chapter"><h3 id="inserting-records" data-toc="inserting-records">Inserting Records</h3><p id="-svbwf6_152">Add new records to the database:</p><div class="code-block" data-lang="ts">
+</div></section></section><section class="chapter"><h2 id="insert-operations" data-toc="insert-operations">Insert Operations</h2><section class="chapter"><h3 id="inserting-records" data-toc="inserting-records">Inserting Records</h3><p id="-jpnc86_152">Add new records to the database:</p><div class="code-block" data-lang="ts">
 // Insert single record 
 const userId = await db
   .table('users') 
@@ -292,7 +292,7 @@ const userId = await db
     active: true }
   );
 console.log(`Created user with ID: ${userId}`);
-</div></section><section class="chapter"><h3 id="batch-inserts" data-toc="batch-inserts">Batch Inserts</h3><p id="-svbwf6_154">Insert multiple records at once:</p><div class="code-block" data-lang="ts">
+</div></section><section class="chapter"><h3 id="batch-inserts" data-toc="batch-inserts">Batch Inserts</h3><p id="-jpnc86_154">Insert multiple records at once:</p><div class="code-block" data-lang="ts">
 const ids = await db 
   .table('users') 
   .insertMany([ 
@@ -300,7 +300,7 @@ const ids = await db
     { name: 'Bob', email: 'bob@example.com' }, 
     { name: 'Carol', email: 'carol@example.com' } 
   ]);
-</div></section></section><section class="chapter"><h2 id="update-operations" data-toc="update-operations">Update Operations</h2><section class="chapter"><h3 id="updating-records" data-toc="updating-records">Updating Records</h3><p id="-svbwf6_158">Modify existing records:</p><div class="code-block" data-lang="ts">
+</div></section></section><section class="chapter"><h2 id="update-operations" data-toc="update-operations">Update Operations</h2><section class="chapter"><h3 id="updating-records" data-toc="updating-records">Updating Records</h3><p id="-jpnc86_158">Modify existing records:</p><div class="code-block" data-lang="ts">
 // Update with conditions 
 const affected = await db
   .table('users') 
@@ -310,7 +310,7 @@ const affected = await db
     updated_at: new Date() 
   });
 console.log(`Updated ${affected} record(s)`);
-</div></section><section class="chapter"><h3 id="increment-and-decrement" data-toc="increment-and-decrement">Increment and Decrement</h3><p id="-svbwf6_160">Adjust numeric values:</p><div class="code-block" data-lang="ts">
+</div></section><section class="chapter"><h3 id="increment-and-decrement" data-toc="increment-and-decrement">Increment and Decrement</h3><p id="-jpnc86_160">Adjust numeric values:</p><div class="code-block" data-lang="ts">
 // Increment a counter 
 await db .table('posts') 
   .where('id', '=', 1) 
@@ -320,21 +320,21 @@ await db
   .table('products')
   .where('id', '=', 100) 
   .decrement('stock', 5);
-</div></section></section><section class="chapter"><h2 id="delete-operations" data-toc="delete-operations">Delete Operations</h2><section class="chapter"><h3 id="deleting-records" data-toc="deleting-records">Deleting Records</h3><p id="-svbwf6_164">Remove records from the database:</p><div class="code-block" data-lang="ts">
+</div></section></section><section class="chapter"><h2 id="delete-operations" data-toc="delete-operations">Delete Operations</h2><section class="chapter"><h3 id="deleting-records" data-toc="deleting-records">Deleting Records</h3><p id="-jpnc86_164">Remove records from the database:</p><div class="code-block" data-lang="ts">
 // Delete with conditions 
 const deleted = await db 
   .table('users')
   .where('status', '=', 'inactive') 
   .where('last_login', '&lt;', cutoffDate)
   .delete();
-</div></section><section class="chapter"><h3 id="truncate-table" data-toc="truncate-table">Truncate Table</h3><p id="-svbwf6_166">Remove all records from a table:</p><div class="code-block" data-lang="ts">
+</div></section><section class="chapter"><h3 id="truncate-table" data-toc="truncate-table">Truncate Table</h3><p id="-jpnc86_166">Remove all records from a table:</p><div class="code-block" data-lang="ts">
 await db.table('sessions').truncate();
-</div></section></section><section class="chapter"><h2 id="raw-expressions" data-toc="raw-expressions">Raw Expressions</h2><section class="chapter"><h3 id="using-raw-sql" data-toc="using-raw-sql">Using Raw SQL</h3><p id="-svbwf6_169">Include raw SQL in your queries when needed:</p><div class="code-block" data-lang="ts">
+</div></section></section><section class="chapter"><h2 id="raw-expressions" data-toc="raw-expressions">Raw Expressions</h2><section class="chapter"><h3 id="using-raw-sql" data-toc="using-raw-sql">Using Raw SQL</h3><p id="-jpnc86_169">Include raw SQL in your queries when needed:</p><div class="code-block" data-lang="ts">
 const results = await db
   .table('orders') 
   .select([ 'id', 'total', db.raw('DATE(created_at) as order_date') ])
   .get();
-</div></section></section><section class="chapter"><h2 id="query-debugging" data-toc="query-debugging">Query Debugging</h2><section class="chapter"><h3 id="getting-the-sql" data-toc="getting-the-sql">Getting the SQL</h3><p id="-svbwf6_172">View the generated SQL query:</p><div class="code-block" data-lang="ts">
+</div></section></section><section class="chapter"><h2 id="query-debugging" data-toc="query-debugging">Query Debugging</h2><section class="chapter"><h3 id="getting-the-sql" data-toc="getting-the-sql">Getting the SQL</h3><p id="-jpnc86_172">View the generated SQL query:</p><div class="code-block" data-lang="ts">
 const query = db 
   .table('users') 
   .where('status', '=', 'active') 
@@ -344,4 +344,4 @@ const query = db
 const { sql, bindings } = query.toSql();
 console.log('SQL:', sql); 
 console.log('Bindings:', bindings);
-</div></section></section><section class="chapter"><h2 id="best-practices" data-toc="best-practices">Best Practices</h2><ol class="list _decimal" id="-svbwf6_174" type="1"><li class="list__item" id="-svbwf6_175"><p id="-svbwf6_181"><span class="control" id="-svbwf6_182">Use Parameter Binding</span> - Always use the query builder's methods instead of string concatenation</p></li><li class="list__item" id="-svbwf6_176"><p id="-svbwf6_183"><span class="control" id="-svbwf6_184">Select Specific Columns</span> - Only retrieve the columns you need to improve performance</p></li><li class="list__item" id="-svbwf6_177"><p id="-svbwf6_185"><span class="control" id="-svbwf6_186">Index Your Conditions</span> - Ensure columns used in <code class="code" id="-svbwf6_187">where</code> clauses are properly indexed</p></li><li class="list__item" id="-svbwf6_178"><p id="-svbwf6_188"><span class="control" id="-svbwf6_189">Use Pagination</span> - Limit large result sets with <code class="code" id="-svbwf6_190">limit</code> and <code class="code" id="-svbwf6_191">offset</code></p></li><li class="list__item" id="-svbwf6_179"><p id="-svbwf6_192"><span class="control" id="-svbwf6_193">Leverage Aggregate Functions</span> - Use database-level aggregation instead of processing in application code</p></li><li class="list__item" id="-svbwf6_180"><p id="-svbwf6_194"><span class="control" id="-svbwf6_195">Monitor Query Performance</span> - Use <code class="code" id="-svbwf6_196">toSql()</code> to review and optimize complex queries</p></li></ol></section><section class="chapter"><h2 id="next-steps" data-toc="next-steps">Next Steps</h2><ul class="list _bullet" id="-svbwf6_197"><li class="list__item" id="-svbwf6_198"><p id="-svbwf6_201">Learn about <a href="migrations.html" id="-svbwf6_202" data-tooltip="Database migrations are version control for your database schema. They allow your team to define, share, and track changes to the database structure over time. With migrations, you can:">Migrations</a> to manage your database schema</p></li><li class="list__item" id="-svbwf6_199"><p id="-svbwf6_203">Explore <a href="elegant-getting-started.html" id="-svbwf6_204" data-tooltip="The Elegant ORM (Object-Relational Mapper) transforms database tables into intuitive TypeScript classes, letting you work with database records as objects rather than writing raw SQL. This object-oriented approach makes your code more maintainable, readable, and enjoyable to write.">Elegant ORM</a> for model-based database interactions</p></li><li class="list__item" id="-svbwf6_200"><p id="-svbwf6_205">Review <a href="getting-started.html" id="-svbwf6_206" data-tooltip="Modern applications depend on reliable, efficient database interactions. Elegant simplifies this process by providing a clean, expressive interface for working with databases. Whether you need raw SQL power, a fluent query builder, or an elegant ORM, this toolkit has you covered.">database configuration</a> options</p></li></ul></section><div class="last-modified">17 October 2025</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="getting-started.html" class="navigation-links__prev">Database: Getting Started</a><a href="migrations.html" class="navigation-links__next">Database: Migrations</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="https://resources.jetbrains.com/writerside/apidoc/6.22.0-b776/app.js"></script></body></html>
+</div></section></section><section class="chapter"><h2 id="best-practices" data-toc="best-practices">Best Practices</h2><ol class="list _decimal" id="-jpnc86_174" type="1"><li class="list__item" id="-jpnc86_175"><p id="-jpnc86_181"><span class="control" id="-jpnc86_182">Use Parameter Binding</span> - Always use the query builder's methods instead of string concatenation</p></li><li class="list__item" id="-jpnc86_176"><p id="-jpnc86_183"><span class="control" id="-jpnc86_184">Select Specific Columns</span> - Only retrieve the columns you need to improve performance</p></li><li class="list__item" id="-jpnc86_177"><p id="-jpnc86_185"><span class="control" id="-jpnc86_186">Index Your Conditions</span> - Ensure columns used in <code class="code" id="-jpnc86_187">where</code> clauses are properly indexed</p></li><li class="list__item" id="-jpnc86_178"><p id="-jpnc86_188"><span class="control" id="-jpnc86_189">Use Pagination</span> - Limit large result sets with <code class="code" id="-jpnc86_190">limit</code> and <code class="code" id="-jpnc86_191">offset</code></p></li><li class="list__item" id="-jpnc86_179"><p id="-jpnc86_192"><span class="control" id="-jpnc86_193">Leverage Aggregate Functions</span> - Use database-level aggregation instead of processing in application code</p></li><li class="list__item" id="-jpnc86_180"><p id="-jpnc86_194"><span class="control" id="-jpnc86_195">Monitor Query Performance</span> - Use <code class="code" id="-jpnc86_196">toSql()</code> to review and optimize complex queries</p></li></ol></section><section class="chapter"><h2 id="next-steps" data-toc="next-steps">Next Steps</h2><ul class="list _bullet" id="-jpnc86_197"><li class="list__item" id="-jpnc86_198"><p id="-jpnc86_201">Learn about <a href="migrations.html" id="-jpnc86_202" data-tooltip="Database migrations are version control for your database schema. They allow your team to define, share, and track changes to the database structure over time. With migrations, you can:">Migrations</a> to manage your database schema</p></li><li class="list__item" id="-jpnc86_199"><p id="-jpnc86_203">Explore <a href="elegant-getting-started.html" id="-jpnc86_204" data-tooltip="The Elegant ORM (Object-Relational Mapper) transforms database tables into intuitive TypeScript classes, letting you work with database records as objects rather than writing raw SQL. This object-oriented approach makes your code more maintainable, readable, and enjoyable to write.">Elegant ORM</a> for model-based database interactions</p></li><li class="list__item" id="-jpnc86_200"><p id="-jpnc86_205">Review <a href="getting-started.html" id="-jpnc86_206" data-tooltip="Modern applications depend on reliable, efficient database interactions. Elegant simplifies this process by providing a clean, expressive interface for working with databases. Whether you need raw SQL power, a fluent query builder, or an elegant ORM, this toolkit has you covered.">database configuration</a> options</p></li></ul></section><div class="last-modified">17 October 2025</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="getting-started.html" class="navigation-links__prev">Database: Getting Started</a><a href="migrations.html" class="navigation-links__next">Database: Migrations</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="https://resources.jetbrains.com/writerside/apidoc/6.22.0-b776/app.js"></script></body></html>
