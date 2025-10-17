@@ -1,6 +1,6 @@
 {
   "name": "@pristine/elegant",
-  "version": "1.0.0-rc4",
+  "version": "1.0.0-rc5",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
@@ -22,7 +22,7 @@
     "test:watch": "vitest watch",
     "test:coverage": "vitest run --coverage",
     "build": "tsc",
-    "build:watch": "tsc --watch",
+    "watch": "tsc --watch",
     "local:start": "cd ./__tests__/app && docker compose up -d",
     "local:stop": "cd ./__tests__/app && docker compose down",
     "local:migrate": "npm run migrate --prefix ./__tests__/app",
@@ -37,9 +37,11 @@
     "url": "https://github.com/joshua-williams/elegant.git"
   },
   "dependencies": {
+    "@types/inquirer": "^9.0.9",
     "ascii-table": "^0.0.9",
     "commander": "^14.0.1",
     "dotenv": "^17.2.3",
+    "inquirer": "^12.10.0",
     "mariadb": "^3.4.5",
     "mysql2": "^3.15.1",
     "pg": "^8.16.3",
