@@ -45,7 +45,11 @@ export default {
       dialect: 'sqlite',
       database: 'database/database.sqlite'
     }
-  }
+  },
+  migrations: {
+    table: 'migrations',
+    directory: 'resources/database/migrations',
+  },
 }
 ```
 
