@@ -95,7 +95,11 @@ export default abstract class ElegantTable {
     this.columns.push(column)
     return column
   }
-
+  timestamps() {
+    this.timestamp('created_at', 'CURRENT_TIMESTAMP')
+    this.timestamp('updated_at', 'CURRENT_TIMESTAMP')
+      .onUpdate('CURRENT_TIMESTAMP')
+  }
   timestamp(columnName:string, defaultValue?:'CURRENT_TIMESTAMP'|Date, nullable?:boolean):TimestampColumnDefinition {
     let _default;
     if (defaultValue instanceof Date) {

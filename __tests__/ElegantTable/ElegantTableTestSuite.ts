@@ -194,7 +194,6 @@ export const CreateTableTestSuite = (tableName:string, Table:ElegantTableConstru
           const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'created_at')} TIMESTAMP DEFAULT '${date.toISOString()}'\n)`
           expect(sql).toEqual(expected)
         })
-
       })
 
       describe('time columns', () => {

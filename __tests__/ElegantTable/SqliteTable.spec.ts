@@ -18,6 +18,14 @@ describe('SqliteTable', () => {
       expect(sql).toEqual(expected)
     })
   })
+  describe('timestamps', () => {
+    it('timestamps', async () => {
+      table.timestamps()
+      const expected = `CREATE TABLE "users" (\n  "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n  "updated_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n)`
+      const sql = await table.toStatement()
+      expect(sql).toEqual(expected)
+    })
+  })
   describe('boolean', () => {
     it('boolean', async () => {
       table.boolean('is_active')

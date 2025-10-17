@@ -4,7 +4,6 @@ import {
   ConstraintColumnDefinition,
   GeneralColumnDefinition,
   NumberColumnDefinition,
-  TimestampColumnDefinition
 } from './ColumnDefinitions.js';
 
 export default class SqliteTable extends ElegantTable {
