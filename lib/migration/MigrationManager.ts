@@ -5,6 +5,7 @@ import path, {basename} from 'node:path'
 import Elegant, {Migration, Schema} from '../../index.js';
 import {ElegantConfig, MigrationFile, MigrationFileMap, MigrationStatus} from '../../types.js';
 import {pathToFileURL} from 'url';
+import chalk from 'chalk';
 
 export class MigrationManager {
   protected config:ElegantConfig;
@@ -59,8 +60,17 @@ export class MigrationManager {
       const fileUrl = pathToFileURL(file.path).href
       const {default:MigrationClass} = await import(fileUrl)
       const migration:Migration = new MigrationClass()
-      const connection = (migration as any).connection || config.default
-      migration.schema = new Schema(await Elegant.connection(connection))
+      const connectionName = (migration as any).connection || config.default
+
+      let connection;
+      try {
+        connection = await Elegant.connection(connectionName)
+      } catch(err) {
+        err.message += chalk.red(`Migration error while connecting to ${chalk.bold(connectionName)}\n`)
+        err.message += `Update database credentials in ${chalk.bold('elegant.config.js')}`
+        throw err;
+      }
+      migration.schema = new Schema(connection)
       migrations.push({
         migration,
         file

@@ -5,7 +5,7 @@ import {ElegantConfig} from '../types.js';
 
 export const getConfig = async ():Promise<ElegantConfig> => {
   const configPath = resourcePath('elegant.config.js')
-  return await import(configPath)
+  return await import(configPath).then(module => module.default)
 }
 
 export const getAppConfig = async ():Promise<ElegantConfig> => {

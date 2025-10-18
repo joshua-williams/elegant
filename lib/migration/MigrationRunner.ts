@@ -31,13 +31,16 @@ export default class MigrationRunner extends MigrationManager {
         await migration.up()
         result.duration = Date.now() - timestamp
         results.push(result)
+        await this.saveResults(results)
+        await migration.disconnect()
       } catch (error) {
         result.status = 'error'
         result.error = error.message
         results.push(result);
+        await migration.disconnect()
       }
     }
-    await this.saveResults(results)
+
     return results;
   }
 

@@ -2,6 +2,7 @@ import AsciiTable from 'ascii-table'
 import {Command} from 'commander'
 import MigrationRunner from '../lib/migration/MigrationRunner.js';
 import MigrationInspector from '../lib/migration/MigrationInspector.js';
+import {log} from '../lib/util.js';
 
 const runner = new MigrationRunner();
 const inspector = new MigrationInspector();
@@ -12,10 +13,10 @@ export const MigrateCommand = new Command('migrate')
     try {
       await runner.init()
       await runner.run()
+      log(`Migration completed`, 'success')
     } catch(err) {
-      console.error(`Failed to run migration run command: ${err.message}`)
+      console.error(err.message)
     }
-    console.log('Database migration completed')
   })
 
 export const RollbackCommand = new Command('migrate:rollback')

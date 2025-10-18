@@ -4,6 +4,7 @@ import {appPath, isTypescript, resourcePath} from '../lib/util.js';
 import * as fs from 'node:fs';
 import path, {basename} from 'node:path';
 import inquirer from 'inquirer';
+import {ElegantConfig, SchemaDialect} from '../types.js';
 
 export default new Command('init')
   .description('Initialize a new Elegant project')
@@ -15,32 +16,47 @@ export default new Command('init')
     if (options.interactive) {
       await runInteractiveConfiguration(options)
     } else {
-      const config = getConfig()
-      initializeConfig(options, config)
+      const config = await getConfig()
+      initializeConfig(options, config, false)
+      initializeResourceDirectory(options, config)
     }
   })
 
 const runInteractiveConfiguration = async (options) => {
   const {default:config} = await import(resourcePath('elegant.config.js'))
-  const {dialect} = await getDialect()
+  let dialect:SchemaDialect
+  try {
+    const response = await getDialect()
+    dialect = response.dialect
+  } catch (error) {
+    return false
+  }
   config.default = dialect.toLowerCase()
+  let connectionConfig;
   switch (config.default) {
     case 'sqlite': {
-      const connectionConfig = await getSqliteConfig()
+      connectionConfig = await getSqliteConfig()
       config.connections = {sqlite: connectionConfig}
       break;
     }
     case 'postgres':
     case 'mysql':
-    case 'mariadb': {
-      const connectionConfig = await getDbCredentials(dialect)
+    case 'mariadb':
+      try {
+        connectionConfig = await getDbCredentials(dialect)
+        if (!connectionConfig) {
+          return;
+        }
+      } catch (error) { return }
       config.connections = {[config.default]:connectionConfig}
       if (options.migrationDir) {
         config.migrations.directory = options.migrationDir
       }
       break;
-    }
+
+    default: return
   }
+  initializeConfig(options, config, true)
   initializeResourceDirectory(options, config)
 }
 
@@ -63,7 +79,7 @@ const getSqliteConfig = async () => {
   return await inquirer.prompt(questions)
 }
 
-const getDialect = async () => {
+const getDialect = () => {
   const question = [
     {
       type: 'list',
@@ -74,7 +90,7 @@ const getDialect = async () => {
     },
   ];
   // @ts-ignore
-  return await inquirer.prompt(question);
+  return inquirer.prompt(question);
 }
 
 const getDbCredentials = async (dialect) => {
@@ -121,58 +137,110 @@ const getDbCredentials = async (dialect) => {
       message: 'Enter your database password:',
       mask: '*', // Hides the input
     },)
+
+  let response;
   try {
-    // @ts-ignore
-    return await inquirer.prompt(questions);
+    response = await inquirer.prompt(questions);
   } catch (error) {
+    response = false
     if (error.isTtyError) {
       // Prompt couldn't be rendered in the current environment
       console.error('Prompt could not be rendered in this environment.', error);
     } else {
       // Something else went wrong
-      console.error('An error occurred:', error);
+      console.error('An error occurred:', error.message);
     }
   }
+  return response
 }
 
-const initializeConfig = (options, config) => {
-  const configString = getConfigString()
-  const configPath = appPath('elegant.config.js')
-
-  if (fs.existsSync(configPath)) {
-    if (options.force) {
-      fs.rmSync(configPath)
-      fs.writeFileSync(configPath, configString, 'utf8')
-    } else {
-      console.error('Elegant configuration file already exists')
-    }
-  } else {
+const initializeConfig = (options, config, interactive:boolean) => {
+  if (interactive) {
+    let configPath =  appPath('elegant.config.js')
+    const configString = buildConfig(config)
     fs.writeFileSync(configPath, configString, 'utf8')
-    console.info(`Created Elegant configuration file at ${configPath}`)
+  } else {
+    const configString = getConfigString()
+    const configPath = appPath('elegant.config.js')
+
+    if (fs.existsSync(configPath)) {
+      if (options.force) {
+        fs.rmSync(configPath)
+        fs.writeFileSync(configPath, configString, 'utf8')
+      } else {
+        console.error('Elegant configuration file already exists')
+      }
+    } else {
+      fs.writeFileSync(configPath, configString, 'utf8')
+      console.info(`Created Elegant configuration file at ${configPath}`)
+    }
   }
 }
 
-const initializeResourceDirectory = (options, config) => {
-  // Create migrations directory
+/**
+ * Copies the Elegant database migration file to the application's migration directory.
+ *
+ * This function determines the correct source migration file path based on the project's
+ * type language (TypeScript or JavaScript) and copies it into the designated migrations
+ * directory, appending a timestamp to the copied file's name to ensure uniqueness.
+ *
+ * The source migration file is named `CreateElegantMigrationTable` and is located under
+ * the `database/migrations` resource path.
+ *
+ * Variables and paths involved:
+ * - `migrationDir`: The destination directory for migration files, derived from application configuration.
+ * - `migr8Path`: The resource path of the Elegant migration file (.ts or .js based on the project setup).
+ * - `targetPath`: The destination filename, including timestamp and appropriate file extension.
+ */
+const copyElegantMigrationFile = (config:ElegantConfig) => {
   let migrationDir = appPath(config.migrations.directory)
-  if (!fs.existsSync(migrationDir)) {
-    fs.mkdirSync(migrationDir, {recursive: true})
-  }
-  // Copy elegant.config.js
-  let configPath =  appPath('elegant.config.js')
-  const configString = buildConfig(config)
-  fs.writeFileSync(configPath, configString, 'utf8')
-
-  // Copy .env
-  const dotEnvString = buildDotEnv(config)
-  const dotEnvPath = appPath('.env')
-  fs.writeFileSync(dotEnvPath, dotEnvString)
-
-  // Copy Elegant database migration file
   let migr8Path = resourcePath('database/migrations/CreateElegantMigrationTable') + (isTypescript() ? '.ts' : '.js')
   let targetPath = path.join(migrationDir, `${Date.now()}.CreateElegantMigrationTable.migration` + (isTypescript() ? '.ts' : '.js'))
   fs.copyFileSync(migr8Path, targetPath)
 }
+
+const getExistingMigrationFile = (config:ElegantConfig) => {
+  return fs.readdirSync(appPath(config.migrations.directory))
+    .filter((file) => file.includes('CreateElegantMigrationTable'))
+}
+
+const removeExistingMigrationFile = (config:ElegantConfig) => {
+  getExistingMigrationFile(config).forEach((file) => {
+    fs.unlinkSync(path.join(appPath(config.migrations.directory), file))
+  })
+
+}
+const initializeResourceDirectory = (options, config) => {
+  // Create migrations directory
+  let migrationDir = appPath(config.migrations.directory)
+  if (fs.existsSync(migrationDir)) {
+    if (options.force) {
+      fs.mkdirSync(migrationDir, {recursive: true})
+      removeExistingMigrationFile(config)
+      copyElegantMigrationFile(config)
+    } else {
+      console.error('Elegant migration directory already exists')
+    }
+  } else {
+    fs.mkdirSync(migrationDir, {recursive: true})
+    removeExistingMigrationFile(config)
+    copyElegantMigrationFile(config)
+  }
+
+  // Copy .env
+  const dotEnvString = buildDotEnv(config)
+  const dotEnvPath = appPath('.env')
+  if (fs.existsSync(dotEnvPath)) {
+    if (options.force) {
+      fs.writeFileSync(dotEnvPath, dotEnvString)
+    } else {
+      console.error('.env file already exists')
+    }
+  } else {
+    fs.writeFileSync(dotEnvPath, dotEnvString)
+  }
+}
+
 const buildDotEnv = (config:any) => {
   if (config.default === 'sqlite') return
   const c = config.connections[config.default]

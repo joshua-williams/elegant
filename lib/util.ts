@@ -2,6 +2,7 @@ import * as path from 'node:path';
 import fs from 'node:fs';
 import { fileURLToPath } from 'url';
 import {spawn} from 'node:child_process';
+import chalk from 'chalk';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -101,5 +102,16 @@ export const getTemplate = (name:string) => {
     return fs.readFileSync(basePath(`resources/templates/${name}.tpl.ts`), 'utf8')
   } else {
     return fs.readFileSync(basePath(`resources/templates/${name}.tpl.js`), 'utf8')
+  }
+}
+
+export const log = (message:string, type:'success'|'error'|'warning' = 'success') => {
+  const warning = chalk.hex('#FFA500');
+  const error = chalk.bold.red;
+  const success = chalk.bold.green;
+  switch (type) {
+    case 'success': console.log(success); break;
+    case 'error': console.error(error); break;
+    case 'warning': console.error(warning); break;
   }
 }

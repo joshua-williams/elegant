@@ -119,4 +119,7 @@ export default class Schema {
     }
   }
 
+  disconnect() {
+    return this.$.db.close()
+  }
 }

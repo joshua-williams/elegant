@@ -38,6 +38,10 @@ export default abstract class Migration {
     return true
   }
 
+  disconnect() {
+    return this.schema?.disconnect()
+  }
+
   get config():ElegantConfig {
     return this.$.config
   }

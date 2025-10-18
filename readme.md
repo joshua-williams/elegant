@@ -1,5 +1,4 @@
 # Installation
-<show-structure for="chapter,procedure" depth="2"/>
 
 ## Meet Elegant
 
