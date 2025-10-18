@@ -35,6 +35,9 @@ const runInteractiveConfiguration = async (options) => {
     case 'mariadb': {
       const connectionConfig = await getDbCredentials(dialect)
       config.connections = {[config.default]:connectionConfig}
+      if (options.migrationDir) {
+        config.migrations.directory = options.migrationDir
+      }
       break;
     }
   }
@@ -151,7 +154,7 @@ const initializeConfig = (options, config) => {
 
 const initializeResourceDirectory = (options, config) => {
   // Create migrations directory
-  let migrationDir:string = options.migrationDir ? appPath(options.migrationDir) : appPath(config.migrations.directory)
+  let migrationDir = appPath(config.migrations.directory)
   if (!fs.existsSync(migrationDir)) {
     fs.mkdirSync(migrationDir, {recursive: true})
   }
@@ -167,7 +170,7 @@ const initializeResourceDirectory = (options, config) => {
 
   // Copy Elegant database migration file
   let migr8Path = resourcePath('database/migrations/CreateElegantMigrationTable') + (isTypescript() ? '.ts' : '.js')
-  let targetPath =  path.join(migrationDir, basename(migr8Path))
+  let targetPath = path.join(migrationDir, `${Date.now()}.CreateElegantMigrationTable.migration` + (isTypescript() ? '.ts' : '.js'))
   fs.copyFileSync(migr8Path, targetPath)
 }
 const buildDotEnv = (config:any) => {
@@ -197,6 +200,7 @@ const buildConfig = (config:any) => {
     database: 'process.env.DB_DATABASE',
     user: 'process.env.DB_USER',
     password: 'process.env.DB_PASSWORD',
+    migrationDirectory: 'resources/database/migrations'
   }
   Object.keys(templateVariables).forEach(key => {
     configString = configString.replaceAll(`{{${key}}}`, templateVariables[key])

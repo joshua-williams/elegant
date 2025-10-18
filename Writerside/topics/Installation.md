@@ -70,12 +70,20 @@ Elegant provides an initialization command that scaffolds your database configur
 
 #### Basic Initialization
 ```bash
-npx elegant init
+# install elegant
+npm install -g @pristine/elegant
+# initialize project 
+elegant init
 ```
 
+### Interactive Initialization
+Elegant provides an interactive database configuration workflow. Running the following command with the `-i` or `--interactive` option starts an intuitive command line interface for setting up `elegant.config.js`
+```bash
+elegant init --interactive
+```
 #### Custom Migrations Directory
 ```bash
-npx elegant init --migration-dir ./database/migrations
+elegant init --migration-dir ./database/migrations
 ```
 
 ```javascript
@@ -94,7 +102,11 @@ export default {
       dialect: 'sqlite',
       database: 'database/database.sqlite'
     }
-  }
+  },
+  migrations: {
+    table: 'migrations',
+    directory: 'resources/database/migrations',
+  },
 }
 ```
 

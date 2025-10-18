@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env node --import tsx
 import 'dotenv/config'
 import {program} from 'commander';
 import InitCommand from './init.js'
