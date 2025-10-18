@@ -8,6 +8,7 @@ import {
   TimestampColumnDefinition
 } from './ColumnDefinitions.js';
 import Elegant from '../../src/Elegant.js';
+import {inferTableName} from '../util.js';
 
 type SchemaTableMeta = {
   charset:Charset,
@@ -139,9 +140,19 @@ export default abstract class ElegantTable {
   }
 
   foreign(columnName:string|string[], tableName?:string, references?:string|string[]):ForeignKeyConstraintColumnDefinition {
+    if (Array.isArray(columnName)) {
+      columnName.forEach(columnName => {
+        const column = this.columns.find((c:ColumnDefinition) => c.name === columnName)
+        if (!column) throw new Error(`Column '${columnName}' does not exist in table '${this.tableName}'`)
+      })
+    }
     const keyName = Array.isArray(columnName) ? `fk_${columnName.join('_')}` : `fk_${columnName}`
     const column = new ForeignKeyConstraintColumnDefinition(keyName)
-    column.foreign(columnName).on(tableName).references(references)
+    if (!tableName && typeof columnName === 'string') {
+      tableName = inferTableName(columnName)
+    }
+
+    column.foreign(columnName).on(tableName).references(references||columnName)
     this.columns.push(column)
     return column
   }

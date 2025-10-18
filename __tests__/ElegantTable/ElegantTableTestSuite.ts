@@ -242,6 +242,25 @@ export const CreateTableTestSuite = (tableName:string, Table:ElegantTableConstru
       })
 
       describe('foreign key constraint', () => {
+        describe('shorthand key constraints', () => {
+          it('foreign key constraint shorthand inferred table name', async () => {
+            table.integer('id').primary()
+            table.integer('user_id')
+            table.foreign('user_id')
+            const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'id')} INT PRIMARY KEY,\n  ${enclose(tableName, 'user_id')} INT,\n  CONSTRAINT ${enclose(tableName, 'fk_user_id')}\n    FOREIGN KEY (${enclose(tableName, 'user_id')})\n    REFERENCES ${enclose(tableName, 'users')}(${enclose(tableName, 'user_id')})\n)`;
+            const sql = await table.toStatement()
+            expect(sql).toEqual(expected)
+          })
+          it('foreign key constraint shorthand', async () => {
+            table.integer('id').primary()
+            table.integer('user_id')
+            table.foreign('user_id', 'users')
+            const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'id')} INT PRIMARY KEY,\n  ${enclose(tableName, 'user_id')} INT,\n  CONSTRAINT ${enclose(tableName, 'fk_user_id')}\n    FOREIGN KEY (${enclose(tableName, 'user_id')})\n    REFERENCES ${enclose(tableName, 'users')}(${enclose(tableName, 'user_id')})\n)`;
+            const sql = await table.toStatement()
+            expect(sql).toEqual(expected)
+          })
+        })
+
         it('foreign key constraint with single reference', async () => {
           table.integer('id')
           table.integer('image_id')

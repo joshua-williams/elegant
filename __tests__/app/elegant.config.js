@@ -26,7 +26,7 @@ export default{
     mysql: {
       dialect: 'mysql',
       host: 'localhost',
-      port: 3306,
+      port: 3333,
       database: 'elegant',
       user: 'root',
       password: 'password',

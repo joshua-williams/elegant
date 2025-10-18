@@ -110,8 +110,19 @@ export const log = (message:string, type:'success'|'error'|'warning' = 'success'
   const error = chalk.bold.red;
   const success = chalk.bold.green;
   switch (type) {
-    case 'success': console.log(success); break;
-    case 'error': console.error(error); break;
-    case 'warning': console.error(warning); break;
+    case 'success': console.log(success(message)); break;
+    case 'error': console.error(error(message)); break;
+    case 'warning': console.error(warning(message)); break;
   }
+}
+
+export const lastChar = (str:string) => str[str.length - 1]
+
+export const inferTableName = (name:string)=> {
+  const pattern = /([\w_\-]+)_id$/
+  const match = name.match(pattern)
+  if ( !match ) return
+  const [,tableName] = match;
+  if (lastChar(tableName) === 'y') return `${tableName.slice(0, tableName.length -1)}ies`
+  if (lastChar(tableName) != 's') return `${tableName}s`
 }
