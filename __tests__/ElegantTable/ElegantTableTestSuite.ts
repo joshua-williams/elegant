@@ -221,7 +221,7 @@ export const CreateTableTestSuite = (tableName:string, Table:ElegantTableConstru
         table = new Table('users', 'create', db)
       })
       afterEach(async () => {
-        await db.close();
+        await db.disconnect();
       })
       describe('primary key constraints', () => {
         it('multiple primary keys', async () => {
@@ -423,7 +423,7 @@ export const GetDatabaseColumnsTestSuite = (connection:string, Table:ElegantTabl
 
       afterAll(async () => {
         await schema.drop('users')
-        await db.close()
+        await db.disconnect()
       })
 
       it('should retrieve columns for table', async () => {

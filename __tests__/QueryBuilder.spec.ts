@@ -10,7 +10,7 @@ describe('query builder', () => {
   it('should set the table', () => {
     qb.table('migrations')
     const expected = 'select *\nfrom migrations'
-    const {query} = qb.parse()
+    const {query} = qb.toStatement()
     expect(query).toEqual(expected)
   })
 
@@ -19,14 +19,14 @@ describe('query builder', () => {
       qb.table('migrations')
         .select('id, migration')
       const expected = 'select id, migration\nfrom migrations'
-      const {query} = qb.parse()
+      const {query} = qb.toStatement()
       expect(query).toEqual(expected)
     })
     it('should set the columns as array', () => {
       qb.select(['id', 'migration'])
         .from('migrations')
       const expected = 'select id, migration\nfrom migrations'
-      const {query} = qb.parse()
+      const {query} = qb.toStatement()
       expect(query).toEqual(expected)
     })
   })
@@ -36,7 +36,7 @@ describe('query builder', () => {
       qb.table('migrations')
         .where('migration', '=', 'contacts')
       const expected = 'select *\nfrom migrations\nwhere migration = ?'
-      const {query, params} = qb.parse()
+      const {query, params} = qb.toStatement()
       expect(query).toEqual(expected)
       expect(params).toEqual(['contacts'])
     })
@@ -45,7 +45,7 @@ describe('query builder', () => {
       .where('migration', '=', 'contacts')
       .and('batch', '=', 5)
       const expected = 'select *\nfrom migrations\nwhere migration = ? and batch = ?'
-      const {query, params} = qb.parse()
+      const {query, params} = qb.toStatement()
       expect(query).toEqual(expected)
       expect(params).toEqual(['contacts',5])
     })
@@ -54,7 +54,7 @@ describe('query builder', () => {
       .where('migration', '=', 'contacts')
       .or('batch', '=', 5)
       const expected = 'select *\nfrom migrations\nwhere migration = ? or batch = ?'
-      const {query, params} = qb.parse()
+      const {query, params} = qb.toStatement()
       expect(query).toEqual(expected)
       expect(params).toEqual(['contacts',5])
     })

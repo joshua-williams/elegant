@@ -38,7 +38,7 @@ export default abstract class Elegant{
 
   public abstract statement(query:string, params?:Scalar[]):Promise<any>
 
-  public abstract close():Promise<void>
+  public abstract disconnect():Promise<void>
 
   table(tableName:string):QueryBuilder {
     const qb = new QueryBuilder();

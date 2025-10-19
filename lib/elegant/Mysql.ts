@@ -186,7 +186,7 @@ export default class Mysql extends Elegant {
    * @return {Promise<void>} A promise that resolves when the connection is closed.
    * @throws {Error} If the connection could not be closed.
    */
-  async close(): Promise<void> {
+  async disconnect(): Promise<void> {
     return this.connection.end();
   }
 }

@@ -9,6 +9,7 @@ type ElegantConfig = {
     directory: string,
   },
   models?: {
+    lazyLoading:boolean,
     directory: string,
   },
   connections: {

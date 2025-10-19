@@ -120,6 +120,6 @@ export default class Schema {
   }
 
   disconnect() {
-    return this.$.db.close()
+    return this.$.db.disconnect()
   }
 }

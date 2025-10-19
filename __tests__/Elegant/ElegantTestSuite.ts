@@ -40,7 +40,7 @@ export const ElegantTestSuite = (connection:SchemaDialect) => {
     })
 
     afterEach(async () => {
-      await db.close()
+      await db.disconnect()
     })
 
     it('should get Elegant instance', () => {

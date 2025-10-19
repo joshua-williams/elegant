@@ -81,7 +81,7 @@ export default class Postgres extends Elegant {
       throw new Error('Method not implemented.');
   }
 
-  close(): Promise<void> {
+  disconnect(): Promise<void> {
     return Promise.resolve(undefined);
   }
 }

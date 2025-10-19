@@ -66,7 +66,7 @@ export default class SQLite extends Elegant {
     })
   }
 
-  public close(): Promise<void> {
+  public disconnect(): Promise<void> {
     return new Promise((resolve, reject) => {
       this.connection.close((err) => {
         if (err) return reject(err)

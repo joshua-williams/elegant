@@ -8,7 +8,7 @@ import {
   TimestampColumnDefinition
 } from './ColumnDefinitions.js';
 import Elegant from '../../src/Elegant.js';
-import {inferTableName} from '../util.js';
+import {inferTableNameFromColumn} from '../util.js';
 
 type SchemaTableMeta = {
   charset:Charset,
@@ -149,7 +149,7 @@ export default abstract class ElegantTable {
     const keyName = Array.isArray(columnName) ? `fk_${columnName.join('_')}` : `fk_${columnName}`
     const column = new ForeignKeyConstraintColumnDefinition(keyName)
     if (!tableName && typeof columnName === 'string') {
-      tableName = inferTableName(columnName)
+      tableName = inferTableNameFromColumn(columnName)
     }
 
     column.foreign(columnName).on(tableName).references(references||columnName)

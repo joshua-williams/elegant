@@ -1,1 +1,3 @@
-export {default as MakeCommand } from './make/make-migration.js'
+export {default as MakeMigrationCommand } from './make/make-migration.js'
+export {default as MakeModelCommand} from './make/make-model.js'
+export { default as MakeTypesCommand } from './make/make-types.js'

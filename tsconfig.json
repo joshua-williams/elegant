@@ -16,7 +16,6 @@
   "include": [
     "types.d.ts",
     "index.ts",
-    "src/**/*.ts",
     "lib/**/*.ts",
     "cli/**/*.ts",
     "__tests__/**/*.spec.ts"

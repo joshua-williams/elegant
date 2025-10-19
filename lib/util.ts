@@ -115,14 +115,37 @@ export const log = (message:string, type:'success'|'error'|'warning' = 'success'
     case 'warning': console.error(warning(message)); break;
   }
 }
+export const toSnakeCase = (str:string)=> {
+  return str.replace(/[A-Z]/g, (letter, index) => {
+    return (index === 0 ? '' : '_') + letter.toLowerCase();
+  });
+}
 
 export const lastChar = (str:string) => str[str.length - 1]
 
-export const inferTableName = (name:string)=> {
+export const inferTableNameFromModelName = (name:string) => {
+  let tableName = name.replace(/model/i,'')
+  tableName = toSnakeCase(tableName)
+  if (lastChar(tableName) == 'y') {
+    tableName = tableName.slice(0, tableName.length -1 ) + 'ies'
+  } else if (lastChar(tableName) !== 's') {
+    tableName += 's'
+  }
+  return tableName
+}
+
+export const inferTableNameFromColumn = (name:string)=> {
   const pattern = /([\w_\-]+)_id$/
   const match = name.match(pattern)
   if ( !match ) return
   const [,tableName] = match;
   if (lastChar(tableName) === 'y') return `${tableName.slice(0, tableName.length -1)}ies`
   if (lastChar(tableName) != 's') return `${tableName}s`
+}
+
+export const getTsConfig = () => {
+  const tsconfigPath = appPath('tsconfig.json')
+  if (!fs.existsSync(tsconfigPath)) throw new Error(`TSconfig file missing in ${tsconfigPath}`)
+  const jsonString = fs.readFileSync(tsconfigPath, 'utf8')
+  return JSON.parse(jsonString)
 }

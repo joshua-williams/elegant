@@ -85,7 +85,7 @@ export default class QueryBuilder {
     return this
   }
 
-  parse():{query:string, params:Scalar[]} {
+  toStatement():{query:string, params:Scalar[]} {
     this.validate()
 
     let query:string;
@@ -93,7 +93,7 @@ export default class QueryBuilder {
 
     switch(this.$.operation) {
       case 'select':
-        const parsed = this.parseSelect()
+        const parsed = this.toSelectStatement()
         query = parsed.sql
         params = parsed.params
         break
@@ -102,7 +102,7 @@ export default class QueryBuilder {
     return {query, params}
   }
 
-  parseSelect():{sql:string, params:Scalar[]} {
+  private toSelectStatement():{sql:string, params:Scalar[]} {
     let sql:string = 'select ';
     if (Array.isArray(this.$.columns)) {
       sql += this.$.columns.map(column =>  column.trim() ).join(', ')
@@ -113,13 +113,13 @@ export default class QueryBuilder {
     }
     sql += `\nfrom ${this.$.table}`
     if (!this.$.conditions.length) return {sql, params: []}
-    const {whereSql, params} = this.parseWhere()
+    const {whereSql, params} = this.toWhereStatement()
     sql += `\nwhere ${whereSql}`
 
     return {sql, params}
   }
 
-  parseWhere():{whereSql:string, params:Scalar[]} {
+  private toWhereStatement():{whereSql:string, params:Scalar[]} {
     const params:Scalar[] = []
     const conditions:string[] = [];
     let sql:string = ''
