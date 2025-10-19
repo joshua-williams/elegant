@@ -1,14 +1,13 @@
 import {Charset, Collation, ElegantTableAction, Scalar} from '../../types.js';
 import ColumnDefinition from './ColumnDefinition.js';
 import {
-  CheckColumnDefinition,
-  ConstraintColumnDefinition,
-  DateTimeColumnDefinition, ForeignKeyConstraintColumnDefinition, NumberColumnDefinition,
-  StringColumnDefinition, TimeColumnDefinition,
-  TimestampColumnDefinition
+  CheckColumnDefinition, ConstraintColumnDefinition, ForeignKeyConstraintColumnDefinition,
+  NumberColumnDefinition, StringColumnDefinition,
 } from './ColumnDefinitions.js';
 import Elegant from '../../src/Elegant.js';
 import {inferTableNameFromColumn} from '../util.js';
+import ElegantTableCore from './ElegantTableCore.js';
+import ElegantFunction from './ElegantFunction.js';
 
 type SchemaTableMeta = {
   charset:Charset,
@@ -20,10 +19,11 @@ type SchemaTableMeta = {
   ifNotExists:boolean,
 }
 
-export default abstract class ElegantTable {
+export default abstract class ElegantTable extends ElegantTableCore {
   protected enclosure = '"';
   protected action:ElegantTableAction = 'create'
   protected columns:ColumnDefinition[] = []
+  protected functions: ElegantFunction[] = []
   protected tableName:string
   protected schema:string
   protected db:Elegant
@@ -38,6 +38,7 @@ export default abstract class ElegantTable {
   }
 
   constructor(tableName:string, action:ElegantTableAction, db:Elegant) {
+    super()
     this.tableName = tableName
     this.action = action;
     this.db = db
@@ -55,69 +56,10 @@ export default abstract class ElegantTable {
     }
   }
 
-  char(columnName:string, length:number = 255):ColumnDefinition {
-    const column = new StringColumnDefinition(columnName, length, 'CHAR')
-    this.columns.push(column)
-    return column
-  }
-
-  charset(charset:Charset):ElegantTable {
-    this.$.charset = charset
-    return this
-  }
-
-  string(columnName:string, length:number = 255):ColumnDefinition {
-    const column = new StringColumnDefinition(columnName, length)
-    this.columns.push(column)
-    return column
-  }
-
-  text(columnName:string):ColumnDefinition {
-    const column = new StringColumnDefinition(columnName, undefined, 'TEXT')
-    this.columns.push(column)
-    return column
-  }
-
-  date(columnName:string, defaultValue?:'CURRENT_TIMESTAMP'|Date, nullable?:boolean):ColumnDefinition {
-    const column = new DateTimeColumnDefinition(columnName, defaultValue, nullable)
-    this.columns.push(column)
-    return column
-  }
-
-  time(columnName:string, defaultValue?:Date|'CURRENT_TIME', precision?:number, nullable?:boolean):ColumnDefinition {
-    const column = new TimeColumnDefinition(columnName, defaultValue, precision, nullable)
-    this.columns.push(column)
-    return column
-  }
-
-  dateTime(columnName:string, defaultValue?:'CURRENT_TIMESTAMP'|Date, nullable?:boolean):TimestampColumnDefinition {
-    let _default;
-    if (defaultValue instanceof Date) {
-      _default = defaultValue.toISOString()
-    } else if (typeof defaultValue === 'string') {
-      if (defaultValue !== 'CURRENT_TIMESTAMP') throw new Error('Invalid default value for dateTime()')
-      _default = defaultValue
-    }
-    const column = new DateTimeColumnDefinition(columnName, _default, nullable)
-    this.columns.push(column)
-    return column
-  }
   timestamps() {
     this.timestamp('created_at', 'CURRENT_TIMESTAMP')
     this.timestamp('updated_at', 'CURRENT_TIMESTAMP')
       .onUpdate('CURRENT_TIMESTAMP')
-  }
-  timestamp(columnName:string, defaultValue?:'CURRENT_TIMESTAMP'|Date, nullable?:boolean):TimestampColumnDefinition {
-    let _default;
-    if (defaultValue instanceof Date) {
-      _default = defaultValue.toISOString()
-    } else if (typeof defaultValue === 'string') {
-      if (defaultValue !== 'CURRENT_TIMESTAMP') throw new Error('Invalid default value for timestamp()')
-      _default = defaultValue
-    }
-    const column = new TimestampColumnDefinition(columnName, _default, nullable)
-    this.columns.push(column)
-    return column
   }
 
   id(columnName:string = 'id'):ColumnDefinition {
@@ -167,56 +109,6 @@ export default abstract class ElegantTable {
     })
   }
 
-  smallInteger(columnName:string, length?:number, nullable?:boolean):ColumnDefinition {
-    const column = new NumberColumnDefinition(columnName, 'SMALLINT', length, undefined, nullable)
-    this.columns.push(column)
-    return column
-  }
-
-  bigInteger(columnName:string, length?:number, nullable?:boolean):ColumnDefinition {
-    const column = new NumberColumnDefinition(columnName, 'BIGINT', length, undefined, nullable)
-    this.columns.push(column)
-    return column
-  }
-
-  integer(columnName:string, length?:number, nullable?:boolean):ColumnDefinition {
-    const column = new NumberColumnDefinition(columnName, 'INT', length, undefined, nullable)
-    this.columns.push(column)
-    return column
-  }
-
-  unsignedSmallInteger(columnName:string, length?:number, nullable?:boolean):ColumnDefinition {
-    const column = new NumberColumnDefinition(columnName, 'SMALLINT', length, undefined, nullable)
-    column.unsigned()
-    this.columns.push(column)
-    return column
-  }
-
-  unsignedInteger(columnName:string, length?:number, nullable?:boolean):ColumnDefinition {
-    const column = new NumberColumnDefinition(columnName, 'INT', length, undefined, nullable)
-    column.unsigned()
-    this.columns.push(column)
-    return column
-  }
-
-  unsignedBigInteger(columnName:string, length?:number, nullable?:boolean):ColumnDefinition {
-    const column = new NumberColumnDefinition(columnName, 'BIGINT', length, undefined, nullable)
-    column.unsigned()
-    this.columns.push(column)
-    return column
-  }
-  decimal(columnName:string, precision:number, scale:number, nullable?:boolean):ColumnDefinition {
-    const length = Number(`${precision}.${scale}`)
-    const column = new NumberColumnDefinition(columnName, 'DECIMAL', length, undefined, nullable)
-    this.columns.push(column)
-    return column
-  }
-
-  float(columnName:string, length?:number, nullable?:boolean):ColumnDefinition {
-    const column = new NumberColumnDefinition(columnName, 'FLOAT', length, undefined, nullable)
-    this.columns.push(column)
-    return column
-  }
 
   enum(name:string, values:Scalar[]):CheckColumnDefinition {
     let column = new StringColumnDefinition(name, 0)
@@ -234,6 +126,8 @@ export default abstract class ElegantTable {
   abstract boolean(columnName:string, defaultValue?:boolean, nullable?:boolean):ColumnDefinition
 
   abstract json(columnName:string, defaultValue?: any, nullable?:boolean):ColumnDefinition
+
+  abstract fn(name:string, createFunction: (fn:ElegantFunction) => void)
 
   collation(collation:Collation):ElegantTable {
     this.$.collation = collation

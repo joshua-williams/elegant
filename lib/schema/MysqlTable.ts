@@ -7,6 +7,7 @@ import {
   StringColumnDefinition,
   TimestampColumnDefinition, YearColumnDefinition
 } from './ColumnDefinitions.js';
+import ElegantFunction from './ElegantFunction.js';
 
 export default class MysqlTable extends ElegantTable {
   protected enclosure: string = '`';
@@ -66,6 +67,31 @@ export default class MysqlTable extends ElegantTable {
     return column
   }
 
+  fn(name:string, fn:(fn:ElegantFunction) => void) {
+    let elegantFunction = new ElegantFunction(name)
+    fn(elegantFunction)
+    this.functions.push(elegantFunction)
+  }
+
+  functionsToStatement() {
+    return this.functions.map(fn => this.functionToStatement(fn)).join('\n\n')
+  }
+
+  protected functionToStatement(fn:ElegantFunction) {
+    let sql = `DELIMITER $$\n\nCREATE FUNCTION \`${fn.name}\``
+    let inputSql = fn.params.getColumns()
+      .map(column => {
+        return `${column.name} ${column.type}`
+      })
+      .join(', ')
+    sql += inputSql ? `(${inputSql})\n` : '()\n'
+    sql += `RETURNS ${fn.returns.$.returns.type}\n`
+    sql += `READS SQL DATA\nBEGIN\n\n`
+    sql += fn.body.trim()
+    sql += `\n\nEND$$\n\n`
+    sql += 'DELIMITER ;'
+    return sql
+  }
   protected columnsToSql() {
     let sql = '  ' + this.columns
       .filter(column => !(column instanceof ConstraintColumnDefinition))

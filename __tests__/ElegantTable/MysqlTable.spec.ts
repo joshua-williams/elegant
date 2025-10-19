@@ -140,4 +140,21 @@ describe('MysqlTable', () => {
       expect(sql).toEqual(expected)
     })
   })
+
+  describe('fn', () => {
+    it('should execute callback with params', () => {
+      table.fn('get_user_email', (fn) => {
+        fn.params.int('user_id')
+        fn.body = `
+            DECLARE email_address VARCHAR(255);
+            SELECT email into email_address FROM users WHERE id = user_id;
+            RETURN email_address
+            `
+        fn.returns.string()
+      })
+      const expected = "DELIMITER $$\n\nCREATE FUNCTION `get_user_email`(user_id INT)\nRETURNS VARCHAR(255)\nREADS SQL DATA\nBEGIN\n\nDECLARE email_address VARCHAR(255);\n            SELECT email into email_address FROM users WHERE id = user_id;\n            RETURN email_address\n\nEND$$\n\nDELIMITER ;";
+      const sql = table.functionsToStatement()
+      expect(sql).toEqual(expected)
+    })
+  })
 });

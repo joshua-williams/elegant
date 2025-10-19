@@ -511,6 +511,127 @@ export class DropOldTables extends Migration {
 }
 ```
 
+## Creating Functions
+
+Create stored functions within your migrations using the `table.fn()` method. Functions are reusable database routines that return a single value and can be called from queries.
+
+### Basic Function Definition
+
+```typescript 
+await this.schema.fn('get_user_email', (fn) => { 
+  fn('get_user_email', (fn) => { 
+    fn.params.int('user_id'); 
+    fn.body = `
+      DECLARE email_address VARCHAR(255); 
+      SELECT email INTO email_address FROM users WHERE id = user_id; 
+      RETURN email_address; 
+    `;
+    fn.returns.string();
+  });
+})
+```
+
+**Return Type** - Specify what the function returns using `fn.returns`:
+```typescript 
+// Returns integer 
+fn.returns.int(); 
+// Returns VARCHAR(255) 
+fn.returns.string(); 
+// Returns DECIMAL(10,2) 
+fn.returns.decimal(10, 2); 
+// Returns boolean
+fn.returns.boolean(); 
+```
+### Complete Examples
+
+**Calculate User Statistics:**
+
+```typescript 
+await this.schema.fn('calculate_user_posts_count', (fn) => { 
+  fn.params.int('user_id');
+  fn.body = `
+    DECLARE post_count INT; 
+    SELECT COUNT(*) INTO post_count 
+    FROM posts WHERE posts.user_id = user_id 
+      AND posts.deleted_at IS NULL; 
+   RETURN post_count; 
+  `;
+  fn.returns.int()
+});
+```
+**Format User Display Name:**
+
+```typescript 
+await this.schema.fn('get_user_display_name', (fn) => { 
+  fn.params.int('user_id');
+  fn.body = `
+    DECLARE display_name VARCHAR(255); 
+    SELECT CONCAT(first_name, ' ', last_name) INTO display_name 
+    FROM users WHERE id = user_id; RETURN display_name;
+  `; 
+  fn.returns.string(); 
+});
+```
+
+### Multiple Parameters
+
+Functions can accept multiple parameters:
+
+```typescript 
+await this.schema.fn('calculate_discount_price', (fn) => { 
+  fn.params.decimal('original_price', 10, 2); 
+  fn.params.decimal('discount_percent', 5, 2); 
+  fn.body = `RETURN original_price * (1 - discount_percent / 100);`; 
+  fn.returns.decimal(10, 2); 
+});
+```
+
+### Using Functions in Queries
+
+Once created, you can call these functions in your queries:
+
+
+```typescript 
+// Using the query builder
+const email = await db.table('users') 
+  .selectRaw('get_user_email(id) as email') 
+     .where('id', userId) 
+  .first();
+// Using raw queries 
+const postCount = await db.raw( 'SELECT calculate_user_posts_count(?) as count', [userId] );
+```
+
+### Database Support
+
+Function creation is currently supported for:
+- **MySQL** - Full support
+- **MariaDB** - Full support
+- **PostgreSQL** - Syntax may differ, test thoroughly
+- **SQLite** - Not supported (SQLite uses a different approach for functions)
+
+### Best Practices
+
+1. **Keep Functions Simple** - Complex logic is often better in application code
+2. **Handle NULL Values** - Use `COALESCE()` or NULL checks
+3. **Name Descriptively** - Use clear names like `calculate_*` or `get_*`
+4. **Document Logic** - Add comments in complex function bodies
+5. **Test Thoroughly** - Functions are harder to debug than application code
+
+### Dropping Functions
+
+To remove a function in a migration's `down()` method:
+
+```typescript 
+async down() { 
+  await this.db.raw('DROP FUNCTION IF EXISTS get_user_email'); 
+  await this.db.raw('DROP FUNCTION IF EXISTS calculate_user_posts_count');
+}
+```
+
+> **Note:** Functions are database-specific features. If you need to support multiple database types, consider implementing the logic in your application code instead.
+> {style="note"}
+
+
 ## Running Migrations
 ### Execute All Pending Migrations
 Run all migrations that haven't been executed yet:
