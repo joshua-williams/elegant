@@ -130,7 +130,8 @@ const users = await db.select<User>( 'SELECT * FROM users WHERE active = ?', [tr
 When you need a single value instead of a full result set, use the `scalar` method:
 
 ```typescript
- const maxId = await db.scalar ('SELECT MAX(id) FROM users'); const userCount = await db.scalar('SELECT COUNT(*) FROM users WHERE active = ?', [true]);
+const maxId = await db.scalar ('SELECT MAX(id) FROM users'); 
+const userCount = await db.scalar('SELECT COUNT(*) FROM users WHERE active = ?', [true]);
 ```
 
 ### UPDATE Queries
