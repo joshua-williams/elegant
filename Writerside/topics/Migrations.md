@@ -625,8 +625,13 @@ To remove a function in a migration's `down()` method:
 
 ```typescript 
 async down() { 
+   await this.schema.dropFn('users')
+   // postgres requires you specify the parameters to drop function
+   await this.schema.dropFn('users', fn => {
+     fn.params.string('user_id')
+   })
+   // you can also run a raw query to drop the function
   await this.db.raw('DROP FUNCTION IF EXISTS get_user_email'); 
-  await this.db.raw('DROP FUNCTION IF EXISTS calculate_user_posts_count');
 }
 ```
 
