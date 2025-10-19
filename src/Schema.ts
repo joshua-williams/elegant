@@ -1,7 +1,10 @@
 import ElegantTable from '../lib/schema/ElegantTable.js';
 import Elegant from '../index.js';
 import {DropTable} from '../lib/schema/DropTable.js';
-import {DropSchemaClosure, SchemaClosure, SchemaDialect, SchemaOptions} from '../types.js';
+import {
+  DropSchemaClosure, ElegantFunctionClosure,
+  ElegantTableAction, SchemaClosure, SchemaOptions
+} from '../types.js';
 import MysqlTable from '../lib/schema/MysqlTable.js';
 import MariaDBTable from '../lib/schema/MariaDBTable.js';
 import PostgresTable from '../lib/schema/PostgresTable.js';
@@ -26,9 +29,21 @@ export default class Schema {
     this.$.db = db
     if (options) {
       if (options.autoExecute !== undefined) this.$.autoExecute = options.autoExecute
+      if (options.connection) this.$.connection = options.connection
     }
   }
 
+
+  private makeTable(tableName:string, action:ElegantTableAction) {
+    let table:ElegantTable;
+    switch(this.$.db.constructor.name.toLowerCase()) {
+      case 'mysql': table = new MysqlTable(tableName, action, this.$.db); break;
+      case 'mariadb': table = new MariaDBTable(tableName, action, this.$.db); break;
+      case "postgres": table = new PostgresTable(tableName, action, this.$.db); break;
+      case "sqlite": table = new SqliteTable(tableName, action, this.$.db); break;
+    }
+    return table;
+  }
   /**
    * Creates a new database table using the specified name and schema configuration.
    *
@@ -37,13 +52,8 @@ export default class Schema {
    * @return {Promise<void>} A promise that resolves when the table creation process is completed.
    */
   public async create(tableName:string, closure:SchemaClosure):Promise<any> {
-    let table:ElegantTable;
-    switch(this.$.db.constructor.name.toLowerCase()) {
-      case 'mysql': table = new MysqlTable(tableName, 'create', this.$.db); break;
-      case 'mariadb': table = new MariaDBTable(tableName, 'create', this.$.db); break;
-      case "postgres": table = new PostgresTable(tableName, 'create', this.$.db); break;
-      case "sqlite": table = new SqliteTable(tableName, 'create', this.$.db); break;
-    }
+    let table:ElegantTable = this.makeTable(tableName, 'create')
+
     this.$.tables.push(table)
     closure(table)
     if (this.$.autoExecute) {
@@ -51,6 +61,30 @@ export default class Schema {
       await this.$.db.statement(statement)
     }
     return Promise.resolve(true)
+  }
+
+  public async fn(name:string, closure:ElegantFunctionClosure) {
+    let table:ElegantTable = this.makeTable(name, 'create')
+    table.fn(name, closure)
+    this.$.tables.push(table)
+    if (this.$.autoExecute) {
+      const statementMap:Map<string,string[]> = (table as any).statements
+      const connection = table.constructor.name.toLowerCase().replace('table', '')
+      const [statement] = statementMap.get(connection)
+      await this.$.db.query(statement)
+    }
+  }
+
+  public async dropFn(name:string, closure?:ElegantFunctionClosure) {
+    let table:ElegantTable = this.makeTable(name, 'drop')
+    table.fn(name, closure)
+    this.tables.push(table)
+    if (this.$.autoExecute) {
+      const statementMap:Map<string,string[]> = (table as any).statements
+      const connection = table.constructor.name.toLowerCase().replace('table', '')
+      const [statement] = statementMap.get(connection)
+      await this.$.db.query(statement)
+    }
   }
 
   /**

@@ -520,27 +520,27 @@ Create stored functions within your migrations using the `table.fn()` method. Fu
 ```typescript 
 await this.schema.fn('get_user_email', (fn) => { 
   fn('get_user_email', (fn) => { 
-    fn.params.int('user_id'); 
+    fn.params.int('user_id_in');
+     fn.returns.string('email_out');
     fn.body = `
-      DECLARE email_address VARCHAR(255); 
-      SELECT email INTO email_address FROM users WHERE id = user_id; 
-      RETURN email_address; 
+      SELECT email INTO email_out FROM users WHERE id = user_id_in; 
+      RETURN email_out; 
     `;
-    fn.returns.string();
   });
 })
 ```
 
 **Return Type** - Specify what the function returns using `fn.returns`:
+
 ```typescript 
 // Returns integer 
-fn.returns.int(); 
+fn.returns.int('id'); 
 // Returns VARCHAR(255) 
-fn.returns.string(); 
+fn.returns.string('name'); 
 // Returns DECIMAL(10,2) 
-fn.returns.decimal(10, 2); 
+fn.returns.decimal('weight', 10, 2); 
 // Returns boolean
-fn.returns.boolean(); 
+fn.returns.boolean('is_active'); 
 ```
 ### Complete Examples
 
@@ -548,17 +548,19 @@ fn.returns.boolean();
 
 ```typescript 
 await this.schema.fn('calculate_user_posts_count', (fn) => { 
-  fn.params.int('user_id');
+  fn.params.int('user_id_in');
+   fn.returns.int('post_count')
   fn.body = `
-    DECLARE post_count INT; 
     SELECT COUNT(*) INTO post_count 
-    FROM posts WHERE posts.user_id = user_id 
+    FROM posts WHERE posts.user_id = user_id_in 
       AND posts.deleted_at IS NULL; 
    RETURN post_count; 
   `;
-  fn.returns.int()
 });
 ```
+* `fn.params `are automatically declared with the respective type and available within the function body 
+* `fn.returns` - the return type is automatically defined and is available withint the function body
+
 **Format User Display Name:**
 
 ```typescript 

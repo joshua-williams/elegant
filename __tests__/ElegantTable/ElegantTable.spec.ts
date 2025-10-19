@@ -13,7 +13,7 @@ describe('Elegant Tables', () => {
     CreateTableTestSuite('Postgres', PostgresTable)
   })
 
-  describe('Base Elegant Table: Alter', () => {
+  describe.skip('Base Elegant Table: Alter', () => {
     // AlterTableTestSuite('MySQL', MysqlTable)
     // AlterTableTestSuite('MariaDB', MariaDBTable)
     // AlterTableTestSuite('Postgres', PostgresTable)

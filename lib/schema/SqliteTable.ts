@@ -5,6 +5,7 @@ import {
   GeneralColumnDefinition,
   NumberColumnDefinition,
 } from './ColumnDefinitions.js';
+import ElegantFunction from './ElegantFunction.js';
 
 export default class SqliteTable extends ElegantTable {
 
@@ -16,6 +17,14 @@ export default class SqliteTable extends ElegantTable {
   }
 
   json(columnName: string, defaultValue?: any, nullable?: boolean): ColumnDefinition {
+    throw new Error('Method not implemented.');
+  }
+
+  fn(name: string, createFunction: (fn: ElegantFunction) => void) {
+    throw new Error('Method not implemented.');
+  }
+
+  functionToStatement(fn: ElegantFunction): string {
     throw new Error('Method not implemented.');
   }
 

@@ -50,7 +50,7 @@ export const ElegantTestSuite = (connection:SchemaDialect) => {
       it('should insert', async () => {
         const email = Math.random().toString(36).substring(7) + '@gmail.com'
         const password = Math.random().toString(36).substring(7)
-        const query = `insert into users (name, email, password, phone) values (${p(4)})`
+        const query = `insert into users (${e(connection, 'name')}, email, password, phone) values (${p(4)})`
         return db.insert(query, ['test',email, password, '555-555-5555'])
           .then(res => {
             expect(typeof res).toBe('number')
@@ -198,6 +198,15 @@ export const ElegantTestSuite = (connection:SchemaDialect) => {
       })
     })
 
+    const e = (connection:string, s:string) => {
+      switch(connection.toLowerCase()) {
+        case 'mysql':
+        case 'mariadb':
+          return `\`${s}\``
+        default:
+          return `"${s}"`
+      }
+    }
     const t = (num:number) => {
       switch(connection) {
         case 'mysql':

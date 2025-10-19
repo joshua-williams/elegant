@@ -54,7 +54,8 @@ export default abstract class Elegant{
     name = name ? name : config.default;
     // check if the connection name is valid
     if (!name) throw new Error('No database connection name provided')
-    const dialect = config.connections[name].dialect
+    const connectionConfig = config.connections[name]
+    const dialect = connectionConfig.dialect
     let elegant:Elegant;
     switch (dialect) {
       case 'mariadb':
@@ -76,7 +77,6 @@ export default abstract class Elegant{
       default:
         throw new Error(`Unsupported database driver: ${dialect}`)
     }
-    const connectConfig:ConnectionConfig = config.connections[name]
-    return elegant.connect(connectConfig)
+    return elegant.connect(connectionConfig)
   }
 }

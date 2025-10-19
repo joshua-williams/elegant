@@ -23,7 +23,7 @@ export default abstract class ElegantTable extends ElegantTableCore {
   protected enclosure = '"';
   protected action:ElegantTableAction = 'create'
   protected columns:ColumnDefinition[] = []
-  protected functions: ElegantFunction[] = []
+  protected statements: Map<string, string[]> = new Map()
   protected tableName:string
   protected schema:string
   protected db:Elegant
@@ -128,6 +128,8 @@ export default abstract class ElegantTable extends ElegantTableCore {
   abstract json(columnName:string, defaultValue?: any, nullable?:boolean):ColumnDefinition
 
   abstract fn(name:string, createFunction: (fn:ElegantFunction) => void)
+
+  abstract functionToStatement(fn:ElegantFunction):string
 
   collation(collation:Collation):ElegantTable {
     this.$.collation = collation
@@ -234,4 +236,7 @@ export default abstract class ElegantTable extends ElegantTableCore {
     return
   }
 
+  public getStatements():Map<string, string[]> {
+    return this.statements
+  }
 }

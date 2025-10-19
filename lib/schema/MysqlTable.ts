@@ -69,29 +69,42 @@ export default class MysqlTable extends ElegantTable {
 
   fn(name:string, fn:(fn:ElegantFunction) => void) {
     let elegantFunction = new ElegantFunction(name)
-    fn(elegantFunction)
-    this.functions.push(elegantFunction)
+    if (typeof fn === 'function') fn(elegantFunction)
+    const sql = this.functionToStatement(elegantFunction)
+    const connection = this.constructor.name.toLowerCase().replace('table', '')
+    if (this.statements.has(connection)) {
+      this.statements.get(connection).push(sql)
+    } else {
+      this.statements.set(connection, [sql])
+    }
   }
 
-  functionsToStatement() {
-    return this.functions.map(fn => this.functionToStatement(fn)).join('\n\n')
+  functionToStatement(fn:ElegantFunction):string {
+    if (this.action === 'drop') {
+      // DROP FUNCTION
+      return `DROP FUNCTION \`${fn.name}\`;`
+    } else if (this.action === 'alter') {
+      // UPDATE FUNCTION
+      throw new Error(`Feature not supported: update function`)
+    } else if (this.action === 'create') {
+      // CREATE FUNCTION
+      let sql = `CREATE FUNCTION \`${fn.name}\``
+      let inputSql = fn.params.getColumns()
+        .map(column => {
+          return `${column.name} ${column.type}`
+        })
+        .join(', ')
+      sql += inputSql ? `(${inputSql})\n` : '()\n'
+      sql += `RETURNS ${fn.returns.$.returns.type}\n`
+      sql += `READS SQL DATA\n`
+      sql += 'BEGIN\n'
+      sql += `DECLARE ${fn.returns.$.returns.name} ${fn.returns.$.returns.type};\n`
+      sql += '  ' + fn.getBody().trim()
+      sql += `\nEND;`
+      return sql
+    }
   }
 
-  protected functionToStatement(fn:ElegantFunction) {
-    let sql = `DELIMITER $$\n\nCREATE FUNCTION \`${fn.name}\``
-    let inputSql = fn.params.getColumns()
-      .map(column => {
-        return `${column.name} ${column.type}`
-      })
-      .join(', ')
-    sql += inputSql ? `(${inputSql})\n` : '()\n'
-    sql += `RETURNS ${fn.returns.$.returns.type}\n`
-    sql += `READS SQL DATA\nBEGIN\n\n`
-    sql += fn.body.trim()
-    sql += `\n\nEND$$\n\n`
-    sql += 'DELIMITER ;'
-    return sql
-  }
   protected columnsToSql() {
     let sql = '  ' + this.columns
       .filter(column => !(column instanceof ConstraintColumnDefinition))

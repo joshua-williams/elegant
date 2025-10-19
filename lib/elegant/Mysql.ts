@@ -37,7 +37,7 @@ export default class Mysql extends Elegant {
    * @throws {Error} If the connection fails.
    */
   async connect(connectConfig: ConnectionConfig): Promise<Elegant> {
-    const config = {...connectConfig}
+    const config = {...connectConfig, multipleStatements:true}
     delete config.dialect
     this.connection = await createConnection(config)
     return this as unknown as Elegant

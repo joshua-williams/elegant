@@ -92,7 +92,10 @@ export const CreateTableTestSuite = (tableName:string, Table:ElegantTableConstru
       })
 
       describe('unsigned', () => {
-        if (['postgres', 'sqlite'].includes(tableName.toLowerCase())) return
+        if (['postgres', 'sqlite'].includes(tableName.toLowerCase())) {
+          it('not supported', () => {})
+          return
+        }
         it('unsigned smallint', async () => {
           table.unsignedSmallInteger('id')
           const sql = await table.toStatement()

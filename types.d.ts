@@ -1,6 +1,9 @@
 import Elegant, {Migration} from './index.js';
 import ElegantTable from './lib/schema/ElegantTable.js';
 import {DropTable} from './lib/schema/DropTable.js';
+import ElegantFunction from './lib/schema/ElegantFunction.js';
+import ElegantTableCore from './lib/schema/ElegantTableCore.js';
+import ElegantFunctionReturn from './lib/schema/ElegantFunctionReturn.js';
 
 type ElegantConfig = {
   default: string,
@@ -30,7 +33,8 @@ type ConnectionConfig = {
 
 type Scalar = string | number | boolean | null
 type SchemaOptions = {
-  autoExecute?: boolean
+  autoExecute?: boolean,
+  connection?: string
 }
 type SchemaClosure = (table:ElegantTable) => void;
 type DropSchemaClosure = (table:DropTable) => void;
@@ -88,8 +92,15 @@ declare module 'ascii-table' {
     toString(): string
   }
 }
-
+type ElegantFunctionClosure = (fn:ElegantFunction)=>void
 type ElegantTableConstructor = new (tableName:string, action:ElegantTableAction, db:Elegant) => ElegantTable
+type ElegantFunctionMeta = {
+  action: ElegantTableAction
+  name:string
+  params:ElegantTableCore
+  returns:ElegantFunctionReturn,
+  body: string
+}
 type ElegantTableAction = 'create'|'alter'|'drop'
 type ComparisonOperator = '=' | '<>' | '!=' | '<' | '>' | '<=' | '>=' | 'IN' | 'NOT IN' | 'LIKE' | 'BETWEEN' | 'IS NULL' | 'IS NOT NULL'
 type QueryCondition = {

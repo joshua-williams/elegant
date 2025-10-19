@@ -1,5 +1,6 @@
 import ElegantTable from './ElegantTable.js';
 import ColumnDefinition from './ColumnDefinition.js';
+import ElegantFunction from './ElegantFunction.js';
 
 export class DropTable extends ElegantTable {
   _ifExists:boolean = false;
@@ -16,7 +17,9 @@ export class DropTable extends ElegantTable {
     return this
   }
   json(columnName: string, defaultValue?: any, nullable?: boolean): ColumnDefinition { return }
-
   protected getDatabaseColumns(): Promise<any[]> { return }
   protected columnsToSql(): string { return }
+  fn(name: string, createFunction: (fn: ElegantFunction) => void) { return }
+  functionToStatement(fn: ElegantFunction): string { return }
+
 }

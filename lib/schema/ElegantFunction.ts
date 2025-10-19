@@ -1,9 +1,11 @@
 import ElegantTableCore from './ElegantTableCore.js';
 import ElegantFunctionReturn from './ElegantFunctionReturn.js';
+import {ElegantFunctionMeta} from '../../types.js';
 
 export default class ElegantFunction  {
 
-  private $ = {
+  private $:ElegantFunctionMeta = {
+    action: 'create',
     name: '',
     params: new ElegantTableCore(),
     returns: new ElegantFunctionReturn(),
@@ -18,18 +20,25 @@ export default class ElegantFunction  {
     return this.$.name
   }
 
-  get body() {
+  body(body:string) {
+    this.$.body = body
+  }
+
+  getBody() {
     return this.$.body
   }
 
-  set body(value:string) {
-    this.$.body = value;
+  drop() {
+    this.$.action = 'drop'
+    return this
   }
-
   get returns() {
     return this.$.returns
   }
   get params() {
     return this.$.params
+  }
+  get action() {
+    return this.$.action
   }
 }

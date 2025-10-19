@@ -20,7 +20,7 @@
     "elegant": "./dist/cli/elegant-cli.js"
   },
   "scripts": {
-    "test": "vitest run",
+    "test": "vitest run __tests__/ElegantTable __tests__/Elegant __tests__/Schema __tests__/QueryBuilder __tests__/util __tests__/Model",
     "test:watch": "vitest watch",
     "test:coverage": "vitest run --coverage",
     "build": "tsc",

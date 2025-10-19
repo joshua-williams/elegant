@@ -5,6 +5,7 @@ describe('Model', () => {
   beforeAll(async () => {
     const db = await Elegant.connection()
     schema = new Schema(db)
+    await schema.drop('users', table => table.ifExists())
     await schema.create('users', (table) => {
       table.id()
       table.string('first_name')
@@ -16,7 +17,7 @@ describe('Model', () => {
   afterAll(async () => {
     await schema.disconnect()
   })
-  
+
   describe('fill', () => {
     it('should not fill by default', async () => {
       class UserModel extends Model {}

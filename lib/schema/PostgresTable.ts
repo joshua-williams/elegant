@@ -4,10 +4,11 @@ import {
   BooleanColumnDefinition, ConstraintColumnDefinition,
   GeneralColumnDefinition,
   NumberColumnDefinition,
-  TimestampColumnDefinition
 } from './ColumnDefinitions.js';
+import ElegantFunction from './ElegantFunction.js';
 
 export default class PostgresTable extends ElegantTable {
+
   protected enclosure: string = '"';
 
   boolean(columnName: string, defaultValue?: boolean, nullable?: boolean): ColumnDefinition {
@@ -28,6 +29,48 @@ export default class PostgresTable extends ElegantTable {
     }
     this.columns.push(column)
     return column
+  }
+
+  fn(name:string, fn:(fn:ElegantFunction) => void) {
+    let elegantFunction = new ElegantFunction(name)
+    if (typeof fn === 'function') fn(elegantFunction)
+    const sql = this.functionToStatement(elegantFunction)
+    const connection = this.constructor.name.toLowerCase().replace('table', '')
+    if (this.statements.has(connection)) {
+      this.statements.get(connection).push(sql)
+    } else {
+      this.statements.set(connection, [sql])
+    }
+  }
+
+  functionToStatement(fn: ElegantFunction): string {
+    if (this.action === 'drop') {
+      // DROP FUNCTION
+      let sql = `DROP FUNCTION "${fn.name}"`
+      const typeSql = (fn.params as any).columns
+        .map(column => column.type)
+        .join(', ')
+      sql += typeSql ? `(${typeSql})` : '()'
+      return sql
+    } else if (this.action === 'alter') {
+      // UPDATE FUNCTION
+    } else if (this.action === 'create') {
+      // CREATE FUNCTION
+      let sql = `CREATE FUNCTION "${fn.name}"`
+      let inputSql = fn.params.getColumns()
+        .map(column => {
+          return `${column.name} ${column.type}`
+        })
+        .join(', ')
+      sql += inputSql ? `(${inputSql})\n` : '()\n'
+      sql += `RETURNS ${fn.returns.$.returns.type} AS $$\n`
+      sql += `DECLARE\n  ${fn.returns.$.returns.name} ${fn.returns.$.returns.type};\n`
+      sql += `BEGIN\n`
+      sql += `${fn.getBody()}\n`
+
+      sql+= `END;\n$$ LANGUAGE plpgsql`
+      return sql
+    }
   }
 
   protected columnsToSql() {
