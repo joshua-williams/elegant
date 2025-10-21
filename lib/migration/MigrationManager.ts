@@ -44,10 +44,14 @@ export class MigrationManager {
    *                                       Use 'asc' for ascending order or 'desc' for descending order.
    * @return {MigrationFile[]} Array of migration files sorted in the specified order.
    */
-  protected getMigrationFiles(order:'asc'|'desc' = 'asc'):MigrationFile[] {
-    const migrationFiles = fs.readdirSync(this.migrationPath())
+  protected getMigrationFiles(order:'asc'|'desc' = 'asc', filter?:(file:string)=>boolean):MigrationFile[] {
+    let migrationFiles:any = fs.readdirSync(this.migrationPath())
       .filter(file => file.endsWith('.migration.js') || file.endsWith('.migration.ts'))
       .filter(file => file.match(/^\d+\./))
+    if (filter) {
+      migrationFiles = migrationFiles.filter(filter)
+    }
+    migrationFiles = migrationFiles
       .map(file => this.pathToMigrationFile(file))
       .sort()
     return (order === 'desc') ? migrationFiles.reverse() : migrationFiles
@@ -63,15 +67,14 @@ export class MigrationManager {
    * @param {'asc'|'desc'} [order='asc'] - The order in which migration files should be retrieved. Use 'asc' for ascending or 'desc' for descending order.
    * @return {Promise<MigrationFileMap[]>} A promise that resolves to an array of migration file mappings, each including the migration instance and file information.
    */
-  protected async getMigrationFileMap(order:'asc'|'desc' = 'asc'):Promise<MigrationFileMap[]> {
-    const config = await getAppConfig()
-    const migrationFiles = this.getMigrationFiles(order)
+  protected async getMigrationFileMap(order:'asc'|'desc' = 'asc', filter?:(file:string)=>boolean):Promise<MigrationFileMap[]> {
+    const migrationFiles = this.getMigrationFiles(order,filter)
     const migrations:MigrationFileMap[] = []
     for (const file of migrationFiles) {
       const fileUrl = pathToFileURL(file.path).href
       const {default:MigrationClass} = await import(fileUrl)
       const migration:Migration = new MigrationClass()
-      const connectionName = (migration as any).connection || config.default
+      const connectionName = (migration as any).connection || this.config.default
 
       let connection;
       try {

@@ -87,12 +87,25 @@ Before running queries, establish a connection to your database:
 import Elegant from '@pristine/elegant';
 const db = await Elegant.connection();
 ```
+In most applications, a single database instance is created and shared across multiple services throughout the application lifecycle. Elegant elegantly implements the singleton design pattern to ensure efficient resource management and connection reuse:
+```typescript
+const db = await Elegant.singleton();
+```
 
 To use a specific connection (other than the default):
 ```typescript 
 const db = await Elegant.connection('postgres');
 ```
 
+Gracefully disconnect from all pooled Elegant database instances that were instantiated using the singleton method:
+```typescript
+const db = await Elegant.connection()
+await db.disconnect()
+```
+Disconnect from all Elegant database instances that were created with the `singleton` method:
+```typescript
+await Elegant.disconnect()
+```
 ### SELECT Queries
 
 Retrieve data using the `select` method:

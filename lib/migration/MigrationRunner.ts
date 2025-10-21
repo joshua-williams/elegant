@@ -8,10 +8,14 @@ export default class MigrationRunner extends MigrationManager {
   public async run():Promise<MigrationResult[]> {
     const results:MigrationResult[] = []
     const batchId:number = Date.now()
-    const migrations =  await this.getMigrationFileMap()
+    let filter
+    try {
+      const lastMigration = await this.lastMigration()
+      filter = (f) => f > lastMigration.timestamp
+    } catch (error) {}
+    const migrations =  await this.getMigrationFileMap('asc', filter)
       .then(migrations => migrations.map(m => m.migration))
     const timestamp = Date.now()
-
     for (const migration of migrations) {
       const result:MigrationResult = new MigrationResult({
         name: migration.constructor.name,
@@ -38,7 +42,6 @@ export default class MigrationRunner extends MigrationManager {
         result.statement = statement
         result.duration = Date.now() - timestamp
         results.push(result)
-        await this.saveResults(results)
       } catch (error) {
         result.status = 'error'
         result.error = error.message
@@ -50,6 +53,7 @@ export default class MigrationRunner extends MigrationManager {
         results.push(result);
       }
     }
+    await this.saveResults(results)
     return results;
   }
 
@@ -92,6 +96,10 @@ export default class MigrationRunner extends MigrationManager {
     }
     await this.saveResults(results)
     return results;
+  }
+
+  lastMigration():Promise<any> {
+    return this.db.select('select * from elegant_migrations order by created_at desc limit 1')
   }
 
   async saveResults(results:MigrationResult[]) {
