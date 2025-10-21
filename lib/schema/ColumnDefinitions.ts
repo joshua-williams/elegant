@@ -138,6 +138,7 @@ export class TimestampColumnDefinition extends ColumnDefinition {
     } else {
       this.$.onUpdate = `'${value}'`
     }
+    return this
   }
 }
 

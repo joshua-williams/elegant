@@ -8,20 +8,22 @@ export default class MigrationRunner extends MigrationManager {
   public async run():Promise<MigrationResult[]> {
     const results:MigrationResult[] = []
     const batchId:number = Date.now()
-    const migrations =  await this.getMigrations()
+    const migrations =  await this.getMigrationFileMap()
       .then(migrations => migrations.map(m => m.migration))
     const timestamp = Date.now()
 
     for (const migration of migrations) {
-      const result = new MigrationResult(
-        migration.constructor.name,
+      const result:MigrationResult = new MigrationResult({
+        name: migration.constructor.name,
         batchId,
-        'migrate',
-        'success',
-        undefined,
+        action: 'migrate',
+        status: 'success',
+        error: undefined,
         timestamp,
-        Date.now() - timestamp
-      );
+        statement: undefined,
+        created_at: undefined,
+        duration: Date.now() - timestamp
+      });
       if (!migration.shouldRun()) {
         result.status = 'skip'
         results.push(result)
@@ -29,25 +31,32 @@ export default class MigrationRunner extends MigrationManager {
       }
       try {
         await migration.up()
+        let statement = ''
+        for (const table in migration.schema.tables) {
+          statement += await migration.schema.tables[table].toStatement()
+        }
+        result.statement = statement
         result.duration = Date.now() - timestamp
         results.push(result)
         await this.saveResults(results)
-        await migration.disconnect()
       } catch (error) {
         result.status = 'error'
         result.error = error.message
+        let statement:string = ''
+        for (const table in migration.schema.tables) {
+          statement += await migration.schema.tables[table].toStatement() + '\n\n'
+        }
+        result.statement = statement
         results.push(result);
-        await migration.disconnect()
       }
     }
-
     return results;
   }
 
   public async rollback():Promise<MigrationResult[]> {
     const results:MigrationResult[] = []
     const batchId:number = Date.now()
-    const migrations =  await this.getMigrations('desc')
+    const migrations =  await this.getMigrationFileMap('desc')
       .then(migrations => {
         return migrations.map(m => m.migration)
           .filter(m => m.constructor.name !== 'CreateElegantMigrationTable')
@@ -55,15 +64,17 @@ export default class MigrationRunner extends MigrationManager {
     const timestamp = Date.now()
 
     for (const migration of migrations) {
-      const result = new MigrationResult(
-        migration.constructor.name,
+      const result = new MigrationResult({
+        name: migration.constructor.name,
         batchId,
-        'rollback',
-        'success',
-        undefined,
+        action: 'rollback',
+        status: 'success',
+        error: undefined,
         timestamp,
-        Date.now() - timestamp
-      );
+        created_at: undefined,
+        statement: undefined,
+        duration: Date.now() - timestamp
+      });
       if (!migration.shouldRun()) {
         result.status = 'skip'
         results.push(result)
@@ -84,11 +95,11 @@ export default class MigrationRunner extends MigrationManager {
   }
 
   async saveResults(results:MigrationResult[]) {
-    const db = await Elegant.connection()
+    const db = await Elegant.singleton()
     for (const result of results) {
       const {name, batchId, action, status, error, duration, created_at} = result
-      const params = [name, batchId, action, status, error, duration, created_at]
-      const query = `INSERT INTO elegant.elegant_migrations (name, batchId, action, status, error, duration, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)`
+      const params = [name, batchId, action, status, error, duration]
+      const query = `INSERT INTO elegant.elegant_migrations (name, batchId, action, status, error, duration) VALUES (?, ?, ?, ?, ?, ?)`
       await db.query(query, params)
     }
   }

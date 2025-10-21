@@ -14,7 +14,7 @@ Database migrations are version control for your database schema. They allow you
 
 Elegant's migration system provides a database-agnostic API that works consistently across MySQL, MariaDB, PostgreSQL, and SQLite.
 
-## Creating Migrations
+## Generating Migrations
 
 ### Generate Migration Files
 
@@ -23,6 +23,7 @@ Use the `make:migration` command to create a new migration file:
 ```bash
 elegant make:migration CreateUsersTable
 ```
+
 
 This generates a timestamped migration file in your `resources/database/migrations` directory:
 ```bash

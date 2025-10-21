@@ -40,6 +40,8 @@ export default{
     directory: 'resources/database/seeds',
   },
   models: {
-    directory: 'resources/database/models',
+    lazyLoading: true,
+    strictAttributes: true,
+    directory: 'resources/database/models'
   },
 }

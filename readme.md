@@ -48,6 +48,7 @@ Add Elegant commands to your `package.json` for quick access:
 {
   "scripts": {
     "db:migrate": "elegant migrate",
+    "make:model": "elegant make:model",
     "db:rollback": "elegant migrate:rollback",
     "db:status": "elegant migrate:status",
     "db:make:migration": "elegant make:migration"
@@ -69,7 +70,7 @@ Elegant provides an initialization command that scaffolds your database configur
 
 #### Basic Initialization
 ```bash
-npx elegant init
+npx @pristine/elegant init
 ```
 
 #### Custom Migrations Directory

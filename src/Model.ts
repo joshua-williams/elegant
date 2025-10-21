@@ -1,10 +1,12 @@
 import Elegant from './Elegant.js';
 import QueryBuilder from './QueryBuilder.js';
 import {getAppConfig} from '../lib/config.js';
+import {ElegantConfig} from '../types.js';
 
 type ModelMeta = {
   db:Elegant,
   queryBuilder:QueryBuilder,
+  config:ElegantConfig
 }
 export default class Model {
   private initialized = false;
@@ -20,6 +22,7 @@ export default class Model {
   private $:ModelMeta = {
     db: undefined,
     queryBuilder: new QueryBuilder(),
+    config: undefined
   }
 
   constructor(db?:Elegant){
@@ -28,12 +31,22 @@ export default class Model {
     }
   }
 
-
   fill(attributes:Record<string, any>):Model {
-    if ( !this.fillable || !this.fillable.length) return this
+
+    if ( !this.fillable || !this.fillable.length) {
+      if (this.$.config.models.strictAttributes) {
+        throw new Error(`Model ${this.constructor.name} has no fillable attributes`)
+      }
+    }
     for (let key in attributes) {
       if (this.fillable.includes(key)) {
-        if (this.guarded && this.guarded.includes(key)) continue
+        if (this.guarded && this.guarded.includes(key)) {
+          if (this.$.config.models.strictAttributes) {
+            throw new Error(`Model ${this.constructor.name} cannot fill guarded attribute ${key}`)
+          } else {
+            continue
+          }
+        }
         this.attributes[key] = attributes[key]
       }
     }
@@ -50,8 +63,8 @@ export default class Model {
 
   async init():Promise<Model> {
     if (this.initialized) return this
+    await getAppConfig()
     await this.getConnection()
-
     for (const key of this.fillable) {
       Object.defineProperty(this, key, {
         enumerable: true,
@@ -70,8 +83,20 @@ export default class Model {
   private async getConnection() {
     if (this.initialized) return this.$.db
     const {default: connection} = await getAppConfig()
-    this.$.db = await Elegant.connection(this.connection || connection)
+    this.$.db = await Elegant.singleton(this.connection || connection)
     return this.$.db
+  }
+
+  private getMethods() {
+    const proto = Object.getPrototypeOf(this); // Get the prototype of the current instance
+    const propertyNames = Object.getOwnPropertyNames(proto); // Get all own property names of the prototype
+
+    // Filter to include only functions (methods) and exclude the constructor
+    const methods = propertyNames.filter(name => {
+      return typeof this[name] === 'function' && name !== 'constructor';
+    });
+
+    return methods;
   }
 
   disconnect() {

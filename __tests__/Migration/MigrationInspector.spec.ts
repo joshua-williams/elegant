@@ -1,13 +1,20 @@
 import MigrationInspector from '../../lib/migration/MigrationInspector.js';
-import {beforeAll} from 'vitest';
-
-let inspector:MigrationInspector = new MigrationInspector();
+import Elegant from '../../src/Elegant.js';
+import {getAppConfig} from '../../lib/config.js';
 
 describe('MigrationInspector', () => {
+  let inspector: MigrationInspector;
+
   beforeAll(async () => {
-    await inspector.init()
+    const db = await Elegant.connection()
+    const config = await getAppConfig()
+    inspector = new MigrationInspector(db, config)
+  })
+  afterAll(async() => {
+    await Elegant.disconnect()
   })
   it('getRanMigrations', async () => {
-
+    const status = await inspector.getStatus();
+    expect(status).toBeDefined()
   })
 });

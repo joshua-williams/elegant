@@ -1,31 +1,23 @@
 import {MigrationManager} from './MigrationManager.js';
-import {MigrationFile} from '../../types.js';
+import MigrationResult from './MigrationResult.js';
 
 export default class MigrationInspector extends MigrationManager {
 
-  // async getRanMigrations():Promise<MigrationFile[]> {
-  //   const lastMigrationFile = this.getLastRanMigration()
-  //   const migrationFileMaps =  await this.getMigrations()
-  //   return migrationFileMaps
-  //     .map((map) => {
-  //       const migrationFile = map.file
-  //       if (!map.constructor.shouldRun()) {
-  //         migrationFile.status = 'skip'
-  //         return migrationFile
-  //       }
-  //       migrationFile.status = this.getMigrationStatus(lastMigrationFile, migrationFile)
-  //       if (lastMigrationFile) {
-  //         if (migrationFile.date.getTime() <= lastMigrationFile.date.getTime()) {
-  //           migrationFile.status = 'success'
-  //         } else if (migrationFile.date.getTime() > lastMigrationFile.date.getTime()) {
-  //           migrationFile.status = 'outstanding'
-  //         }
-  //       } else {
-  //         migrationFile.status = 'outstanding'
-  //       }
-  //
-  //       return migrationFile
-  //     })
-  // }
+  async getStatus() {
 
+    const migrations:any[] = (await this.getMigrations())
+      .map( (migration:MigrationResult) => {
+        return {
+          date: migration.created_at,
+          name: migration.name,
+          status: migration.status,
+        }
+      })
+    const pending = this.getMigrationFiles()
+      .filter(m => !m.name.includes('CreateElegantMigrationTable'))
+      .filter(m1 => !migrations.find(m2 => m1.name === m2.name))
+      .map(m => ({...m, status: 'pending'}))
+    return [...pending, ...migrations]
+
+  }
 }

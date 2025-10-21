@@ -120,7 +120,7 @@ const generateTypeString = async (model:Model, config:ElegantConfig):Promise<str
 }
 const getDatabaseColumns = async (model:Model, config) => {
   const connection = (model as any).connection || config.default
-  const db = await Elegant.connection(connection)
+  const db = await Elegant.singleton(connection)
   const {dialect} = config.connections[connection]
   let Table:typeof MysqlTable| typeof MariaDBTable| typeof PostgresTable| typeof SqliteTable;
   switch (dialect) {

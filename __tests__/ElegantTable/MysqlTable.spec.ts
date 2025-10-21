@@ -133,6 +133,13 @@ describe('MysqlTable', () => {
       const expected = `CREATE TABLE \`users\` (\n  \`created_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE '${date.toISOString()}'\n)`
       expect(sql).toEqual(expected)
     })
+    it('timestamp with onUpdate CURRENT_TIMESTAMP', async () => {
+      table.timestamp('created_at', 'CURRENT_TIMESTAMP')
+        .onUpdate('CURRENT_TIMESTAMP')
+      const sql = await table.toStatement()
+      const expected = `CREATE TABLE \`users\` (\n  \`created_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP()\n)`
+      expect(sql).toEqual(expected)
+    })
     it('timestamps', async () => {
       table.timestamps()
       const expected = `CREATE TABLE \`users\` (\n  \`created_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n  \`updated_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP()\n)`

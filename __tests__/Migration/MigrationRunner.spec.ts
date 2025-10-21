@@ -1,8 +1,11 @@
 import MigrationRunner from '../../lib/migration/MigrationRunner.js';
+import Elegant from '../../src/Elegant.js';
+import {getAppConfig} from '../../lib/config.js';
 
 describe.skip('migration', async () => {
-  let runner:MigrationRunner = new MigrationRunner();
-  await runner.init()
+  const db = await Elegant.connection()
+  const config = await getAppConfig()
+  let runner:MigrationRunner = new MigrationRunner(db, config);
 
   describe('run', () => {
     it('should run migrations', async () => {

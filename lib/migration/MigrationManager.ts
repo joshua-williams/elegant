@@ -8,11 +8,9 @@ import {pathToFileURL} from 'url';
 import chalk from 'chalk';
 
 export class MigrationManager {
-  protected config:ElegantConfig;
-
-  async init() {
-    this.config = await getAppConfig()
-  }
+  constructor(
+    protected db:Elegant,
+    protected config:ElegantConfig) {}
 
   /**
    * Constructs and returns the migration path based on the provided subPath.
@@ -40,8 +38,11 @@ export class MigrationManager {
   }
 
   /**
-   * Retrieves the list of migration files in the migration directory.
-   * @return {MigrationFile[]} An array of migration files.
+   * Retrieves and sorts migration files from the specified migration path.
+   *
+   * @param {'asc'|'desc'} [order='asc'] - The order in which to sort the migration files.
+   *                                       Use 'asc' for ascending order or 'desc' for descending order.
+   * @return {MigrationFile[]} Array of migration files sorted in the specified order.
    */
   protected getMigrationFiles(order:'asc'|'desc' = 'asc'):MigrationFile[] {
     const migrationFiles = fs.readdirSync(this.migrationPath())
@@ -52,7 +53,17 @@ export class MigrationManager {
     return (order === 'desc') ? migrationFiles.reverse() : migrationFiles
   }
 
-  protected async getMigrations(order:'asc'|'desc' = 'asc'):Promise<MigrationFileMap[]> {
+  getMigrations() {
+    return this.db.select('select * from elegant_migrations order by created_at desc')
+  }
+  /**
+   * Retrieves a list of migration files and their corresponding migration classes,
+   * instantiates each migration, and attaches a database schema instance for processing.
+   *
+   * @param {'asc'|'desc'} [order='asc'] - The order in which migration files should be retrieved. Use 'asc' for ascending or 'desc' for descending order.
+   * @return {Promise<MigrationFileMap[]>} A promise that resolves to an array of migration file mappings, each including the migration instance and file information.
+   */
+  protected async getMigrationFileMap(order:'asc'|'desc' = 'asc'):Promise<MigrationFileMap[]> {
     const config = await getAppConfig()
     const migrationFiles = this.getMigrationFiles(order)
     const migrations:MigrationFileMap[] = []
@@ -64,7 +75,7 @@ export class MigrationManager {
 
       let connection;
       try {
-        connection = await Elegant.connection(connectionName)
+        connection = await Elegant.singleton(connectionName)
       } catch(err) {
         err.message += chalk.red(`Migration error while connecting to ${chalk.bold(connectionName)}\n`)
         err.message += `Update database credentials in ${chalk.bold('elegant.config.js')}`

@@ -10,9 +10,11 @@ export default class CreateElegantMigrationTable extends Migration {
       table.string('name')
       table.string('status', 90)
       table.text('error')
+      table.text('statement')
       table.timestamp('created_at')
-        .default('CURRENT_TIMESTAMP')
         .onUpdate('CURRENT_TIMESTAMP')
+        .default('CURRENT_TIMESTAMP')
+        .notNull()
     })
   }
   async down() {

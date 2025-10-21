@@ -9,6 +9,7 @@ const __dirname = path.dirname(__filename);
 
 
 export default abstract class Elegant{
+  private static pool: {[key:string]:Elegant} = {}
   public connection:any;
   protected config:ConnectionConfig;
 
@@ -78,5 +79,28 @@ export default abstract class Elegant{
         throw new Error(`Unsupported database driver: ${dialect}`)
     }
     return elegant.connect(connectionConfig)
+  }
+
+  public static async singleton(name?:string) {
+    if (!name) {
+      const config = await getAppConfig()
+      if (! config.default) throw new Error('No default database connection configured')
+      name = config.default
+    }
+    if (this.pool[name]) return this.pool[name]
+    const db = await Elegant.connection(name)
+    this.pool[name] = db
+    return db
+  }
+
+  public static async disconnect(name?:string):Promise<any> {
+    if (name) {
+      if ( ! this.pool[name] ) throw new Error(`No database connection name provided for ${name}`)
+      return this.pool[name].disconnect()
+    } else {
+      for (const db of Object.values(this.pool)) {
+        await db.disconnect()
+      }
+    }
   }
 }

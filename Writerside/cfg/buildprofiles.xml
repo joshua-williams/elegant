@@ -7,7 +7,15 @@
     <build-profile instance="elegant">
         <variables>
             <noindex-content>false</noindex-content>
+            <custom-css>custom.css</custom-css>
         </variables>
+
+        <footer>
+            <social type="github" href="https://github.com/joshua-williams/elegant"/>
+            <social type="linkedin" href="https://www.linkedin.com/in/joshua-williams-x/"></social>
+            <social type="email" href="elegant@pristine.technology"></social>
+            <link href="https://elegant.pristine.technology">Blog</link>
+        </footer>
     </build-profile>
     <build-profile instance="ec">
         <variables>
