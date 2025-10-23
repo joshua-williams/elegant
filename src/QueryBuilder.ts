@@ -65,9 +65,18 @@ export default class QueryBuilder {
     return this
   }
 
-  where(columnName:string, operator:Operator, value:Scalar) {
+  where(columnName:string, operator:Operator|Scalar, value?:Scalar) {
+    let _operator:Operator = '='
+    let _value:Scalar;
+    if (arguments.length === 2) {
+      _value = operator
+      _operator = '='
+    } else {
+      _operator = operator as Operator
+      _value = value
+    }
     this.$.previousCommand = 'where'
-    this.$.conditions.push(new QueryCondition(columnName, operator, value))
+    this.$.conditions.push(new QueryCondition(columnName, _operator, _value))
     return this
   }
 

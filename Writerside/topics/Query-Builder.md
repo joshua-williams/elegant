@@ -137,8 +137,7 @@ const avgAge = await db .table('users')
 
 ### Where Clauses
 
-Filter query results using `where` conditions:
-
+Use the query builder's `where` method to add conditional clauses to your queries. In its standard form, `where` accepts three arguments: the column name, a comparison operator (any operator supported by your database), and the value to compare against.
 ```typescript 
 // Basic where clause 
 const activeUsers = await db
@@ -149,8 +148,13 @@ const activeUsers = await db
 const results = await db 
   .table('users') 
   .where('status', '=', 'active') 
-  .where('subscription', '=', 'premium')
+  .and('subscription', '=', 'premium')
   .get();
+```
+
+For convenience, when checking equality, you can omit the operator and pass the value directly as the second argument. Elegant assumes the `=` operator by default:
+```typescript
+await db.table('users').where('name', 'jack').get()
 ```
 
 ### Comparison Operators
@@ -308,7 +312,7 @@ Restrict the number of records returned:
 
 ```typescript 
 // Get first 10
-users const users = await db 
+const users = await db 
   .table('users') 
   .limit(10) 
   .get();

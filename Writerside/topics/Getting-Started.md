@@ -134,7 +134,9 @@ interface User {
   active: boolean; 
 }
 const users = await db.select<User>( 'SELECT * FROM users WHERE active = ?', [true] );
-// TypeScript now knows the structure of users users.forEach(user => { console.log(user.email); // Type-safe access });
+  // TypeScript now knows the structure of users 
+   users.forEach(user => { console.log(user.email); // Type-safe access 
+});
 ```
 
 
@@ -187,7 +189,8 @@ const user = await db.select( 'SELECT * FROM users WHERE email = ?', [userInput]
 
 ```typescript
 // Dangerous - DO NOT DO THIS 
-const user = await db.select( SELECT * FROM users WHERE email = '${userInput}' );
+const email = 'no@email.com'
+const user = await db.select(`SELECT * FROM users WHERE email = '${email}'`)
 ```
 
 
@@ -210,7 +213,7 @@ await db.transaction(async (trx) => {
   await trx.insert('INSERT INTO orders (user_id, total) VALUES (?, ?)', [userId, total]);
   await trx.update('UPDATE inventory SET quantity = quantity - ? WHERE product_id = ?', [qty, productId]);
   await trx.insert('INSERT INTO order_items (order_id, product_id) VALUES (?, ?)', [orderId, productId]);
-// If any query fails, all changes are rolled back // If all succeed, changes are committed automatically });
+});
 ```
 
 

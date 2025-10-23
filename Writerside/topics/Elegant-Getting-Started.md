@@ -26,9 +26,8 @@ Generate corresponding type definitions for models based on database schema
 ```bash
 elegant make:types
 ```
-### Inspecting Models
-Sometimes it can be difficult to determine all of a model's available attributes and relationships just by skimming its code. Instead, try the `model:show` Elegant command, which provides a convenient overview of all the model's attributes and relations:
-
+### Inspecting Model Structure
+When working with complex models, understanding their complete structure—including all properties and connections—can be challenging through code inspection alone. The model:show command offers a quick solution by displaying a comprehensive summary of a model's attributes and relationships in an easy-to-read format:   
 ```bash
 elegant model:show
 ```
@@ -43,10 +42,8 @@ class User extends Model {}
 ```
 
 ### Table Names
-After glancing at the example above, you may have noticed that we did not tell Elegant which database table corresponds to our User model. By convention, the "snake case", plural name of the class will be used as the table name unless another name is explicitly specified. So, in this case, Elegant will assume the User model stores records in the users table, while an `SocialMediaLinks` model would store records in an `social_media_links` table.
-
-If your model's corresponding database table does not fit this convention, you may manually specify the model's table name by defining a table property on the model:
-
+By default, Elegant automatically determines which database table to use for each model through a naming convention. The framework converts the model's class name into lowercase "snake_case" and pluralizes it. For example, a User model maps to the users table, and a SocialMediaLinks model maps to the social_media_links table.
+When your database table doesn't follow this pattern, you can override the automatic mapping by defining a table property directly on your model:
 ```typescript
 import { Model } from '@pristine/elegant'
 
@@ -56,7 +53,7 @@ class User extends Model {
 ```
 
 ### Primary Keys
-Elegant will also assume that each model's corresponding database table has a primary key column named id. If necessary, you may define a protected `primaryKey` property on your model to specify a different column that serves as your model's primary key:
+By default, Elegant expects every database table to include a primary key column called id. To use a different column as your primary key, define a protected primaryKey property on your model:
 
 ```typescript
 import { Model } from '@pristine/elegant'
@@ -67,7 +64,7 @@ class User extends Model {
 ```
 
 ### Timestamps
-By default, Elegant expects `created_at` and `updated_at` columns to exist on your model's corresponding database table. Elegant will automatically set these column's values when models are created or updated. If you do not want these columns to be automatically managed by Elegant, you should define a `timestamps` property on your model with a value of false:
+By default, Elegant looks for `created_at` and `updated_at` columns in your model's database table. The framework automatically populates these columns whenever you create or modify a model. To disable this automatic timestamp management, set the `timestamps` property on your model to false:
 
 ```typescript
 import { Model } from '@pristine/elegant'
@@ -89,7 +86,7 @@ class User extends Model {
 ```
 
 ### Database Connections
-By default, all Elegant models will use the default database connection configured for your application. If you would like to specify a different connection that should be used when interacting with a particular model, you should define a $connection property on the model:
+All Elegant models use your application's `default` database connection unless configured otherwise. To specify which connection a model should use, define a `connection` property on that model:
 
 ```typescript
 import { Model } from '@pristine/elegant'
@@ -100,7 +97,7 @@ class User extends Model {
 ```
 
 ### Default Attribute Values
-By default, a newly instantiated model instance will not contain any attribute values. If you would like to define the default values for some of your model's attributes, you may define an `attributes` property on your model. Attribute values placed in the `attributes` array should be in their raw, "storable" format as if they were just read from the database:
+When you create a new model instance, its attributes start empty by default. To set initial values for specific attributes, define an `attributes` property on your model. Values in the `attributes` array must be in their raw database format—the same format used when retrieving data directly from the database:
 
 ```typescript
 import { Model } from '@pristine/elegant'
@@ -114,12 +111,10 @@ class User extends Model {
 ```
 
 ### Configuring Strictness
-Laravel offers several methods that allow you to configure Elegant's behavior and "strictness" in a variety of situations.
+Elegant provides configuration options to control its behavior and strictness across different scenarios.
+The `lazyLoading` option determines whether lazy loading is enabled. This is particularly useful for development environments—you can disable lazy loading during development to catch relationship loading issues early, while keeping it enabled in production to maintain normal operation even if lazy-loaded relationships slip through. Configure this setting in your `elegant.config.js` file.
 
-First, the `lazyLoading` configuration option indicates if lazy loading should be enabled. For example, you may wish to only disable lazy loading in non-production environments so that your production environment will continue to function normally even if a lazy loaded relationship is accidentally present in production code. Typically, this option can be configured in `elegant.config.js`.
-
-Also, you may instruct Elegant to throw an exception when attempting to fill an unfillable attribute by configuring `strictAttributes`. This can help prevent unexpected errors during local development when attempting to set an attribute that has not been added to the model's fillable array:
-
+The `strictAttributes` option makes Elegant throw an exception when you attempt to populate a non-fillable attribute. Enabling this during local development helps catch errors early when you try to set attributes that haven't been added to the model's fillable array:
 ```javascript 
 export default {
   default: 'mysql',
@@ -133,7 +128,7 @@ export default {
 ```
 
 ## Retrieving Models
-Once you have created a model and [its associated database table](Migrations.md#generating-migrations), you are ready to start retrieving data from your database. You can think of each Elegant model as a powerful [query builder](Query-Builder.md) allowing you to fluently query the database table associated with the model. The model's `all` method will retrieve all of the records from the model's associated database table:
+After creating a model and its corresponding database table, you can begin querying data. Each Elegant model functions as an advanced query builder, providing a fluent interface for interacting with its associated table. The `all` method fetches every record from the model's table:
 
 ```typescript
 // user.model.ts
@@ -151,7 +146,7 @@ const users = await User.all()
 ```
 
 #### Building Queries
-The Elegant `all` method will return all the results in the model's table. However, since each Elegant model serves as a [query builder](Query-Builder.md), you may add additional constraints to queries and then invoke the `get` method to retrieve the results:
+The `all` method returns every record from the model's table. Since Elegant models function as query builders, you can chain additional conditions onto your queries before calling the get method to fetch the results:
 
 ```typescript
 Users
@@ -164,13 +159,13 @@ Users
 >Since Elegant models are query builders, you should review all of the methods provided by Laravel's query builder. You may use any of these methods when writing your Elegant queries.
 
 #### Refreshing Models
-If you already have an instance of an Elegant model that was retrieved from the database, you can "refresh" the model using the fresh and refresh methods. The fresh method will re-retrieve the model from the database. The existing model instance will not be affected:
+When you have an existing Elegant model instance loaded from the database, you can update it with the latest data using the fresh and refresh methods. The fresh method fetches a new copy of the model from the database without modifying the current instance:
 
 ```typescript
 User.where('name','jack').first()
 User.refresh()
 ```
-The refresh method will re-hydrate the existing model using fresh data from the database. In addition, all of its loaded relationships will be refreshed as well:
+The refresh method updates the current model instance with fresh data from the database. Additionally, any loaded relationships are also refreshed:
 
 ```typescript
 User.where('name','jack').first()

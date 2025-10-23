@@ -17,20 +17,26 @@ export default new Command('make:model')
     if (!fs.existsSync(modelDir)) fs.mkdirSync(modelDir, {recursive: true})
     const template = getTemplate('model').replace('ModelClass', name)
     fs.writeFileSync(modelPath, template)
-    log(`ModelClass ${name} created`)
-      const db = await Elegant.singleton()
-      const generator = new TypeGenerator(db, config)
-      try {
-          const {result, message, error, warning} = await generator.generate(name);
-          if (result) log(error, 'error')
-          else if (message) log(message)
-          if (warning) log(warning, 'warning')
-      } catch (error) {
-          console.error(error.message)
-          process.exit(1)
-      } finally {
-          await Elegant.disconnect()
-      }
+
+    if (!isTypescript()) {
+      log(`ModelClass ${name} created`)
+      process.exit(0)
+    }
+    // Generate type definition
+    const db = await Elegant.singleton()
+    const generator = new TypeGenerator(db, config)
+    try {
+        const {result, message, error, warning} = await generator.generate(name);
+        if (result) log(error, 'error')
+        else if (message) log(message)
+        if (warning) log(warning, 'warning')
+    } catch (error) {
+      log(`ModelClass ${name} created`)
+      log(`Failed to create type definition: ${error.message}`, 'error')
+        process.exit(1)
+    } finally {
+        await Elegant.disconnect()
+    }
   })
 
 
