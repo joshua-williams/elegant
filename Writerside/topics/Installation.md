@@ -77,15 +77,13 @@ elegant init
 ```
 
 ### Interactive Initialization
-Elegant provides an interactive database configuration workflow. Running the following command with the `-i` or `--interactive` option starts an intuitive command line interface for setting up `elegant.config.js`
-```bash
-elegant init --interactive
-```
+Elegant provides an interactive database configuration workflow. Running the initialization command with the `-i` or `--interactive` flag launches a guided command-line interface that walks you through setting up your `elegant.config.js` file:
+
 #### Custom Migrations Directory
 ```bash
 elegant init --migration-dir ./database/migrations
 ```
-
+Example `elegant.config.js` file.
 ```javascript
 export default {
   default: 'mysql',
@@ -103,6 +101,10 @@ export default {
       database: 'database/database.sqlite'
     }
   },
+  models: {
+    lazyLoading: true,
+    strictAttributes: false,
+  }, 
   migrations: {
     table: 'migrations',
     directory: 'resources/database/migrations',

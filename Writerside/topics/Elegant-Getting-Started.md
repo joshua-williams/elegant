@@ -149,21 +149,43 @@ export default new UserModel()
 // user.service.ts
 import User from './user.model'
 
-const users = await User.all()
+export const getUsers = () => User.all()
 ```
 
-#### Building Queries
-The `all` method returns every record from the model's table. Since Elegant models function as query builders, you can chain additional conditions onto your queries before calling the get method to fetch the results:
+### Elegant Models as Query Builders
+Elegant models function as comprehensive query builders, giving you access to a full suite of database query methods directly from your model classes. This design means you can chain query methods fluently to construct complex database operations without dropping down to raw SQL.
+
+### Available Query Methods
+Since Elegant models inherit query builder functionality, you can leverage numerous methods for filtering, sorting, aggregating, and manipulating data. These methods work seamlessly with your model instances, allowing you to build sophisticated queries using an expressive, readable syntax.
+
+### Common Query Operations Include:
+
+* Filtering: Apply conditions to narrow down results based on column values
+* Sorting: Order results by one or more columns in ascending or descending order
+* Limiting: Restrict the number of records returned
+* Aggregation: Calculate sums, averages, counts, and other statistical values
+* Joining: Combine data from multiple related tables
+* Grouping: Organize results by shared attribute values
+
+Example Usage:
 
 ```typescript
-Users
-  .where('active', 1)
-  .orderBy('name')
-  .take(10)
-  .get()
-```
+// Retrieve active users ordered by creation date
+const users = await User.where('status', 'active')
+  .orderBy('created_at', 'desc')
+  .limit(10)
+  .get();
 
->Since Elegant models are query builders, you should review all of the methods provided by Laravel's query builder. You may use any of these methods when writing your Elegant queries.
+// Count users by role
+const adminCount = await User.where('role', 'admin').count();
+
+// Complex query with multiple conditions
+const results = await User.where('age', '>', 18)
+  .where('verified', true)
+  .orWhere('premium', true)
+  .get();
+```
+All query builder methods available in Elegant can be chained together and executed on your model classes, providing a powerful and intuitive interface for database interactions. For a complete reference of available methods, consult the Query Builder documentation section.
 
 #### Refreshing Models
 When you have an existing Elegant model instance loaded from the database, you can update it with the latest data using the fresh and refresh methods. The fresh method fetches a new copy of the model from the database without modifying the current instance:

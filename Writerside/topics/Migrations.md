@@ -54,6 +54,10 @@ elegant make:migration Changes
 ## Migration Structure
 ### Basic Structure
 A migration class contains two essential methods:
+
+* **`up()` Method** - Defines forward changes (creating tables, adding columns, etc.)
+* **`down()` Method** - Defines how to undo those changes (dropping tables, removing columns, etc.)
+
 ```typescript
 import { Migration } from '@pristine/elegant';
 
@@ -81,30 +85,35 @@ export class CreateUsersTable extends Migration {
 }
 ```
 
-**`up()` Method** - Defines forward changes (creating tables, adding columns, etc.)
-**`down()` Method** - Defines how to undo those changes (dropping tables, removing columns, etc.)
-### Migration Properties
-Customize migration behavior with class properties:
-
+### Using Specific Database Connections
+By default, migrations execute against your primary database connection. However, you can specify an alternative connection for migrations that need to run against a different database:
 ```typescript
 export class CreateUsersTable extends Migration {
-  // Use a specific database connection
   connection = 'analytics';
-  
-  // Skip this migration conditionally
+
+  async up() { /* Migration logic */ }
+
+  async down() { /* Rollback logic */ }
+}
+```
+Setting the `connection` property directs Elegant to run this migration against the named connection defined in your `elegant.config.js` file. This is particularly useful when managing multiple databases or when certain tables need to reside in separate database instances.
+Conditional Migration Execution
+Elegant allows you to control whether a migration should execute based on runtime conditions. Implement the `shouldRun()` method to define custom logic that determines if the migration proceeds:
+
+### Conditional Migration Execution
+```typescript
+export class CreateUsersTable extends Migration {
   shouldRun() {
     return process.env.ENABLE_USERS_TABLE === 'true';
   }
-  
-  async up() {
-    // Migration logic
-  }
-  
-  async down() {
-    // Rollback logic
-  }
+
+  async up() { /* Migration logic */ }
+
+  async down() { /* Rollback logic */ }
 }
 ```
+
+When `shouldRun()` returns false, Elegant skips the migration entirely. This feature enables environment-specific migrations, feature flag integration, or conditional schema changes based on application configuration. The method evaluates each time you run migrations, providing dynamic control over which schema changes apply to your database.
 
 ## Creating Tables
 ### Basic Table Creation
@@ -360,6 +369,7 @@ export class AddPhoneToUsers extends Migration {
     await this.schema.table('users', (table) => {
       table.string('phone', 20).nullable();
       table.string('address').nullable();
+      table.alter();
     });
   }
   
@@ -367,6 +377,7 @@ export class AddPhoneToUsers extends Migration {
     await this.schema.table('users', (table) => {
       table.dropColumn('phone');
       table.dropColumn('address');
+      table.alter();
     });
   }
 }
@@ -382,6 +393,7 @@ export class ModifyUsersNameColumn extends Migration {
       // Change column type or attributes
       table.string('name', 200).change();
       table.text('bio').nullable().change();
+      table.alter();
     });
   }
   
@@ -389,6 +401,7 @@ export class ModifyUsersNameColumn extends Migration {
     await this.schema.table('users', (table) => {
       table.string('name', 100).change();
       table.text('bio').notNullable().change();
+      table.alter()
     });
   }
 }
@@ -402,12 +415,14 @@ export class RenameUsersNameColumn extends Migration {
   async up() {
     await this.schema.table('users', (table) => {
       table.renameColumn('name', 'full_name');
+      table.alter()
     });
   }
   
   async down() {
     await this.schema.table('users', (table) => {
       table.renameColumn('full_name', 'name');
+      table.alter()
     });
   }
 }
@@ -421,9 +436,9 @@ export class RemovePhoneFromUsers extends Migration {
   async up() {
     await this.schema.table('users', (table) => {
       table.dropColumn('phone');
-      
       // Drop multiple columns
       table.dropColumns(['address', 'city', 'state']);
+      table.alter();
     });
   }
   
@@ -433,6 +448,7 @@ export class RemovePhoneFromUsers extends Migration {
       table.string('address').nullable();
       table.string('city', 100).nullable();
       table.string('state', 2).nullable();
+      table.alter();
     });
   }
 }
@@ -448,6 +464,7 @@ export class AddIndexesToProducts extends Migration {
       table.index('category');
       table.index(['category', 'status'], 'idx_category_status');
       table.unique('sku');
+      table.alter()
     });
   }
   
@@ -457,6 +474,7 @@ export class AddIndexesToProducts extends Migration {
       table.dropIndex('category');
       table.dropIndex('idx_category_status');
       table.dropUnique('sku');
+      table.alter()
     });
   }
 }
@@ -486,11 +504,12 @@ export class DropUsersTable extends Migration {
   
   async down() {
     // Recreate the table
-    await this.schema.create('users', (table) => {
+    await this.schema.table('users', (table) => {
       table.id();
       table.string('name');
       table.string('email');
       table.timestamps();
+      table.create()
     });
   }
 }

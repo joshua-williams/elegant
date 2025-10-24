@@ -64,7 +64,7 @@ DB_USER=my_user
 DB_PASSWORD=my_password
 ```
 
-You may override the default config and migrations path.
+You may override the default config and migrations path with Elegant specific environment variables.
 ```bash
 ELEGANT_CONFIG_PATH=relative/path/elegant.config.js
 ELEGANT_MIGRATION_DIR=relative/path/to/migrations
