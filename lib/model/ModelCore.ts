@@ -1,6 +1,6 @@
 import Elegant from '../../src/Elegant.js';
 import {Model, QueryBuilder} from '../../index.js';
-import {ElegantConfig} from '../../types.js';
+import {AttrXformers, ElegantConfig, Scalar} from '../../types.js';
 import {getAppConfig} from '../config.js';
 import ModelRelationships from './ModelRelationships.js';
 import {inferTableNameFromModelName} from '../util.js';
@@ -13,9 +13,11 @@ type ModelCoreMeta = {
   reservedProperties: string[],
   reservedMethods: Set<string>,
   modelMethods:Set<string>,
-  attributes:string[],
+  modelProperties:Set<string>,
+  attributes:Map<string, Scalar>,
   defaultAttributes:Record<string, any>
-  changedAttributes:Record<string, any>
+  changedAttributes:Map<string, any>
+  propsLoaded:boolean
 }
 export default class ModelCore extends ModelRelationships{
   protected $connection:string
@@ -26,6 +28,7 @@ export default class ModelCore extends ModelRelationships{
   protected $updated_at = 'updated_at'
   protected $fillable:string[] = []
   protected $guarded:string[] = []
+
   protected $:ModelCoreMeta = {
     db: undefined,
     queryBuilder: new QueryBuilder(),
@@ -34,25 +37,33 @@ export default class ModelCore extends ModelRelationships{
     reservedProperties: [],
     reservedMethods: new Set(),
     modelMethods: new Set(),
-    attributes: [],
+    modelProperties: new Set(),
+    attributes: new Map(),
     defaultAttributes: {},
-    changedAttributes: {},
+    changedAttributes: new Map(),
+    propsLoaded:false,
   }
 
+  /**
+   * Constructs an instance of the class and sets up the proxy for property handling.
+   *
+   * @param {Elegant} [db] - An optional Elegant database instance to associate with the model.
+   * @param {ElegantConfig} [config] - An optional configuration object to customize behavior.
+   * @return {Proxy} - A proxy instance of the current object for managed property access and mutation.
+   */
   constructor(db?:Elegant, config?:ElegantConfig) {
     super()
     if (db) this.$.db = db;
     if (config) this.$.config = config;
     this.$.queryBuilder.table(this.$table||inferTableNameFromModelName(this.constructor.name))
     this.$.reservedProperties =  Object.getOwnPropertyNames(this)
-
     const proxy = new Proxy(this, {
       get(target, prop, receiver) {
-        return target[prop]
+        return target.getProperty(target, prop, receiver)
       },
       set(target, prop, value) {
         if (typeof prop === 'string') {
-          return target.setProperty(prop, value)
+          return target.setProperty(target, prop, value)
         }
       }
     })
@@ -66,9 +77,14 @@ export default class ModelCore extends ModelRelationships{
    * @return {string[]} An array of all property names found on the object and its prototype chain.
    */
   getAllPropertyNames() {
+    Object.keys(this)
+      .filter(prop => !prop.startsWith('$'))
+      .forEach(prop => {
+        this.$.modelProperties.add(prop)
+        this.$.attributes.set(prop, this[prop])
+      })
     let current = Object.getPrototypeOf(this);
     while (current && current !== Object.prototype) {
-
       let properties = Object.getOwnPropertyNames(current)
       let constructorName = current.constructor.name
       if (constructorName === 'ModelCore') {
@@ -80,36 +96,66 @@ export default class ModelCore extends ModelRelationships{
         const isFirstProtocol = this.constructor.name === current.constructor.name
         if (isFirstProtocol) {
           this.$.modelMethods.add(prop)
+          this.$.attributes.set(prop, this[prop])
         } else {
           this.$.reservedMethods.add(prop)
         }
       });
       current = Object.getPrototypeOf(current);
     }
+    this.$.propsLoaded = true
   }
 
+  /**
+   * Creates a new instance of the model, initializes it, and optionally fills it with the provided attributes.
+   *
+   * @param {Record<string, any>} [attributes] - Optional object containing the attributes to initialize the model instance with.
+   * @return {Promise<T>} A promise that resolves to the newly created and initialized model instance.
+   */
   public static async create<T extends Model>(attributes?:Record<string, any>) {
     const model = new this()
     await model.init()
+    if (attributes) {
+      ((model as Model).fill(attributes))
+    }
     return model as T
   }
 
+  /**
+   * Initializes the instance by setting up application configuration and database connection.
+   * Ensures that initialization is only performed once.
+   *
+   * @return {Promise<this>} A promise that resolves to the initialized instance.
+   */
   async init():Promise<this> {
     this.getAllPropertyNames()
     if (this.$.initialized) return this
     this.$.config = await getAppConfig()
     this.$.db = await this.getConnection()
-    this.$.attributes = Object.getOwnPropertyNames(this)
-      .filter(name => !this.$.reservedProperties.includes(name))
-    const instanceMethods = Object.getOwnPropertyNames(this.constructor.prototype)
-      .filter(prop => prop !== "constructor" && typeof this[prop] === "function");
     this.$.initialized = true
     return this
   }
 
+  /**
+   * Retrieves the name of the database table associated with the model.
+   *
+   * The method first checks if the `$table` property is available on the instance.
+   * If `$table` is not defined, it infers the table name from the model's constructor name based on Elegant
+   * naming conventions.
+   *
+   * @return {string} The name of the table used by the model.
+   */
   protected tableName() {
     return this.$table || inferTableNameFromModelName(this.constructor.name)
   }
+
+  /**
+   * Establishes and retrieves the database connection. If already initialized,
+   * it returns the existing connection. Otherwise, it initializes the connection
+   * and stores it for future use.
+   *
+   * @return {Promise<Object>} A promise that resolves to the database connection object.
+   */
   private async getConnection() {
     if (this.$.initialized) return this.$.db
     const {default: connection} = await getAppConfig()
@@ -117,24 +163,120 @@ export default class ModelCore extends ModelRelationships{
     return this.$.db
   }
 
-  private setProperty(name:string, value:any) {
+  /**
+   * Retrieves the value of a property from the Elegant model, applying any defined modifiers, accessors, or mutators.
+   * This method also handles specific conditions for property access, such as checking for changes, attributes, and strict attribute configurations.
+   *
+   * @param {Object} target - The target object from which the property will be retrieved.
+   * @param {string} prop - The name of the property to get.
+   * @param {Object} receiver - The object that initially called the `get` operation, typically the proxy itself.
+   * @return {*} The value of the requested property, which may be transformed by modifiers, accessors, or mutators, or the original property value if no transformations apply.
+   */
+  private getProperty(target, prop, receiver) {
+    if (target.$.modelMethods.has(prop) && this.$.propsLoaded) {
+
+      let value;
+      if (target.$.changedAttributes.has(prop)) {
+        value = target.$.changedAttributes.get(prop)
+      }
+      let modifierValue = value
+      let accessorValue = value
+      let mutatorValue = value
+
+      function modifier(value, fn) {
+        modifierValue = fn(value)
+      }
+      function accessor(value, fn) {
+        accessorValue = fn(value)
+      }
+      function mutator(value, fn) {}
+      const mutatorFunctions:AttrXformers = {
+        accessor: accessor.bind(target, accessorValue),
+        mutator: mutator.bind(target, mutatorValue),
+        modifier: modifier.bind(target, modifierValue)
+      }
+      let func = this[prop]
+      if (typeof func === 'function') {
+        func(mutatorFunctions)
+      }
+
+      if (modifierValue !== value) {
+        return modifierValue
+      }
+      if (accessorValue !== value) {
+        return accessorValue
+      }
+      return value
+    }
+    else if (target.$.changedAttributes.has(prop)) {
+      return target.$.changedAttributes.get(prop)
+    }
+    else if (target.$.attributes.has(prop)) {
+      return target.$.attributes.get(prop)
+    }
+    return target[prop]
+  }
+
+  /**
+   * Sets a property on the specified target with a given name and value.
+   * Validates the property against reserved and guarded lists, handles model methods, and processes attribute mutations.
+   * Throws an error if the property is immutable, guarded, or does not exist in strict mode.
+   *
+   * @param {Object} target - The target object where the property should be set.
+   * @param {string} name - The name of the property to be set.
+   * @param {any} value - The value to be assigned to the property.
+   * @return {any|undefined} - Returns the processed value if the property is successfully set; otherwise undefined.
+   */
+  private setProperty(target, name:string, value:any) {
     if (this.$.reservedProperties.includes(name)) {
       throw new Error(`Model ${this.constructor.name} ${name} is immutable`)
     }
     if (this.$guarded.includes(name)) {
       throw new Error(`Model ${this.constructor.name} cannot fill guarded attribute ${name}`)
     }
-    if (!this.$.attributes.includes(name)) {
+    if (target.$.modelMethods.has(name) && this.$.propsLoaded) {
+      let modifierValue = value
+      let mutatorValue = value
+      let accessorValue = value
+
+      function modifier(value, fn:(value) => any) {
+        modifierValue = fn(value)
+      }
+      function accessor(value) {
+        accessorValue = value
+      }
+      function mutator(value, fn) {
+        mutatorValue = fn(value)
+      }
+      let func = this[name]
+      const mutatorFunctions:AttrXformers = {
+        accessor: accessor.bind(this, accessorValue),
+        mutator: mutator.bind(this, mutatorValue),
+        modifier: modifier.bind(this, modifierValue)
+      }
+      func(mutatorFunctions)
+      if (modifierValue !== value) {
+         return target.$.changedAttributes.set(name, modifierValue)
+      }
+      if (mutatorValue !== value) {
+        return target.$.changedAttributes.set(name, mutatorValue)
+      }
+    }
+    if (!this.$.attributes.has(name)) {
       if (this.$.config.models.strictAttributes) {
         throw new Error(`${this.constructor.name} Model: unknown attribute ${name}"`)
       }
       return
     }
-
-    this.$.changedAttributes[name] = value
+    this.$.changedAttributes.set(name, value)
     return this[name] = value
   }
 
+  /**
+   * Disconnects from the database if the connection has been initialized.
+   *
+   * @return {Promise<void>|undefined} Returns a promise that resolves when the disconnection is complete, or undefined if the connection was not initialized.
+   */
   disconnect() {
     if (!this.$.initialized) return
     return this.$.db.disconnect()

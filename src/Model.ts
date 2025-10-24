@@ -21,7 +21,7 @@ export default class Model extends ModelCore {
         }
       }
 
-      if (!this.$.attributes.includes(name)) {
+      if (!this.$.attributes.has(name)) {
         if (isStrict) {
           throw new Error(`"${this.constructor.name} Model: unknown attribute ${name}"`)
         } else {
@@ -35,8 +35,7 @@ export default class Model extends ModelCore {
           continue
         }
       }
-
-      this.$.changedAttributes[name] = attributes[name]
+      this.$.changedAttributes.set(name, attributes[name])
     }
     return this
   }
@@ -45,13 +44,13 @@ export default class Model extends ModelCore {
 
   }
   first<T>() {
-    const columns = this.$.attributes.join(', ')
+    const columns = Array.from(this.$.attributes).join(', ')
     return this.$.db.select(`select ${columns} from ${this.tableName()} limit 1`)
       .then((row:T[]) => row[0])
   }
 
   all<T>() {
-    const columns = this.$.attributes.join(', ')
+    const columns = Array.from(this.$.attributes).join(', ')
     return this.$.db.select(`select ${columns} from ${this.tableName()}`)
       .then((rows:T[]) => rows)
   }

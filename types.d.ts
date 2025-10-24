@@ -109,3 +109,9 @@ type QueryCondition = {
   operator:ComparisonOperator
   value:Scalar|Scalar[]
 }
+type AttrXformer = (value:any) => void
+type AttrXformers = {
+  accessor: (value:any, fn:AttrXformer) => void,
+  mutator: (value:any, fn:AttrXformer) => void,
+  modifier: (value:any, fn:AttrXformer) => void,
+}
