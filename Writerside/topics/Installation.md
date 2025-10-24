@@ -78,7 +78,9 @@ elegant init
 
 ### Interactive Initialization
 Elegant provides an interactive database configuration workflow. Running the initialization command with the `-i` or `--interactive` flag launches a guided command-line interface that walks you through setting up your `elegant.config.js` file:
-
+```bash
+elegant init --interactive
+```
 #### Custom Migrations Directory
 ```bash
 elegant init --migration-dir ./database/migrations

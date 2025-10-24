@@ -1,4 +1,5 @@
 # Installation
+<show-structure for="chapter,procedure" depth="1"/>
 
 ## Meet Elegant
 
@@ -48,7 +49,6 @@ Add Elegant commands to your `package.json` for quick access:
 {
   "scripts": {
     "db:migrate": "elegant migrate",
-    "make:model": "elegant make:model",
     "db:rollback": "elegant migrate:rollback",
     "db:status": "elegant migrate:status",
     "db:make:migration": "elegant make:migration"
@@ -70,14 +70,22 @@ Elegant provides an initialization command that scaffolds your database configur
 
 #### Basic Initialization
 ```bash
-npx @pristine/elegant init
+# install elegant
+npm install -g @pristine/elegant
+# initialize project 
+elegant init
 ```
 
+### Interactive Initialization
+Elegant provides an interactive database configuration workflow. Running the initialization command with the `-i` or `--interactive` flag launches a guided command-line interface that walks you through setting up your `elegant.config.js` file:
+```bash
+elegant init --interactive
+```
 #### Custom Migrations Directory
 ```bash
-npx elegant init --migration-dir ./database/migrations
+elegant init --migration-dir ./database/migrations
 ```
-
+Example `elegant.config.js` file.
 ```javascript
 export default {
   default: 'mysql',
@@ -94,7 +102,15 @@ export default {
       dialect: 'sqlite',
       database: 'database/database.sqlite'
     }
-  }
+  },
+  models: {
+    lazyLoading: true,
+    strictAttributes: false,
+  },
+  migrations: {
+    table: 'migrations',
+    directory: 'resources/database/migrations',
+  },
 }
 ```
 
