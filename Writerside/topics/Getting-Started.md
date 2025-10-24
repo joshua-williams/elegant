@@ -94,10 +94,10 @@ const db = await Elegant.singleton();
 
 To use a specific connection (other than the default):
 ```typescript 
-const db = await Elegant.connection('postgres');
+const db = await Elegant.singleton('postgres');
 ```
 
-Gracefully disconnect from all pooled Elegant database instances that were instantiated using the singleton method:
+Gracefully disconnect from all  Elegant database instances that were instantiated using the `connection` method:
 ```typescript
 const db = await Elegant.connection()
 await db.disconnect()
@@ -112,7 +112,7 @@ Retrieve data using the `select` method:
 
 ```typescript 
 import Elegant from '@pristine/elegant';
-const db = await Elegant.connection(); 
+const db = await Elegant.singleton(); 
 const users = await db.select('SELECT * FROM users WHERE active = ?', [true]);
 ```
 
