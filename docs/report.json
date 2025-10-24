@@ -1,10 +1,17 @@
 {
-  "testsErrorsCount" : 0,
+  "testsErrorsCount" : 1,
   "testsTotal" : 177,
   "testsWarningsCount" : 0,
-  "testsPassedCount" : 177,
+  "testsPassedCount" : 176,
   "testsWarnings" : { },
-  "testsErrors" : { },
+  "testsErrors" : {
+    "MRK002" : [ {
+      "id" : "MRK002--Unescaped---or-nonterminated-character-entity-reference--in-elegant-tree-19-9",
+      "problemId" : "MRK002",
+      "name" : "Source file syntax is corrupted",
+      "description" : "\"Unescaped & or nonterminated character/entity reference\" in elegant.tree:19:9"
+    } ]
+  },
   "idsAndTitles" : {
     "CDE001" : "The <compare> element must contain exactly two code blocks",
     "CDE002" : "The 'collapsed-title-line-number' attribute value on a 'code-block' element is not a valid number",
@@ -543,12 +550,6 @@
       "id" : "MRK001-",
       "problemId" : "MRK001",
       "name" : "The element doesn't comply with validation rules",
-      "description" : ""
-    } ],
-    "MRK002" : [ {
-      "id" : "MRK002-",
-      "problemId" : "MRK002",
-      "name" : "Source file syntax is corrupted",
       "description" : ""
     } ],
     "MRK003" : [ {

@@ -1,5 +1,5 @@
 <!DOCTYPE html SYSTEM "about:legacy-compat">
-<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="built-on" content="2025-10-17T22:33:04.618882339"><title>Database: Migrations | Elegant</title><script type="application/json" id="virtual-toc-data">[{"id":"introduction","level":0,"title":"Introduction","anchor":"#introduction"},{"id":"creating-migrations","level":0,"title":"Creating Migrations","anchor":"#creating-migrations"},{"id":"migration-structure","level":0,"title":"Migration Structure","anchor":"#migration-structure"},{"id":"creating-tables","level":0,"title":"Creating Tables","anchor":"#creating-tables"},{"id":"column-types","level":0,"title":"Column Types","anchor":"#column-types"},{"id":"column-modifiers","level":0,"title":"Column Modifiers","anchor":"#column-modifiers"},{"id":"modifying-tables","level":0,"title":"Modifying Tables","anchor":"#modifying-tables"},{"id":"renaming-and-dropping-tables","level":0,"title":"Renaming and Dropping Tables","anchor":"#renaming-and-dropping-tables"},{"id":"running-migrations","level":0,"title":"Running Migrations","anchor":"#running-migrations"},{"id":"rolling-back-migrations","level":0,"title":"Rolling Back Migrations","anchor":"#rolling-back-migrations"},{"id":"database-specific-considerations","level":0,"title":"Database-Specific Considerations","anchor":"#database-specific-considerations"},{"id":"troubleshooting","level":0,"title":"Troubleshooting","anchor":"#troubleshooting"},{"id":"next-steps","level":0,"title":"Next Steps","anchor":"#next-steps"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="https://resources.jetbrains.com/writerside/apidoc/6.22.0-b776/app.css" rel="stylesheet"><meta name="msapplication-TileColor" content="#000000"><link rel="apple-touch-icon" sizes="180x180" href="https://jetbrains.com/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="https://jetbrains.com/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="https://jetbrains.com/favicon-16x16.png"><meta name="msapplication-TileImage" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-144x144.png"><meta name="msapplication-square70x70logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-70x70.png"><meta name="msapplication-square150x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-150x150.png"><meta name="msapplication-wide310x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x150.png"><meta name="msapplication-square310x310logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x310.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Database: Migrations | Elegant"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Elegant Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/migrations.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Database: Migrations | Elegant"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="built-on" content="2025-10-24T03:30:18.669818673"><title>Database: Migrations | Elegant</title><script type="application/json" id="virtual-toc-data">[{"id":"introduction","level":0,"title":"Introduction","anchor":"#introduction"},{"id":"generating-migrations","level":0,"title":"Generating Migrations","anchor":"#generating-migrations"},{"id":"migration-structure","level":0,"title":"Migration Structure","anchor":"#migration-structure"},{"id":"creating-tables","level":0,"title":"Creating Tables","anchor":"#creating-tables"},{"id":"column-types","level":0,"title":"Column Types","anchor":"#column-types"},{"id":"column-modifiers","level":0,"title":"Column Modifiers","anchor":"#column-modifiers"},{"id":"modifying-tables","level":0,"title":"Modifying Tables","anchor":"#modifying-tables"},{"id":"renaming-and-dropping-tables","level":0,"title":"Renaming and Dropping Tables","anchor":"#renaming-and-dropping-tables"},{"id":"creating-functions","level":0,"title":"Creating Functions","anchor":"#creating-functions"},{"id":"running-migrations","level":0,"title":"Running Migrations","anchor":"#running-migrations"},{"id":"rolling-back-migrations","level":0,"title":"Rolling Back Migrations","anchor":"#rolling-back-migrations"},{"id":"database-specific-considerations","level":0,"title":"Database-Specific Considerations","anchor":"#database-specific-considerations"},{"id":"troubleshooting","level":0,"title":"Troubleshooting","anchor":"#troubleshooting"},{"id":"next-steps","level":0,"title":"Next Steps","anchor":"#next-steps"}]</script><script type="application/json" id="topic-shortcuts"></script><link href="https://resources.jetbrains.com/writerside/apidoc/6.22.0-b776/app.css" rel="stylesheet"><link href="static/custom.css" rel="stylesheet"><meta name="msapplication-TileColor" content="#000000"><link rel="apple-touch-icon" sizes="180x180" href="https://jetbrains.com/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="https://jetbrains.com/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="https://jetbrains.com/favicon-16x16.png"><meta name="msapplication-TileImage" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-144x144.png"><meta name="msapplication-square70x70logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-70x70.png"><meta name="msapplication-square150x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-150x150.png"><meta name="msapplication-wide310x150logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x150.png"><meta name="msapplication-square310x310logo" content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x310.png"><meta name="image" content=""><!-- Open Graph --><meta property="og:title" content="Database: Migrations | Elegant"><meta property="og:description" content=""><meta property="og:image" content=""><meta property="og:site_name" content="Elegant Help"><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:url" content="writerside-documentation/migrations.html"><!-- End Open Graph --><!-- Twitter Card --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content=""><meta name="twitter:title" content="Database: Migrations | Elegant"><meta name="twitter:description" content=""><meta name="twitter:creator" content=""><meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage --><script type="application/ld+json">{
     "@context": "http://schema.org",
     "@type": "WebPage",
     "@id": "writerside-documentation/migrations.html#webpage",
@@ -13,13 +13,13 @@
     "@id": "writerside-documentation/#website",
     "url": "writerside-documentation/",
     "name": "Elegant Help"
-}</script><!-- End Schema.org --></head><body data-id="Migrations" data-main-title="Database: Migrations" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Database"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Elegant  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="Migrations" id="Migrations.md">Database: Migrations</h1><section class="chapter"><h2 id="introduction" data-toc="introduction">Introduction</h2><p id="-51m0ff_17">Database migrations are version control for your database schema. They allow your team to define, share, and track changes to the database structure over time. With migrations, you can:</p><ul class="list _bullet" id="-51m0ff_18"><li class="list__item" id="-51m0ff_20"><p id="-51m0ff_25"><span class="control" id="-51m0ff_26">Track Changes</span> - Every schema modification is recorded and versioned</p></li><li class="list__item" id="-51m0ff_21"><p id="-51m0ff_27"><span class="control" id="-51m0ff_28">Collaborate Safely</span> - Team members can pull schema changes alongside code changes</p></li><li class="list__item" id="-51m0ff_22"><p id="-51m0ff_29"><span class="control" id="-51m0ff_30">Rollback Errors</span> - Undo problematic migrations when issues arise</p></li><li class="list__item" id="-51m0ff_23"><p id="-51m0ff_31"><span class="control" id="-51m0ff_32">Environment Parity</span> - Ensure consistent database structure across development, staging, and production</p></li><li class="list__item" id="-51m0ff_24"><p id="-51m0ff_33"><span class="control" id="-51m0ff_34">Automate Deployment</span> - Run migrations as part of your deployment pipeline</p></li></ul><p id="-51m0ff_19">Elegant's migration system provides a database-agnostic API that works consistently across MySQL, MariaDB, PostgreSQL, and SQLite.</p></section><section class="chapter"><h2 id="creating-migrations" data-toc="creating-migrations">Creating Migrations</h2><section class="chapter"><h3 id="generate-migration-files" data-toc="generate-migration-files">Generate Migration Files</h3><p id="-51m0ff_38">Use the <code class="code" id="-51m0ff_43">make:migration</code> command to create a new migration file:</p><div class="code-block" data-lang="bash">
+}</script><!-- End Schema.org --></head><body data-id="Migrations" data-main-title="Database: Migrations" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="Database"><div class="wrapper"><main class="panel _main"><header class="panel__header"><div class="container"><h3>Elegant  Help</h3><div class="panel-trigger"></div></div></header><section class="panel__content"><div class="container"><article class="article" data-shortcut-switcher="inactive"><h1 data-toc="Migrations" id="Migrations.md">Database: Migrations</h1><section class="chapter"><h2 id="introduction" data-toc="introduction">Introduction</h2><p id="rl5zcu_18">Database migrations are version control for your database schema. They allow your team to define, share, and track changes to the database structure over time. With migrations, you can:</p><ul class="list _bullet" id="rl5zcu_19"><li class="list__item" id="rl5zcu_21"><p id="rl5zcu_26"><span class="control" id="rl5zcu_27">Track Changes</span> - Every schema modification is recorded and versioned</p></li><li class="list__item" id="rl5zcu_22"><p id="rl5zcu_28"><span class="control" id="rl5zcu_29">Collaborate Safely</span> - Team members can pull schema changes alongside code changes</p></li><li class="list__item" id="rl5zcu_23"><p id="rl5zcu_30"><span class="control" id="rl5zcu_31">Rollback Errors</span> - Undo problematic migrations when issues arise</p></li><li class="list__item" id="rl5zcu_24"><p id="rl5zcu_32"><span class="control" id="rl5zcu_33">Environment Parity</span> - Ensure consistent database structure across development, staging, and production</p></li><li class="list__item" id="rl5zcu_25"><p id="rl5zcu_34"><span class="control" id="rl5zcu_35">Automate Deployment</span> - Run migrations as part of your deployment pipeline</p></li></ul><p id="rl5zcu_20">Elegant's migration system provides a database-agnostic API that works consistently across MySQL, MariaDB, PostgreSQL, and SQLite.</p></section><section class="chapter"><h2 id="generating-migrations" data-toc="generating-migrations">Generating Migrations</h2><section class="chapter"><h3 id="generate-migration-files" data-toc="generate-migration-files">Generate Migration Files</h3><p id="rl5zcu_39">Use the <code class="code" id="rl5zcu_44">make:migration</code> command to create a new migration file:</p><div class="code-block" data-lang="bash">
 elegant make:migration CreateUsersTable
-</div><p id="-51m0ff_40">This generates a timestamped migration file in your <code class="code" id="-51m0ff_44">resources/database/migrations</code> directory:</p><div class="code-block" data-lang="bash">
+</div><p id="rl5zcu_41">This generates a timestamped migration file in your <code class="code" id="rl5zcu_45">resources/database/migrations</code> directory:</p><div class="code-block" data-lang="bash">
 resources/database/migrations/20250101120000_CreateUsersTable.ts
-</div><p id="-51m0ff_42">The timestamp prefix ensures migrations run in the correct order.</p></section><section class="chapter"><h3 id="custom-migration-path" data-toc="custom-migration-path">Custom Migration Path</h3><p id="-51m0ff_45">Specify a different location for your migrations:</p><div class="code-block" data-lang="bash">
+</div><p id="rl5zcu_43">The timestamp prefix ensures migrations run in the correct order.</p></section><section class="chapter"><h3 id="custom-migration-path" data-toc="custom-migration-path">Custom Migration Path</h3><p id="rl5zcu_46">Specify a different location for your migrations:</p><div class="code-block" data-lang="bash">
 elegant make:migration CreatePostsTable --path ./database/migrations
-</div></section><section class="chapter"><h3 id="naming-conventions" data-toc="naming-conventions">Naming Conventions</h3><p id="-51m0ff_47">Use descriptive names that clearly indicate what the migration does:</p><div class="code-block" data-lang="bash">
+</div></section><section class="chapter"><h3 id="naming-conventions" data-toc="naming-conventions">Naming Conventions</h3><p id="rl5zcu_48">Use descriptive names that clearly indicate what the migration does:</p><div class="code-block" data-lang="bash">
 # Good migration names
 elegant make:migration CreateUsersTable
 elegant make:migration AddEmailVerificationToUsers
@@ -29,7 +29,7 @@ elegant make:migration AddIndexToProductsSku
 # Avoid vague names
 elegant make:migration UpdateDatabase
 elegant make:migration Changes
-</div></section></section><section class="chapter"><h2 id="migration-structure" data-toc="migration-structure">Migration Structure</h2><section class="chapter"><h3 id="basic-structure" data-toc="basic-structure">Basic Structure</h3><p id="-51m0ff_51">A migration class contains two essential methods:</p><div class="code-block" data-lang="ts">
+</div></section></section><section class="chapter"><h2 id="migration-structure" data-toc="migration-structure">Migration Structure</h2><section class="chapter"><h3 id="basic-structure" data-toc="basic-structure">Basic Structure</h3><p id="rl5zcu_53">A migration class contains two essential methods:</p><ul class="list _bullet" id="rl5zcu_54"><li class="list__item" id="rl5zcu_56"><p id="rl5zcu_58"><span class="control" id="rl5zcu_59"><code class="code" id="rl5zcu_60">up()</code> Method</span> - Defines forward changes (creating tables, adding columns, etc.)</p></li><li class="list__item" id="rl5zcu_57"><p id="rl5zcu_61"><span class="control" id="rl5zcu_62"><code class="code" id="rl5zcu_63">down()</code> Method</span> - Defines how to undo those changes (dropping tables, removing columns, etc.)</p></li></ul><div class="code-block" data-lang="ts">
 import { Migration } from '@pristine/elegant';
 
 export class CreateUsersTable extends Migration {
@@ -54,32 +54,32 @@ export class CreateUsersTable extends Migration {
     await this.schema.drop('users');
   }
 }
-</div><p id="-51m0ff_53"><span class="control" id="-51m0ff_54"><code class="code" id="-51m0ff_56">up()</code> Method</span> - Defines forward changes (creating tables, adding columns, etc.) <span class="control" id="-51m0ff_55"><code class="code" id="-51m0ff_57">down()</code> Method</span> - Defines how to undo those changes (dropping tables, removing columns, etc.)</p></section><section class="chapter"><h3 id="migration-properties" data-toc="migration-properties">Migration Properties</h3><p id="-51m0ff_58">Customize migration behavior with class properties:</p><div class="code-block" data-lang="ts">
+</div></section><section class="chapter"><h3 id="using-specific-database-connections" data-toc="using-specific-database-connections">Using Specific Database Connections</h3><p id="rl5zcu_64">By default, migrations execute against your primary database connection. However, you can specify an alternative connection for migrations that need to run against a different database:</p><div class="code-block" data-lang="ts">
 export class CreateUsersTable extends Migration {
-  // Use a specific database connection
   connection = 'analytics';
-  
-  // Skip this migration conditionally
+
+  async up() { /* Migration logic */ }
+
+  async down() { /* Rollback logic */ }
+}
+</div><p id="rl5zcu_66">Setting the <code class="code" id="rl5zcu_67">connection</code> property directs Elegant to run this migration against the named connection defined in your <code class="code" id="rl5zcu_68">elegant.config.js</code> file. This is particularly useful when managing multiple databases or when certain tables need to reside in separate database instances. Conditional Migration Execution Elegant allows you to control whether a migration should execute based on runtime conditions. Implement the <code class="code" id="rl5zcu_69">shouldRun()</code> method to define custom logic that determines if the migration proceeds:</p></section><section class="chapter"><h3 id="conditional-migration-execution" data-toc="conditional-migration-execution">Conditional Migration Execution</h3><div class="code-block" data-lang="ts">
+export class CreateUsersTable extends Migration {
   shouldRun() {
     return process.env.ENABLE_USERS_TABLE === 'true';
   }
-  
-  async up() {
-    // Migration logic
-  }
-  
-  async down() {
-    // Rollback logic
-  }
+
+  async up() { /* Migration logic */ }
+
+  async down() { /* Rollback logic */ }
 }
-</div></section></section><section class="chapter"><h2 id="creating-tables" data-toc="creating-tables">Creating Tables</h2><section class="chapter"><h3 id="basic-table-creation" data-toc="basic-table-creation">Basic Table Creation</h3><p id="-51m0ff_62">Create a new table using the method: <code class="code" id="-51m0ff_64">create</code></p><div class="code-block" data-lang="ts">
+</div><p id="rl5zcu_71">When <code class="code" id="rl5zcu_72">shouldRun()</code> returns false, Elegant skips the migration entirely. This feature enables environment-specific migrations, feature flag integration, or conditional schema changes based on application configuration. The method evaluates each time you run migrations, providing dynamic control over which schema changes apply to your database.</p></section></section><section class="chapter"><h2 id="creating-tables" data-toc="creating-tables">Creating Tables</h2><section class="chapter"><h3 id="basic-table-creation" data-toc="basic-table-creation">Basic Table Creation</h3><p id="rl5zcu_75">Create a new table using the method: <code class="code" id="rl5zcu_77">create</code></p><div class="code-block" data-lang="ts">
 await this.schema.create('users', (table) =&gt; {
   table.id();
   table.string('name');
   table.string('email');
   table.timestamps();
 });
-</div></section><section class="chapter"><h3 id="complete-example" data-toc="complete-example">Complete Example</h3><p id="-51m0ff_65">Here's a comprehensive table definition:</p><div class="code-block" data-lang="ts">
+</div></section><section class="chapter"><h3 id="complete-example" data-toc="complete-example">Complete Example</h3><p id="rl5zcu_78">Here's a comprehensive table definition:</p><div class="code-block" data-lang="ts">
 export class CreateUsersTable extends Migration {
   async up() {
     await this.schema.create('users', (table) =&gt; {
@@ -169,7 +169,7 @@ table.json('settings').nullable();
 </div></section><section class="chapter"><h3 id="binary-columns" data-toc="binary-columns">Binary Columns</h3><div class="code-block" data-lang="ts">
 table.enum('status', ['pending', 'active', 'suspended', 'deleted']);
 table.enum('role', ['user', 'admin', 'moderator']).default('user');
-</div></section></section><section class="chapter"><h2 id="column-modifiers" data-toc="column-modifiers">Column Modifiers</h2><section class="chapter"><h3 id="constraints-and-options" data-toc="constraints-and-options">Constraints and Options</h3><p id="-51m0ff_83">Add constraints and options to columns:</p><div class="code-block" data-lang="ts">
+</div></section></section><section class="chapter"><h2 id="column-modifiers" data-toc="column-modifiers">Column Modifiers</h2><section class="chapter"><h3 id="constraints-and-options" data-toc="constraints-and-options">Constraints and Options</h3><p id="rl5zcu_96">Add constraints and options to columns:</p><div class="code-block" data-lang="ts">
 await this.schema.create('products', (table) =&gt; {
   table.id();
   
@@ -210,7 +210,7 @@ table.primary(['user_id', 'role_id']);
 
 // UUID primary key
 table.uuid('id').primary();
-</div></section><section class="chapter"><h3 id="foreign-keys" data-toc="foreign-keys">Foreign Keys</h3><p id="-51m0ff_86">Define relationships between tables:</p><div class="code-block" data-lang="ts">
+</div></section><section class="chapter"><h3 id="foreign-keys" data-toc="foreign-keys">Foreign Keys</h3><p id="rl5zcu_99">Define relationships between tables:</p><div class="code-block" data-lang="ts">
 await this.schema.create('posts', (table) =&gt; {
   table.id();
   table.string('title');
@@ -226,7 +226,7 @@ await this.schema.create('posts', (table) =&gt; {
   
   table.timestamps();
 });
-</div><p id="-51m0ff_88">Shorthand for foreign keys:</p><div class="code-block" data-lang="ts">
+</div><p id="rl5zcu_101">Shorthand for foreign keys:</p><div class="code-block" data-lang="ts">
 // Creates unsigned integer and foreign key constraint
 table.foreignId('user_id')
   .constrained()
@@ -236,7 +236,7 @@ table.foreignId('user_id')
 table.foreignId('author_id')
   .constrained('users')
   .onDelete('SET NULL');
-</div></section><section class="chapter"><h3 id="indexes" data-toc="indexes">Indexes</h3><p id="-51m0ff_90">Improve query performance with indexes:</p><div class="code-block" data-lang="ts">
+</div></section><section class="chapter"><h3 id="indexes" data-toc="indexes">Indexes</h3><p id="rl5zcu_103">Improve query performance with indexes:</p><div class="code-block" data-lang="ts">
 await this.schema.create('products', (table) =&gt; {
   table.id();
   table.string('name');
@@ -259,12 +259,13 @@ await this.schema.create('products', (table) =&gt; {
   
   table.timestamps();
 });
-</div></section></section><section class="chapter"><h2 id="modifying-tables" data-toc="modifying-tables">Modifying Tables</h2><section class="chapter"><h3 id="adding-columns" data-toc="adding-columns">Adding Columns</h3><p id="-51m0ff_97">Add columns to existing tables:</p><div class="code-block" data-lang="ts">
+</div></section></section><section class="chapter"><h2 id="modifying-tables" data-toc="modifying-tables">Modifying Tables</h2><section class="chapter"><h3 id="adding-columns" data-toc="adding-columns">Adding Columns</h3><p id="rl5zcu_110">Add columns to existing tables:</p><div class="code-block" data-lang="ts">
 export class AddPhoneToUsers extends Migration {
   async up() {
     await this.schema.table('users', (table) =&gt; {
       table.string('phone', 20).nullable();
       table.string('address').nullable();
+      table.alter();
     });
   }
   
@@ -272,16 +273,18 @@ export class AddPhoneToUsers extends Migration {
     await this.schema.table('users', (table) =&gt; {
       table.dropColumn('phone');
       table.dropColumn('address');
+      table.alter();
     });
   }
 }
-</div></section><section class="chapter"><h3 id="modifying-columns" data-toc="modifying-columns">Modifying Columns</h3><p id="-51m0ff_99">Change existing column definitions:</p><div class="code-block" data-lang="ts">
+</div></section><section class="chapter"><h3 id="modifying-columns" data-toc="modifying-columns">Modifying Columns</h3><p id="rl5zcu_112">Change existing column definitions:</p><div class="code-block" data-lang="ts">
 export class ModifyUsersNameColumn extends Migration {
   async up() {
     await this.schema.table('users', (table) =&gt; {
       // Change column type or attributes
       table.string('name', 200).change();
       table.text('bio').nullable().change();
+      table.alter();
     });
   }
   
@@ -289,31 +292,34 @@ export class ModifyUsersNameColumn extends Migration {
     await this.schema.table('users', (table) =&gt; {
       table.string('name', 100).change();
       table.text('bio').notNullable().change();
+      table.alter()
     });
   }
 }
-</div></section><section class="chapter"><h3 id="renaming-columns" data-toc="renaming-columns">Renaming Columns</h3><p id="-51m0ff_101">Rename columns within a table:</p><div class="code-block" data-lang="ts">
+</div></section><section class="chapter"><h3 id="renaming-columns" data-toc="renaming-columns">Renaming Columns</h3><p id="rl5zcu_114">Rename columns within a table:</p><div class="code-block" data-lang="ts">
 export class RenameUsersNameColumn extends Migration {
   async up() {
     await this.schema.table('users', (table) =&gt; {
       table.renameColumn('name', 'full_name');
+      table.alter()
     });
   }
   
   async down() {
     await this.schema.table('users', (table) =&gt; {
       table.renameColumn('full_name', 'name');
+      table.alter()
     });
   }
 }
-</div></section><section class="chapter"><h3 id="dropping-columns" data-toc="dropping-columns">Dropping Columns</h3><p id="-51m0ff_103">Remove columns from tables:</p><div class="code-block" data-lang="ts">
+</div></section><section class="chapter"><h3 id="dropping-columns" data-toc="dropping-columns">Dropping Columns</h3><p id="rl5zcu_116">Remove columns from tables:</p><div class="code-block" data-lang="ts">
 export class RemovePhoneFromUsers extends Migration {
   async up() {
     await this.schema.table('users', (table) =&gt; {
       table.dropColumn('phone');
-      
       // Drop multiple columns
       table.dropColumns(['address', 'city', 'state']);
+      table.alter();
     });
   }
   
@@ -323,10 +329,11 @@ export class RemovePhoneFromUsers extends Migration {
       table.string('address').nullable();
       table.string('city', 100).nullable();
       table.string('state', 2).nullable();
+      table.alter();
     });
   }
 }
-</div></section><section class="chapter"><h3 id="managing-indexes" data-toc="managing-indexes">Managing Indexes</h3><p id="-51m0ff_105">Add or remove indexes:</p><div class="code-block" data-lang="ts">
+</div></section><section class="chapter"><h3 id="managing-indexes" data-toc="managing-indexes">Managing Indexes</h3><p id="rl5zcu_118">Add or remove indexes:</p><div class="code-block" data-lang="ts">
 export class AddIndexesToProducts extends Migration {
   async up() {
     await this.schema.table('products', (table) =&gt; {
@@ -334,6 +341,7 @@ export class AddIndexesToProducts extends Migration {
       table.index('category');
       table.index(['category', 'status'], 'idx_category_status');
       table.unique('sku');
+      table.alter()
     });
   }
   
@@ -343,6 +351,7 @@ export class AddIndexesToProducts extends Migration {
       table.dropIndex('category');
       table.dropIndex('idx_category_status');
       table.dropUnique('sku');
+      table.alter()
     });
   }
 }
@@ -364,15 +373,16 @@ export class DropUsersTable extends Migration {
   
   async down() {
     // Recreate the table
-    await this.schema.create('users', (table) =&gt; {
+    await this.schema.table('users', (table) =&gt; {
       table.id();
       table.string('name');
       table.string('email');
       table.timestamps();
+      table.create()
     });
   }
 }
-</div></section><section class="chapter"><h3 id="drop-if-exists" data-toc="drop-if-exists">Drop If Exists</h3><p id="-51m0ff_112">Safely drop tables that may not exist:</p><div class="code-block" data-lang="ts">
+</div></section><section class="chapter"><h3 id="drop-if-exists" data-toc="drop-if-exists">Drop If Exists</h3><p id="rl5zcu_125">Safely drop tables that may not exist:</p><div class="code-block" data-lang="ts">
 export class DropOldTables extends Migration {
   async up() {
     await this.schema.dropIfExists('old_users');
@@ -383,30 +393,96 @@ export class DropOldTables extends Migration {
     // Usually no down action needed for cleanup migrations
   }
 }
-</div></section></section><section class="chapter"><h2 id="running-migrations" data-toc="running-migrations">Running Migrations</h2><section class="chapter"><h3 id="execute-all-pending-migrations" data-toc="execute-all-pending-migrations">Execute All Pending Migrations</h3><p id="-51m0ff_117">Run all migrations that haven't been executed yet:</p><div class="code-block" data-lang="bash">
+</div></section></section><section class="chapter"><h2 id="creating-functions" data-toc="creating-functions">Creating Functions</h2><p id="rl5zcu_127">Create stored functions within your migrations using the <code class="code" id="rl5zcu_135">table.fn()</code> method. Functions are reusable database routines that return a single value and can be called from queries.</p><section class="chapter"><h3 id="basic-function-definition" data-toc="basic-function-definition">Basic Function Definition</h3><div class="code-block" data-lang="ts">
+await this.schema.fn('get_user_email', (fn) =&gt; { 
+  fn('get_user_email', (fn) =&gt; { 
+    fn.params.int('user_id_in');
+     fn.returns.string('email_out');
+    fn.body = `
+      SELECT email INTO email_out FROM users WHERE id = user_id_in; 
+      RETURN email_out; 
+    `;
+  });
+})
+</div><p id="rl5zcu_137"><span class="control" id="rl5zcu_139">Return Type</span> - Specify what the function returns using <code class="code" id="rl5zcu_140">fn.returns</code>:</p><div class="code-block" data-lang="ts">
+// Returns integer 
+fn.returns.int('id'); 
+// Returns VARCHAR(255) 
+fn.returns.string('name'); 
+// Returns DECIMAL(10,2) 
+fn.returns.decimal('weight', 10, 2); 
+// Returns boolean
+fn.returns.boolean('is_active'); 
+</div></section><section class="chapter"><h3 id="complete-examples" data-toc="complete-examples">Complete Examples</h3><p id="rl5zcu_141"><span class="control" id="rl5zcu_146">Calculate User Statistics:</span></p><div class="code-block" data-lang="ts">
+await this.schema.fn('calculate_user_posts_count', (fn) =&gt; { 
+  fn.params.int('user_id_in');
+   fn.returns.int('post_count')
+  fn.body = `
+    SELECT COUNT(*) INTO post_count 
+    FROM posts WHERE posts.user_id = user_id_in 
+      AND posts.deleted_at IS NULL; 
+   RETURN post_count; 
+  `;
+});
+</div><ul class="list _bullet" id="rl5zcu_143"><li class="list__item" id="rl5zcu_147"><p id="rl5zcu_149"><code class="code" id="rl5zcu_150">fn.params</code>are automatically declared with the respective type and available within the function body</p></li><li class="list__item" id="rl5zcu_148"><p id="rl5zcu_151"><code class="code" id="rl5zcu_152">fn.returns</code> - the return type is automatically defined and is available withint the function body</p></li></ul><p id="rl5zcu_144"><span class="control" id="rl5zcu_153">Format User Display Name:</span></p><div class="code-block" data-lang="ts">
+await this.schema.fn('get_user_display_name', (fn) =&gt; { 
+  fn.params.int('user_id');
+  fn.body = `
+    DECLARE display_name VARCHAR(255); 
+    SELECT CONCAT(first_name, ' ', last_name) INTO display_name 
+    FROM users WHERE id = user_id; RETURN display_name;
+  `; 
+  fn.returns.string(); 
+});
+</div></section><section class="chapter"><h3 id="multiple-parameters" data-toc="multiple-parameters">Multiple Parameters</h3><p id="rl5zcu_154">Functions can accept multiple parameters:</p><div class="code-block" data-lang="ts">
+await this.schema.fn('calculate_discount_price', (fn) =&gt; { 
+  fn.params.decimal('original_price', 10, 2); 
+  fn.params.decimal('discount_percent', 5, 2); 
+  fn.body = `RETURN original_price * (1 - discount_percent / 100);`; 
+  fn.returns.decimal(10, 2); 
+});
+</div></section><section class="chapter"><h3 id="using-functions-in-queries" data-toc="using-functions-in-queries">Using Functions in Queries</h3><p id="rl5zcu_156">Once created, you can call these functions in your queries:</p><div class="code-block" data-lang="ts">
+// Using the query builder
+const email = await db.table('users') 
+  .selectRaw('get_user_email(id) as email') 
+     .where('id', userId) 
+  .first();
+// Using raw queries 
+const postCount = await db.raw( 'SELECT calculate_user_posts_count(?) as count', [userId] );
+</div></section><section class="chapter"><h3 id="database-support" data-toc="database-support">Database Support</h3><p id="rl5zcu_158">Function creation is currently supported for:</p><ul class="list _bullet" id="rl5zcu_159"><li class="list__item" id="rl5zcu_160"><p id="rl5zcu_164"><span class="control" id="rl5zcu_165">MySQL</span> - Full support</p></li><li class="list__item" id="rl5zcu_161"><p id="rl5zcu_166"><span class="control" id="rl5zcu_167">MariaDB</span> - Full support</p></li><li class="list__item" id="rl5zcu_162"><p id="rl5zcu_168"><span class="control" id="rl5zcu_169">PostgreSQL</span> - Syntax may differ, test thoroughly</p></li><li class="list__item" id="rl5zcu_163"><p id="rl5zcu_170"><span class="control" id="rl5zcu_171">SQLite</span> - Not supported (SQLite uses a different approach for functions)</p></li></ul></section><section class="chapter"><h3 id="best-practices" data-toc="best-practices">Best Practices</h3><ol class="list _decimal" id="rl5zcu_172" type="1"><li class="list__item" id="rl5zcu_173"><p id="rl5zcu_178"><span class="control" id="rl5zcu_179">Keep Functions Simple</span> - Complex logic is often better in application code</p></li><li class="list__item" id="rl5zcu_174"><p id="rl5zcu_180"><span class="control" id="rl5zcu_181">Handle NULL Values</span> - Use <code class="code" id="rl5zcu_182">COALESCE()</code> or NULL checks</p></li><li class="list__item" id="rl5zcu_175"><p id="rl5zcu_183"><span class="control" id="rl5zcu_184">Name Descriptively</span> - Use clear names like <code class="code" id="rl5zcu_185">calculate_*</code> or <code class="code" id="rl5zcu_186">get_*</code></p></li><li class="list__item" id="rl5zcu_176"><p id="rl5zcu_187"><span class="control" id="rl5zcu_188">Document Logic</span> - Add comments in complex function bodies</p></li><li class="list__item" id="rl5zcu_177"><p id="rl5zcu_189"><span class="control" id="rl5zcu_190">Test Thoroughly</span> - Functions are harder to debug than application code</p></li></ol></section><section class="chapter"><h3 id="dropping-functions" data-toc="dropping-functions">Dropping Functions</h3><p id="rl5zcu_191">To remove a function in a migration's <code class="code" id="rl5zcu_194">down()</code> method:</p><div class="code-block" data-lang="ts">
+async down() { 
+   await this.schema.dropFn('users')
+   // postgres requires you specify the parameters to drop function
+   await this.schema.dropFn('users', fn =&gt; {
+     fn.params.string('user_id')
+   })
+   // you can also run a raw query to drop the function
+  await this.db.raw('DROP FUNCTION IF EXISTS get_user_email'); 
+}
+</div><aside class="prompt" data-type="note" data-title="" id="rl5zcu_193"><p id="rl5zcu_195"><span class="control" id="rl5zcu_196">Note:</span> Functions are database-specific features. If you need to support multiple database types, consider implementing the logic in your application code instead.</p></aside></section></section><section class="chapter"><h2 id="running-migrations" data-toc="running-migrations">Running Migrations</h2><section class="chapter"><h3 id="execute-all-pending-migrations" data-toc="execute-all-pending-migrations">Execute All Pending Migrations</h3><p id="rl5zcu_200">Run all migrations that haven't been executed yet:</p><div class="code-block" data-lang="bash">
 elegant migrate
-</div><p id="-51m0ff_119">This command:</p><ol class="list _decimal" id="-51m0ff_120" type="1"><li class="list__item" id="-51m0ff_121"><p id="-51m0ff_124">Checks which migrations have already run</p></li><li class="list__item" id="-51m0ff_122"><p id="-51m0ff_125">Executes pending migrations in chronological order</p></li><li class="list__item" id="-51m0ff_123"><p id="-51m0ff_126">Records successful migrations in the migrations tracking table</p></li></ol></section><section class="chapter"><h3 id="check-migration-status" data-toc="check-migration-status">Check Migration Status</h3><p id="-51m0ff_127">View which migrations have run and which are pending:</p><div class="code-block" data-lang="bash">
+</div><p id="rl5zcu_202">This command:</p><ol class="list _decimal" id="rl5zcu_203" type="1"><li class="list__item" id="rl5zcu_204"><p id="rl5zcu_207">Checks which migrations have already run</p></li><li class="list__item" id="rl5zcu_205"><p id="rl5zcu_208">Executes pending migrations in chronological order</p></li><li class="list__item" id="rl5zcu_206"><p id="rl5zcu_209">Records successful migrations in the migrations tracking table</p></li></ol></section><section class="chapter"><h3 id="check-migration-status" data-toc="check-migration-status">Check Migration Status</h3><p id="rl5zcu_210">View which migrations have run and which are pending:</p><div class="code-block" data-lang="bash">
 elegant migrate:status
-</div><p id="-51m0ff_129">Output example:</p><div class="code-block" data-lang="bash">
+</div><p id="rl5zcu_212">Output example:</p><div class="code-block" data-lang="bash">
 Migration Status:
 ✓ 20250101120000_CreateUsersTable
 ✓ 20250101130000_CreatePostsTable
 ✗ 20250102140000_AddPhoneToUsers (pending)
-</div></section><section class="chapter"><h3 id="migration-output" data-toc="migration-output">Migration Output</h3><p id="-51m0ff_131">Migrations provide feedback as they run:</p><div class="code-block" data-lang="bash">
+</div></section><section class="chapter"><h3 id="migration-output" data-toc="migration-output">Migration Output</h3><p id="rl5zcu_214">Migrations provide feedback as they run:</p><div class="code-block" data-lang="bash">
 Running migrations...
 ✓ CreateUsersTable
 ✓ CreatePostsTable
 ✓ AddPhoneToUsers
 
 Migrations completed successfully.
-</div></section></section><section class="chapter"><h2 id="rolling-back-migrations" data-toc="rolling-back-migrations">Rolling Back Migrations</h2><section class="chapter"><h3 id="rollback-last-batch" data-toc="rollback-last-batch">Rollback Last Batch</h3><p id="-51m0ff_141">Undo the most recent migration batch:</p><div class="code-block" data-lang="bash">
+</div></section></section><section class="chapter"><h2 id="rolling-back-migrations" data-toc="rolling-back-migrations">Rolling Back Migrations</h2><section class="chapter"><h3 id="rollback-last-batch" data-toc="rollback-last-batch">Rollback Last Batch</h3><p id="rl5zcu_224">Undo the most recent migration batch:</p><div class="code-block" data-lang="bash">
 elegant migrate:rollback
-</div><p id="-51m0ff_143">This executes the <code class="code" id="-51m0ff_144">down()</code> method of the last batch of migrations.</p></section><section class="chapter"><h3 id="rollback-multiple-batches" data-toc="rollback-multiple-batches">Rollback Multiple Batches</h3><p id="-51m0ff_145">Rollback a specific number of migration batches:</p><div class="code-block" data-lang="bash">
+</div><p id="rl5zcu_226">This executes the <code class="code" id="rl5zcu_227">down()</code> method of the last batch of migrations.</p></section><section class="chapter"><h3 id="rollback-multiple-batches" data-toc="rollback-multiple-batches">Rollback Multiple Batches</h3><p id="rl5zcu_228">Rollback a specific number of migration batches:</p><div class="code-block" data-lang="bash">
 # Rollback last 3 batches
 elegant migrate:rollback --step=3
-</div></section><section class="chapter"><h3 id="rollback-all-migrations" data-toc="rollback-all-migrations">Rollback All Migrations</h3><p id="-51m0ff_147">Reset the database to its initial state:</p><div class="code-block" data-lang="bash">
+</div></section><section class="chapter"><h3 id="rollback-all-migrations" data-toc="rollback-all-migrations">Rollback All Migrations</h3><p id="rl5zcu_230">Reset the database to its initial state:</p><div class="code-block" data-lang="bash">
 elegant migrate:reset
-</div><aside class="prompt" data-type="warning" data-title="" id="-51m0ff_149"><p id="-51m0ff_153">Warning: Data Loss Rolling back migrations will drop tables and delete data. Always backup your database before rolling back migrations in production environments.</p></aside><p id="-51m0ff_150">Migration Best Practices</p><ol class="list _decimal" id="-51m0ff_151" type="1"><li class="list__item" id="-51m0ff_154"><p id="-51m0ff_155">Always Provide Down Methods Every migration should have a working down() method:</p></li></ol><div class="code-block" data-lang="ts">
+</div><aside class="prompt" data-type="warning" data-title="" id="rl5zcu_232"><p id="rl5zcu_236">Warning: Data Loss Rolling back migrations will drop tables and delete data. Always backup your database before rolling back migrations in production environments.</p></aside><p id="rl5zcu_233">Migration Best Practices</p><ol class="list _decimal" id="rl5zcu_234" type="1"><li class="list__item" id="rl5zcu_237"><p id="rl5zcu_238">Always Provide Down Methods Every migration should have a working down() method:</p></li></ol><div class="code-block" data-lang="ts">
 // Good
 export class CreateUsersTable extends Migration {
   async up() {
@@ -432,7 +508,7 @@ export class CreateUsersTable extends Migration {
     // TODO: Implement rollback
   }
 }
-</div></section><section class="chapter"><h3 id="2-keep-migrations-focused" data-toc="2-keep-migrations-focused">2. Keep Migrations Focused</h3><p id="-51m0ff_156">Each migration should do one thing:</p><div class="code-block" data-lang="ts">
+</div></section><section class="chapter"><h3 id="2-keep-migrations-focused" data-toc="2-keep-migrations-focused">2. Keep Migrations Focused</h3><p id="rl5zcu_239">Each migration should do one thing:</p><div class="code-block" data-lang="ts">
 // Good - single purpose
 export class AddEmailVerificationToUsers extends Migration {
   // Only adds email verification fields
@@ -442,7 +518,7 @@ export class AddEmailVerificationToUsers extends Migration {
 export class UpdateUsersAndPosts extends Migration {
   // Modifies multiple unrelated tables
 }
-</div></section><section class="chapter"><h3 id="3-test-migrations-both-ways" data-toc="3-test-migrations-both-ways">3. Test Migrations Both Ways</h3><p id="-51m0ff_158">Always test both <code class="code" id="-51m0ff_160">up()</code> and <code class="code" id="-51m0ff_161">down()</code> methods:</p><div class="code-block" data-lang="bash">
+</div></section><section class="chapter"><h3 id="3-test-migrations-both-ways" data-toc="3-test-migrations-both-ways">3. Test Migrations Both Ways</h3><p id="rl5zcu_241">Always test both <code class="code" id="rl5zcu_243">up()</code> and <code class="code" id="rl5zcu_244">down()</code> methods:</p><div class="code-block" data-lang="bash">
 # Run migration
 elegant migrate
 
@@ -451,7 +527,7 @@ elegant migrate:rollback
 
 # Re-run migration
 elegant migrate
-</div></section><section class="chapter"><h3 id="4-use-descriptive-names" data-toc="4-use-descriptive-names">4. Use Descriptive Names</h3><p id="-51m0ff_162">Migration names should clearly describe what they do:</p><div class="code-block" data-lang="none">
+</div></section><section class="chapter"><h3 id="4-use-descriptive-names" data-toc="4-use-descriptive-names">4. Use Descriptive Names</h3><p id="rl5zcu_245">Migration names should clearly describe what they do:</p><div class="code-block" data-lang="none">
 // Good
 CreateUsersTable
 AddEmailVerificationToUsers
@@ -463,7 +539,7 @@ UpdateDatabase
 Changes
 Migration1
 Fix
-</div></section><section class="chapter"><h3 id="5-handle-production-carefully" data-toc="5-handle-production-carefully">5. Handle Production Carefully</h3><p id="-51m0ff_164">In production environments:</p><ul class="list _bullet" id="-51m0ff_165"><li class="list__item" id="-51m0ff_166"><p id="-51m0ff_171"><span class="control" id="-51m0ff_172">Backup first</span> - Always backup before running migrations</p></li><li class="list__item" id="-51m0ff_167"><p id="-51m0ff_173"><span class="control" id="-51m0ff_174">Review changes</span> - Understand what each migration does</p></li><li class="list__item" id="-51m0ff_168"><p id="-51m0ff_175"><span class="control" id="-51m0ff_176">Plan downtime</span> - Some migrations may require brief downtime</p></li><li class="list__item" id="-51m0ff_169"><p id="-51m0ff_177"><span class="control" id="-51m0ff_178">Test in staging</span> - Run migrations in a staging environment first</p></li><li class="list__item" id="-51m0ff_170"><p id="-51m0ff_179"><span class="control" id="-51m0ff_180">Monitor performance</span> - Large table alterations can be slow</p></li></ul></section><section class="chapter"><h3 id="6-version-control" data-toc="6-version-control">6. Version Control</h3><ul class="list _bullet" id="-51m0ff_181"><li class="list__item" id="-51m0ff_182"><p id="-51m0ff_185">Always commit migration files to version control</p></li><li class="list__item" id="-51m0ff_183"><p id="-51m0ff_186">Never modify migrations that have run in production</p></li><li class="list__item" id="-51m0ff_184"><p id="-51m0ff_187">Create new migrations to fix issues instead of editing old ones</p></li></ul></section></section><section class="chapter"><h2 id="database-specific-considerations" data-toc="database-specific-considerations">Database-Specific Considerations</h2><section class="chapter"><h3 id="mysql-mariadb" data-toc="mysql-mariadb">MySQL / MariaDB</h3><div class="code-block" data-lang="ts">
+</div></section><section class="chapter"><h3 id="5-handle-production-carefully" data-toc="5-handle-production-carefully">5. Handle Production Carefully</h3><p id="rl5zcu_247">In production environments:</p><ul class="list _bullet" id="rl5zcu_248"><li class="list__item" id="rl5zcu_249"><p id="rl5zcu_254"><span class="control" id="rl5zcu_255">Backup first</span> - Always backup before running migrations</p></li><li class="list__item" id="rl5zcu_250"><p id="rl5zcu_256"><span class="control" id="rl5zcu_257">Review changes</span> - Understand what each migration does</p></li><li class="list__item" id="rl5zcu_251"><p id="rl5zcu_258"><span class="control" id="rl5zcu_259">Plan downtime</span> - Some migrations may require brief downtime</p></li><li class="list__item" id="rl5zcu_252"><p id="rl5zcu_260"><span class="control" id="rl5zcu_261">Test in staging</span> - Run migrations in a staging environment first</p></li><li class="list__item" id="rl5zcu_253"><p id="rl5zcu_262"><span class="control" id="rl5zcu_263">Monitor performance</span> - Large table alterations can be slow</p></li></ul></section><section class="chapter"><h3 id="6-version-control" data-toc="6-version-control">6. Version Control</h3><ul class="list _bullet" id="rl5zcu_264"><li class="list__item" id="rl5zcu_265"><p id="rl5zcu_268">Always commit migration files to version control</p></li><li class="list__item" id="rl5zcu_266"><p id="rl5zcu_269">Never modify migrations that have run in production</p></li><li class="list__item" id="rl5zcu_267"><p id="rl5zcu_270">Create new migrations to fix issues instead of editing old ones</p></li></ul></section></section><section class="chapter"><h2 id="database-specific-considerations" data-toc="database-specific-considerations">Database-Specific Considerations</h2><section class="chapter"><h3 id="mysql-mariadb" data-toc="mysql-mariadb">MySQL / MariaDB</h3><div class="code-block" data-lang="ts">
 await this.schema.create('users', (table) =&gt; {
   table.id();
   table.string('name');
@@ -478,7 +554,7 @@ await this.schema.create('users', (table) =&gt; {
 table.json('metadata');          // JSON column
 table.jsonb('settings');         // JSONB column (more efficient)
 table.uuid('id').primary();      // UUID primary key
-</div></section><section class="chapter"><h3 id="sqlite" data-toc="sqlite">SQLite</h3><p id="-51m0ff_193">SQLite has some limitations:</p><ul class="list _bullet" id="-51m0ff_194"><li class="list__item" id="-51m0ff_196"><p id="-51m0ff_199">Limited <code class="code" id="-51m0ff_200">ALTER TABLE</code> support</p></li><li class="list__item" id="-51m0ff_197"><p id="-51m0ff_201">No <code class="code" id="-51m0ff_202">ENUM</code> type (use CHECK constraints)</p></li><li class="list__item" id="-51m0ff_198"><p id="-51m0ff_203">Foreign keys must be enabled explicitly</p></li></ul><div class="code-block" data-lang="ts">
+</div></section><section class="chapter"><h3 id="sqlite" data-toc="sqlite">SQLite</h3><p id="rl5zcu_276">SQLite has some limitations:</p><ul class="list _bullet" id="rl5zcu_277"><li class="list__item" id="rl5zcu_279"><p id="rl5zcu_282">Limited <code class="code" id="rl5zcu_283">ALTER TABLE</code> support</p></li><li class="list__item" id="rl5zcu_280"><p id="rl5zcu_284">No <code class="code" id="rl5zcu_285">ENUM</code> type (use CHECK constraints)</p></li><li class="list__item" id="rl5zcu_281"><p id="rl5zcu_286">Foreign keys must be enabled explicitly</p></li></ul><div class="code-block" data-lang="ts">
 // SQLite limitations
 // ✓ Supported
 table.string('name');
@@ -487,7 +563,7 @@ table.integer('age');
 // ✗ Limited support
 table.renameColumn('old', 'new');  // Not supported
 table.dropColumn('column');         // Not supported
-</div></section></section><section class="chapter"><h2 id="troubleshooting" data-toc="troubleshooting">Troubleshooting</h2><section class="chapter"><h3 id="migration-failed" data-toc="migration-failed">Migration Failed</h3><p id="-51m0ff_206">If a migration fails midway:</p><ol class="list _decimal" id="-51m0ff_207" type="1"><li class="list__item" id="-51m0ff_208"><p id="-51m0ff_213">Check the error message for details</p></li><li class="list__item" id="-51m0ff_209"><p id="-51m0ff_214">Review the migration code</p></li><li class="list__item" id="-51m0ff_210"><p id="-51m0ff_215">Fix the issue</p></li><li class="list__item" id="-51m0ff_211"><p id="-51m0ff_216">Rollback if necessary: <code class="code" id="-51m0ff_217">elegant migrate:rollback</code></p></li><li class="list__item" id="-51m0ff_212"><p id="-51m0ff_218">Re-run the migration: <code class="code" id="-51m0ff_219">elegant migrate</code></p></li></ol></section><section class="chapter"><h3 id="multiple-connections" data-toc="multiple-connections">Multiple Connections</h3><p id="-51m0ff_220">Specify which connection to use:</p><div class="code-block" data-lang="ts">
+</div></section></section><section class="chapter"><h2 id="troubleshooting" data-toc="troubleshooting">Troubleshooting</h2><section class="chapter"><h3 id="migration-failed" data-toc="migration-failed">Migration Failed</h3><p id="rl5zcu_289">If a migration fails midway:</p><ol class="list _decimal" id="rl5zcu_290" type="1"><li class="list__item" id="rl5zcu_291"><p id="rl5zcu_296">Check the error message for details</p></li><li class="list__item" id="rl5zcu_292"><p id="rl5zcu_297">Review the migration code</p></li><li class="list__item" id="rl5zcu_293"><p id="rl5zcu_298">Fix the issue</p></li><li class="list__item" id="rl5zcu_294"><p id="rl5zcu_299">Rollback if necessary: <code class="code" id="rl5zcu_300">elegant migrate:rollback</code></p></li><li class="list__item" id="rl5zcu_295"><p id="rl5zcu_301">Re-run the migration: <code class="code" id="rl5zcu_302">elegant migrate</code></p></li></ol></section><section class="chapter"><h3 id="multiple-connections" data-toc="multiple-connections">Multiple Connections</h3><p id="rl5zcu_303">Specify which connection to use:</p><div class="code-block" data-lang="ts">
 export class CreateAnalyticsEvents extends Migration {
   connection = 'analytics';
   
@@ -503,6 +579,6 @@ export class CreateAnalyticsEvents extends Migration {
     await this.schema.drop('events');
   }
 }
-</div><p id="-51m0ff_222">Run migrations for a specific connection:</p><div class="code-block" data-lang="bash">
+</div><p id="rl5zcu_305">Run migrations for a specific connection:</p><div class="code-block" data-lang="bash">
 elegant migrate --connection=analytics
-</div></section></section><section class="chapter"><h2 id="next-steps" data-toc="next-steps">Next Steps</h2><ul class="list _bullet" id="-51m0ff_224"><li class="list__item" id="-51m0ff_225"><p id="-51m0ff_228">Learn about <a href="query-builder.html" id="-51m0ff_229" data-tooltip="Elegant's query builder provides an intuitive, fluent interface for constructing and executing database queries. Rather than writing raw SQL strings throughout your application, the query builder offers a chainable API that's both readable and maintainable.">Query Builder</a> to interact with your database</p></li><li class="list__item" id="-51m0ff_226"><p id="-51m0ff_230">Explore <a href="elegant-getting-started.html" id="-51m0ff_231" data-tooltip="The Elegant ORM (Object-Relational Mapper) transforms database tables into intuitive TypeScript classes, letting you work with database records as objects rather than writing raw SQL. This object-oriented approach makes your code more maintainable, readable, and enjoyable to write.">Elegant ORM</a> for model-based interactions</p></li><li class="list__item" id="-51m0ff_227"><p id="-51m0ff_232">Review <a href="getting-started.html" id="-51m0ff_233" data-tooltip="Modern applications depend on reliable, efficient database interactions. Elegant simplifies this process by providing a clean, expressive interface for working with databases. Whether you need raw SQL power, a fluent query builder, or an elegant ORM, this toolkit has you covered.">database configuration</a> options</p></li></ul></section><div class="last-modified">17 October 2025</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="query-builder.html" class="navigation-links__prev">Database: Query Builder</a><a href="elegant-getting-started.html" class="navigation-links__next">Elegant ORM: Getting Started</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="https://resources.jetbrains.com/writerside/apidoc/6.22.0-b776/app.js"></script></body></html>
+</div></section></section><section class="chapter"><h2 id="next-steps" data-toc="next-steps">Next Steps</h2><ul class="list _bullet" id="rl5zcu_307"><li class="list__item" id="rl5zcu_308"><p id="rl5zcu_311">Learn about <a href="query-builder.html" id="rl5zcu_312" data-tooltip="Elegant's query builder provides an intuitive, fluent interface for constructing and executing database queries. Rather than writing raw SQL strings throughout your application, the query builder offers a chainable API that's both readable and maintainable.">Query Builder</a> to interact with your database</p></li><li class="list__item" id="rl5zcu_309"><p id="rl5zcu_313">Explore <a href="elegant-getting-started.html" id="rl5zcu_314" data-tooltip="The Elegant ORM (Object-Relational Mapper) transforms database tables into intuitive TypeScript classes, letting you work with database records as objects rather than writing raw SQL. This object-oriented approach makes your code more maintainable, readable, and enjoyable to write.">Elegant ORM</a> for model-based interactions</p></li><li class="list__item" id="rl5zcu_310"><p id="rl5zcu_315">Review <a href="getting-started.html" id="rl5zcu_316" data-tooltip="Modern applications depend on reliable, efficient database interactions. Elegant simplifies this process by providing a clean, expressive interface for working with databases. Whether you need raw SQL power, a fluent query builder, or an elegant ORM, this toolkit has you covered.">database configuration</a> options</p></li></ul></section><div class="last-modified">24 October 2025</div><div data-feedback-placeholder="true"></div><div class="navigation-links _bottom"><a href="query-builder.html" class="navigation-links__prev">Database: Query Builder</a><a href="elegant-getting-started.html" class="navigation-links__next">Elegant ORM: Getting Started</a></div></article><div id="disqus_thread"></div></div></section></main></div><script src="https://resources.jetbrains.com/writerside/apidoc/6.22.0-b776/app.js"></script></body></html>
