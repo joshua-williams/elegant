@@ -263,7 +263,7 @@ export default class ModelCore extends ModelRelationships{
       }
     }
     if (!this.$.attributes.has(name)) {
-      if (this.$.config.models.strictAttributes) {
+      if (this.hasStrictAttributes()) {
         throw new Error(`${this.constructor.name} Model: unknown attribute ${name}"`)
       }
       return
@@ -272,6 +272,15 @@ export default class ModelCore extends ModelRelationships{
     return this[name] = value
   }
 
+  protected hasStrictAttributes():boolean {
+    let isStrict:boolean = false
+    if (process.env.hasOwnProperty('ELEGANT_STRICT_ATTRIBUTES')) {
+      isStrict = process.env.ELEGANT_STRICT_ATTRIBUTES === 'true'
+    } else if (this.$.config.models.hasOwnProperty('strictAttributes')) {
+      isStrict = this.$.config.models.strictAttributes
+    }
+    return isStrict
+  }
   /**
    * Disconnects from the database if the connection has been initialized.
    *

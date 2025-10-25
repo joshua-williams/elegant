@@ -1,5 +1,4 @@
-import Elegant, {Model, QueryBuilder, Schema} from '../index.js';
-import { vi } from 'vitest';
+import Elegant, {Model, Schema} from '../index.js';
 
 describe('Model', () => {
   let schema:Schema;
@@ -34,39 +33,74 @@ describe('Model', () => {
       }
       const user:any = await UserModel.create({firstName:'John', lastName:'Doe'})
       expect(user).toBeInstanceOf(UserModel)
-      console.log(user.firstName)
       expect(user.firstName).toEqual('John')
-      // expect(user.lastName).toEqual('Doe')
+      expect(user.lastName).toEqual('Doe')
     })
   })
-  describe('fill strictAttributes', () => {
-    it('should throw error when attempting to fill attributes if fillable is not set', async () => {
-      class UserModel extends Model {}
-      const user:any =  await UserModel.create()
-      const expected = () => user.fill({firstName:'John', lastName:'Doe'})
-      expect(expected).toThrow('Model UserModel has no fillable attributes')
+
+  describe('fill', () => {
+    describe('fill strictAttributes', () => {
+      beforeAll(() => {
+        (process.env as any).ELEGANT_STRICT_ATTRIBUTES = true
+      })
+      it('should throw error when attempting to fill attributes if fillable is not set', async () => {
+        class UserModel extends Model {}
+        const user:any =  await UserModel.create()
+        const expected = () => user.fill({firstName:'John', lastName:'Doe'})
+        expect(expected).toThrow('Model UserModel has no fillable attributes')
+      })
+
+      it('should throw error when attempting to fill property not in attributes', async () => {
+        class UserModel extends Model {
+          $fillable = ['firstName', 'lastName', 'email']
+        }
+        const user:any = await new UserModel().init()
+        const expected = () => user.fill({firstName:'John', lastName:'Doe'})
+        expect(expected).toThrow('UserModel Model: unknown attribute "firstName"')
+      })
+
+      it('should throw error when attempting to fill a guarded property', async () => {
+        class UserModel extends Model {
+          $attributes = ['firstName', 'lastName', 'email']
+          $fillable = ['firstName', 'lastName', 'email']
+          $guarded = ['email']
+        }
+        const user:any = await (new UserModel()).init()
+        const expected = () => user.fill({firstName:'John', lastName:'Doe'})
+        expect(expected).toThrow('UserModel Model: unknown attribute "firstName"')
+      })
     })
 
-    it('should throw error when attempting to fill property not in attributes', async () => {
-      class UserModel extends Model {
-        $fillable = ['firstName', 'lastName', 'email']
-      }
-      const user:any = await (new UserModel()).init()
-      const expected = () => user.fill({firstName:'John', lastName:'Doe'})
-      expect(expected).toThrow('Model UserModel "firstName" is not a known attribute')
-    })
+    describe('fill non-strictAttributes', () => {
+      beforeAll(() => {
+        (process.env as any).ELEGANT_STRICT_ATTRIBUTES = false
+      })
+      it('should not throw error when attempting to fill attributes if fillable is not set', async () => {
+        class UserModel extends Model {}
+        const user:any =  await UserModel.create()
+        const expected = () => user.fill({firstName:'John', lastName:'Doe'})
+        expect(expected).not.toThrow('Model UserModel has no fillable attributes')
+      })
 
-    it('should throw error when attempting to fill a guarded property', async () => {
-      class UserModel extends Model {
-        $attributes = ['firstName', 'lastName', 'email']
-        $fillable = ['firstName', 'lastName', 'email']
-        $guarded = ['email']
-      }
-      const user:any = await (new UserModel()).init()
-      const expected = () => user.fill({firstName:'John', lastName:'Doe'})
-      user.fill({email:'no@email.com'})
+      it('should throw error when attempting to fill property not in attributes', async () => {
+        class UserModel extends Model {
+          $fillable = ['firstName', 'lastName', 'email']
+        }
+        const user:any = await new UserModel().init()
+        const expected = () => user.fill({firstName:'John', lastName:'Doe'})
+        expect(expected).not.toThrow('UserModel Model: unknown attribute "firstName"')
+      })
 
-      expect(expected).toThrow('Model UserModel "firstName" is not a known attribute')
+      it('should throw error when attempting to fill a guarded property', async () => {
+        class UserModel extends Model {
+          $attributes = ['firstName', 'lastName', 'email']
+          $fillable = ['firstName', 'lastName', 'email']
+          $guarded = ['email']
+        }
+        const user:any = await (new UserModel()).init()
+        const expected = () => user.fill({firstName:'John', lastName:'Doe'})
+        expect(expected).not.toThrow('UserModel Model: unknown attribute "firstName"`')
+      })
     })
   })
 

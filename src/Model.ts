@@ -3,7 +3,7 @@ import ModelCore from '../lib/model/ModelCore.js';
 export default class Model extends ModelCore {
 
   fill(attributes:Record<string, any>):Model {
-    const isStrict = this.$.config.models.strictAttributes
+    let isStrict = this.hasStrictAttributes()
     if (!this.$fillable.length && isStrict) {
       throw new Error(`Model ${this.constructor.name} has no fillable attributes`)
     }
@@ -12,7 +12,6 @@ export default class Model extends ModelCore {
       if (this.$.reservedProperties.includes(name)) {
         throw new Error(`Model ${this.constructor.name} ${name} is immutable`)
       }
-
       if (!this.$fillable.includes(name)) {
         if (isStrict) {
           throw new Error(`Model ${this.constructor.name} "${name}" is not a fillable attributes`)
@@ -20,15 +19,13 @@ export default class Model extends ModelCore {
           continue
         }
       }
-
       if (!this.$.attributes.has(name)) {
         if (isStrict) {
-          throw new Error(`"${this.constructor.name} Model: unknown attribute ${name}"`)
+          throw new Error(`${this.constructor.name} Model: unknown attribute "${name}"`)
         } else {
           continue
         }
       }
-
       if (this.$guarded.includes(name)) {
         if (isStrict) {
           throw new Error(`Model ${this.constructor.name} cannot fill guarded attribute ${name}`)        } else {
@@ -54,6 +51,4 @@ export default class Model extends ModelCore {
     return this.$.db.select(`select ${columns} from ${this.tableName()}`)
       .then((rows:T[]) => rows)
   }
-
-
 }
