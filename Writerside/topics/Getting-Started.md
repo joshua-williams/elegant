@@ -181,7 +181,9 @@ const result = await db.select('SELECT * FROM users LIMIT 10');
 
 ## Parameter Binding
 
-Elegant uses parameterized queries to protect against SQL injection. Parameters are represented by `?` placeholders in your SQL:
+Elegant uses parameterized queries to protect against SQL injection. Parameters are represented by `?` or `$n` placeholders depending the database dialect. 
+
+MySQL and MariaDB and SQLite use `?` to represent parameters while Postgres use `$` followd by the parameter number.
 ```typescript 
 // Safe - uses parameter binding 
 const user = await db.select( 'SELECT * FROM users WHERE email = ?', [userInput] );
@@ -251,6 +253,41 @@ const db = await Elegant.connection();
 await db.close();
 ```
 
+
+## Database-Specific Notes
+
+### MySQL and MariaDB
+
+- Uses `?` for parameter placeholders
+- Supports all standard features
+- Recommended charset: `utf8mb4`
+- Collation: `utf8mb4_unicode_ci`
+
+### PostgreSQL
+
+- Uses `$1`, `$2`, etc. for parameter placeholders
+- Case-sensitive table and column names by default
+- Supports advanced features like arrays and JSON operators
+- Boolean type is native (not emulated)
+
+### SQLite
+
+- Uses `?` for parameter placeholders
+- Lightweight, serverless database
+- Limited ALTER TABLE support (some column modifications require table recreation)
+- Foreign keys must be explicitly enabled in connection settings
+
+---
+
+## Additional Resources
+
+For more information and support:
+
+- GitHub Repository: https://github.com/joshua-williams/elegant
+- Report Issues: https://github.com/joshua-williams/elegant/issues
+- TypeScript Type Definitions: Included with package
+
+---
 
 ## Next Steps
 

@@ -14,7 +14,7 @@ Elegant provides powerful mechanisms to transform attribute values as they're re
 Accessors modify attribute values when you retrieve them from a model instance. They act as intermediaries between the raw database value and the value your application code receives.
 To create an accessor, define a protected method on your model class. The method name should use camelCase formatting to represent the underlying database column name.
 
-Example: Creating a First Name Accessor
+Example: Creating a Name Accessor
 
 ```TypeScript
 class User extends Model {

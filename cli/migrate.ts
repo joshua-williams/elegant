@@ -46,8 +46,7 @@ export const StatusCommand = new Command('migrate:status')
     const config = await getAppConfig()
     const inspector = new MigrationInspector(db, config);
     const status = await inspector.getStatus()
-    await db.disconnect()
-
+    await Elegant.disconnect()
     const table = new AsciiTable('Migration Status')
       .setHeading('Migration Date', 'Class Name', 'Status')
     status.forEach(m => {

@@ -1,6 +1,8 @@
 import Elegant from '../../index.js';
 import {MigrationManager} from './MigrationManager.js';
 import MigrationResult from './MigrationResult.js';
+import { ConnectionConfig} from '../../types.js';
+import {getAppConfig} from '../config.js';
 
 
 export default class MigrationRunner extends MigrationManager {
@@ -11,7 +13,9 @@ export default class MigrationRunner extends MigrationManager {
     let filter
     try {
       const lastMigration = await this.lastMigration()
-      filter = (f) => f > lastMigration.timestamp
+      if (lastMigration.length) {
+        filter = (f) => f > lastMigration.timestamp
+      }
     } catch (error) {}
     const migrations =  await this.getMigrationFileMap('asc', filter)
       .then(migrations => migrations.map(m => m.migration))
@@ -104,12 +108,17 @@ export default class MigrationRunner extends MigrationManager {
 
   async saveResults(results:MigrationResult[]) {
     const db = await Elegant.singleton()
+    const {database} = await this.getConnectionConfig()
     for (const result of results) {
       const {name, batchId, action, status, error, duration, created_at} = result
       const params = [name, batchId, action, status, error, duration]
-      const query = `INSERT INTO elegant.elegant_migrations (name, batchId, action, status, error, duration) VALUES (?, ?, ?, ?, ?, ?)`
-      await db.query(query, params)
+      const query = `INSERT INTO ${database}.elegant_migrations (name, batchId, action, status, error, duration) VALUES (?, ?, ?, ?, ?, ?)`
+      const affected = await db.insert(query, params)
+      console.log('rows affected', affected)
     }
   }
-
+  protected async getConnectionConfig():Promise<ConnectionConfig> {
+    const config = await getAppConfig()
+    return config.connections[config.default]
+  }
 }

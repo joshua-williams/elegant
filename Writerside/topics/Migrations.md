@@ -164,6 +164,8 @@ export class CreateUsersTable extends Migration {
 ```
 
 ## Column Types
+
+
 ### String Columns
 ```typescript
 // VARCHAR with default length (255)
@@ -885,6 +887,7 @@ Run migrations for a specific connection:
 ```bash
 elegant migrate --connection=analytics
 ```
+
 ## Next Steps
 - Learn about [Query Builder](Query-Builder.md) to interact with your database
 - Explore [Elegant ORM](Elegant-Getting-Started.md) for model-based interactions
