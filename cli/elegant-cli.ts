@@ -2,7 +2,7 @@
 import 'dotenv/config'
 import {program} from 'commander';
 import InitCommand from './init.js'
-import {MakeModelCommand, MakeMigrationCommand, MakeTypesCommand} from './make.js';
+import {MakeModelCommand, MakeMigrationCommand, MakeTypesCommand, MakeStatementCommand} from './make.js';
 import {MigrateCommand, RollbackCommand, StatusCommand} from './migrate.js';
 
 program
@@ -12,6 +12,7 @@ program
   .addCommand(MakeModelCommand)
   .addCommand(MakeMigrationCommand)
   .addCommand(MakeTypesCommand)
+  .addCommand(MakeStatementCommand)
   .addCommand(MigrateCommand)
   .addCommand(RollbackCommand)
   .addCommand(StatusCommand)

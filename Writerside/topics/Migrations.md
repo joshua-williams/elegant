@@ -718,27 +718,16 @@ This command:
 ### Check Migration Status
 View which migrations have run and which are pending:
 
+
 ```bash
 elegant migrate:status
 ```
 Output example:
-```console
-Migration Status:
-✓ 20250101120000_CreateUsersTable
-✓ 20250101130000_CreatePostsTable
-✗ 20250102140000_AddPhoneToUsers (pending)
-```
-### Migration Output
-Migrations provide feedback as they run:
 
-```console
-Running migrations...
-✓ CreateUsersTable
-✓ CreatePostsTable
-✓ AddPhoneToUsers
-
-Migrations completed successfully.
-```
+| Migration Date           | Migration Name              | Status  |
+|--------------------------|-----------------------------|---------|
+| 2025-10-25T21:06:01.524Z | CreateContactsTable         | pending |
+| 2025-10-25T22:47:22.000  | CreateElegantMigrationTable | success |
 
 ## Rolling Back Migrations
 ### Rollback Last Batch
@@ -763,7 +752,45 @@ elegant migrate:reset
 > Warning: Data Loss Rolling back migrations will drop tables and delete data. Always backup your database before rolling back migrations in production environments.
 > {style="warning"}
 
-Migration Best Practices
+## Generating SQL Statements
+Elegant can generate SQL statements from your migration files without executing them against the database. This is useful for review, version control, or integration with external database management tools.
+### Output Options
+#### Save to Specific File Path
+Generate SQL statements for a migration and save them to a designated file location. Use the `-o` or `--outputFile` option to specify the exact file path:
+```bash
+elegant make:statement --migration User -o resources/statements/User.sql
+```
+If the target directory doesn't exist, add the `-f` or `--force` flag to create it automatically:
+```bash
+elegant make:statement --force --migration User -o resources/statements/User.sql
+```
+#### Save to Specific Directory
+Generate SQL statements and save them to a directory without specifying the filename. Use the `-p` or `--outputDir` option to define the target directory. The file will be named after the model class with a .sql extension:
+```bash
+elegant make:statement --migration User -p resources/statements
+```
+This creates `resources/statements/User.sql`. If the directory doesn't exist, include the `-f` or `--force` flag:
+```bash
+elegant make:statement --force --migration User -p resources/statements
+```
+#### Output to Console
+Print the generated SQL directly to standard output by omitting both file and directory options:
+````bash
+elegant make:statement --migration User
+````
+This allows you to:
+
+* Review SQL statements before execution
+* Pipe output to other database tools or scripts
+* Integrate with version control workflows
+* Process statements through custom pipelines
+
+#### Example with piping:
+```bash
+elegant make:statement --migration User | mysql -u root -p database_name
+```
+
+## Migration Best Practices
 1. Always Provide Down Methods
    Every migration should have a working down() method:
 
@@ -903,31 +930,6 @@ If a migration fails midway:
 4. Rollback if necessary: `elegant migrate:rollback`
 5. Re-run the migration: `elegant migrate`
 
-### Multiple Connections
-Specify which connection to use:
-
-```typescript
-export class CreateAnalyticsEvents extends Migration {
-  connection = 'analytics';
-  
-  async up() {
-    await this.schema.create('events', (table) => {
-      table.id();
-      table.string('event_name');
-      table.timestamps();
-    });
-  }
-  
-  async down() {
-    await this.schema.drop('events');
-  }
-}
-```
-
-Run migrations for a specific connection:
-```bash
-elegant migrate --connection=analytics
-```
 
 ## Next Steps
 - Learn about [Query Builder](Query-Builder.md) to interact with your database

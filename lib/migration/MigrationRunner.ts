@@ -17,7 +17,7 @@ export default class MigrationRunner extends MigrationManager {
         filter = (f) => f > lastMigration.timestamp
       }
     } catch (error) {}
-    const migrations =  await this.getMigrationFileMap('asc', filter)
+    const migrations =  await this.getMigrationFileMap(filter, 'asc')
       .then(migrations => migrations.map(m => m.migration))
     const timestamp = Date.now()
     for (const migration of migrations) {
@@ -64,7 +64,7 @@ export default class MigrationRunner extends MigrationManager {
   public async rollback():Promise<MigrationResult[]> {
     const results:MigrationResult[] = []
     const batchId:number = Date.now()
-    const migrations =  await this.getMigrationFileMap('desc')
+    const migrations =  await this.getMigrationFileMap(undefined, 'desc')
       .then(migrations => {
         return migrations.map(m => m.migration)
           .filter(m => m.constructor.name !== 'CreateElegantMigrationTable')

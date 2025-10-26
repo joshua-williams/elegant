@@ -44,7 +44,7 @@ export class MigrationManager {
    *                                       Use 'asc' for ascending order or 'desc' for descending order.
    * @return {MigrationFile[]} Array of migration files sorted in the specified order.
    */
-  protected getMigrationFiles(order:'asc'|'desc' = 'asc', filter?:(file:string)=>boolean):MigrationFile[] {
+  public getMigrationFiles(order:'asc'|'desc' = 'asc', filter?:(file:string)=>boolean):MigrationFile[] {
     let migrationFiles:any = fs.readdirSync(this.migrationPath())
       .filter(file => file.endsWith('.migration.js') || file.endsWith('.migration.ts'))
       .filter(file => file.match(/^\d+\./))
@@ -67,7 +67,7 @@ export class MigrationManager {
    * @param {'asc'|'desc'} [order='asc'] - The order in which migration files should be retrieved. Use 'asc' for ascending or 'desc' for descending order.
    * @return {Promise<MigrationFileMap[]>} A promise that resolves to an array of migration file mappings, each including the migration instance and file information.
    */
-  protected async getMigrationFileMap(order:'asc'|'desc' = 'asc', filter?:(file:string)=>boolean):Promise<MigrationFileMap[]> {
+   async getMigrationFileMap(filter?: (file: string) => boolean, order: "asc" | "desc" = 'asc'):Promise<MigrationFileMap[]> {
     const migrationFiles = this.getMigrationFiles(order,filter)
     const migrations:MigrationFileMap[] = []
     for (const file of migrationFiles) {
