@@ -1,3 +1,7 @@
+:root {
+    --wh-sidebar-width-xlg: 275px;
+
+}
 .app__virtual-toc-sidebar,
 .app__virtual-toc {
     width: 230px !important;
