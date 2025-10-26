@@ -2,3 +2,6 @@
 .app__virtual-toc {
     width: 230px !important;
 }
+.footer__powered {
+    display: none !important;
+}
