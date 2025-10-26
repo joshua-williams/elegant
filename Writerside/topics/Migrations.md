@@ -312,8 +312,8 @@ await this.schema.create('posts', (table) => {
   
   // Create a foreign key constraint
   table.foreign('user_id')
-    .references('id')
     .on('users')
+    .references('id')
     .onDelete('CASCADE')
     .onUpdate('CASCADE');
 });
@@ -328,8 +328,8 @@ Create a foreign key constraint that references multiple columns in another tabl
 ```typescript
 table.interger('user_id')
 table.foreign(['user_id', 'author_id'])
-  .references('id')
   .on('users')
+  .references('id')
   .onDelete('CASCADE')
   .onUpdate('CASCADE');
 
