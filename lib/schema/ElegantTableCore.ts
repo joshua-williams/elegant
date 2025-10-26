@@ -9,31 +9,31 @@ import {
 export default class ElegantTableCore {
   protected columns: ColumnDefinition[] = []
 
-  char(columnName:string, length:number = 255):ColumnDefinition {
+  char(columnName:string, length:number = 255):StringColumnDefinition {
     const column = new StringColumnDefinition(columnName, length, 'CHAR')
     this.columns.push(column)
     return column
   }
 
-  string(columnName:string, length:number = 255):ColumnDefinition {
+  string(columnName:string, length:number = 255):StringColumnDefinition {
     const column = new StringColumnDefinition(columnName, length)
     this.columns.push(column)
     return column
   }
 
-  text(columnName:string):ColumnDefinition {
+  text(columnName:string):StringColumnDefinition {
     const column = new StringColumnDefinition(columnName, undefined, 'TEXT')
     this.columns.push(column)
     return column
   }
 
-  date(columnName:string, defaultValue?:'CURRENT_TIMESTAMP'|Date, nullable?:boolean):ColumnDefinition {
+  date(columnName:string, defaultValue?:'CURRENT_TIMESTAMP'|Date, nullable?:boolean):DateTimeColumnDefinition {
     const column = new DateTimeColumnDefinition(columnName, defaultValue, nullable)
     this.columns.push(column)
     return column
   }
 
-  time(columnName:string, defaultValue?:Date|'CURRENT_TIME', precision?:number, nullable?:boolean):ColumnDefinition {
+  time(columnName:string, defaultValue?:Date|'CURRENT_TIME', precision?:number, nullable?:boolean):TimeColumnDefinition {
     const column = new TimeColumnDefinition(columnName, defaultValue, precision, nullable)
     this.columns.push(column)
     return column
@@ -65,77 +65,77 @@ export default class ElegantTableCore {
     return column
   }
 
-  smallInteger(columnName:string, length?:number, nullable?:boolean):ColumnDefinition {
+  smallInteger(columnName:string, length?:number, nullable?:boolean):NumberColumnDefinition {
     const column = new NumberColumnDefinition(columnName, 'SMALLINT', length, undefined, nullable)
     this.columns.push(column)
     return column
   }
 
-  smallInt(columnName:string, length?:number, nullable?:boolean):ColumnDefinition {
+  smallInt(columnName:string, length?:number, nullable?:boolean):NumberColumnDefinition {
     return this.smallInteger(columnName, length, nullable)
   }
 
-  bigInteger(columnName:string, length?:number, nullable?:boolean):ColumnDefinition {
+  bigInteger(columnName:string, length?:number, nullable?:boolean):NumberColumnDefinition {
     const column = new NumberColumnDefinition(columnName, 'BIGINT', length, undefined, nullable)
     this.columns.push(column)
     return column
   }
 
-  bigInt(columnName:string, length?:number, nullable?:boolean):ColumnDefinition {
+  bigInt(columnName:string, length?:number, nullable?:boolean):NumberColumnDefinition {
     return this.bigInteger(columnName, length, nullable)
   }
 
-  integer(columnName:string, length?:number, nullable?:boolean):ColumnDefinition {
+  integer(columnName:string, length?:number, nullable?:boolean):NumberColumnDefinition {
     const column = new NumberColumnDefinition(columnName, 'INT', length, undefined, nullable)
     this.columns.push(column)
     return column
   }
 
-  int(columnName:string, length?:number, nullable?:boolean):ColumnDefinition {
+  int(columnName:string, length?:number, nullable?:boolean):NumberColumnDefinition {
     return this.integer(columnName, length, nullable)
   }
 
-  unsignedSmallInteger(columnName:string, length?:number, nullable?:boolean):ColumnDefinition {
+  unsignedSmallInteger(columnName:string, length?:number, nullable?:boolean):NumberColumnDefinition {
     const column = new NumberColumnDefinition(columnName, 'SMALLINT', length, undefined, nullable)
     column.unsigned()
     this.columns.push(column)
     return column
   }
 
-  uSmallInt(columnName:string, length?:number, nullable?:boolean):ColumnDefinition {
+  uSmallInt(columnName:string, length?:number, nullable?:boolean):NumberColumnDefinition {
     return this.unsignedSmallInteger(columnName, length, nullable)
   }
 
-  unsignedInteger(columnName:string, length?:number, nullable?:boolean):ColumnDefinition {
+  unsignedInteger(columnName:string, length?:number, nullable?:boolean):NumberColumnDefinition {
     const column = new NumberColumnDefinition(columnName, 'INT', length, undefined, nullable)
     column.unsigned()
     this.columns.push(column)
     return column
   }
 
-  uInt(columnName:string, length?:number, nullable?:boolean):ColumnDefinition {
+  uInt(columnName:string, length?:number, nullable?:boolean):NumberColumnDefinition {
     return this.unsignedInteger(columnName, length, nullable)
   }
 
-  unsignedBigInteger(columnName:string, length?:number, nullable?:boolean):ColumnDefinition {
+  unsignedBigInteger(columnName:string, length?:number, nullable?:boolean):NumberColumnDefinition {
     const column = new NumberColumnDefinition(columnName, 'BIGINT', length, undefined, nullable)
     column.unsigned()
     this.columns.push(column)
     return column
   }
 
-  uBigInt(columnName:string, length?:number, nullable?:boolean):ColumnDefinition {
+  uBigInt(columnName:string, length?:number, nullable?:boolean):NumberColumnDefinition {
     return this.unsignedBigInteger(columnName, length, nullable)
   }
 
-  decimal(columnName:string, precision:number, scale:number, nullable?:boolean):ColumnDefinition {
+  decimal(columnName:string, precision:number, scale:number, nullable?:boolean):NumberColumnDefinition {
     const length = Number(`${precision}.${scale}`)
     const column = new NumberColumnDefinition(columnName, 'DECIMAL', length, undefined, nullable)
     this.columns.push(column)
     return column
   }
 
-  float(columnName:string, length?:number, nullable?:boolean):ColumnDefinition {
+  float(columnName:string, length?:number, nullable?:boolean):NumberColumnDefinition {
     const column = new NumberColumnDefinition(columnName, 'FLOAT', length, undefined, nullable)
     this.columns.push(column)
     return column

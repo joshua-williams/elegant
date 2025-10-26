@@ -4,6 +4,7 @@ import {DropTable} from './lib/schema/DropTable.js';
 import ElegantFunction from './lib/schema/ElegantFunction.js';
 import ElegantTableCore from './lib/schema/ElegantTableCore.js';
 import ElegantFunctionReturn from './lib/schema/ElegantFunctionReturn.js';
+import {ForeignKeyConstraintColumnDefinition} from './lib/schema/ColumnDefinitions.js';
 
 type ElegantConfig = {
   default: string,
@@ -61,7 +62,7 @@ type ColumnDefinitionProperties = {
   autoIncrement:boolean,
   comment:string,
   collate:string,
-  foreign:string[],
+  foreign:string[] | ForeignKeyConstraintColumnDefinition,
   table: string,
   references:Scalar[],
   onUpdate?:string,

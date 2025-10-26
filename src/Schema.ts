@@ -51,7 +51,7 @@ export default class Schema {
    * @param {SchemaClosure} closure - A closure that defines the schema of the table.
    * @return {Promise<void>} A promise that resolves when the table creation process is completed.
    */
-  public async create(tableName:string, closure:SchemaClosure):Promise<any> {
+  public async createTable(tableName:string, closure:SchemaClosure):Promise<any> {
     let table:ElegantTable = this.makeTable(tableName, 'create')
 
     this.$.tables.push(table)
@@ -61,6 +61,16 @@ export default class Schema {
       await this.$.db.statement(statement)
     }
     return Promise.resolve(true)
+  }
+
+  public async table(tableName:string, closure:SchemaClosure) {
+    let table:ElegantTable = this.makeTable(tableName, 'create')
+    this.tables.push(table)
+    closure(table)
+    if (this.$.autoExecute) {
+      const statement = await this.$.db.statement(tableName)
+      await this.$.db.statement(statement)
+    }
   }
 
   public async fn(name:string, closure:ElegantFunctionClosure) {

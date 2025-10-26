@@ -2,7 +2,7 @@ import {Migration} from '@pristine/elegant'
 
 export default class CreateElegantMigrationTable extends Migration {
   async up() {
-    await this.schema.create('elegant_migrations', (table) => {
+    await this.schema.createTable('elegant_migrations', (table) => {
       table.id()
       table.bigInteger('batchId')
       table.char('action', 20)

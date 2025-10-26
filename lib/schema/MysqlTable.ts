@@ -1,7 +1,7 @@
 import ColumnDefinition from 'lib/schema/ColumnDefinition.js';
 import ElegantTable from "./ElegantTable.js";
 import {
-  ConstraintColumnDefinition,
+  ConstraintColumnDefinition, ForeignKeyConstraintColumnDefinition,
   GeneralColumnDefinition, JsonColumnDefinition,
   NumberColumnDefinition,
   StringColumnDefinition,
@@ -117,6 +117,9 @@ export default class MysqlTable extends ElegantTable {
   }
   protected columnToSql(column: ColumnDefinition): string {
     if (column instanceof ConstraintColumnDefinition) return
+    if (column.$.foreign instanceof ForeignKeyConstraintColumnDefinition) {
+      this.columns.push(column)
+    }
     let sql = `${this.enclose(column.name)} ${column.type}`;
     if (column.$.unsigned) sql += ' UNSIGNED'
     if (column.$.nullable !== undefined) sql += column.$.nullable ? ' NULL' : ' NOT NULL'

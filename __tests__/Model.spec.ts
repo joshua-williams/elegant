@@ -6,7 +6,7 @@ describe('Model', () => {
     const db = await Elegant.singleton()
     schema = new Schema(db)
     await schema.drop('users', table => table.ifExists())
-    await schema.create('users', (table) => {
+    await schema.createTable('users', (table) => {
       table.id()
       table.string('first_name')
       table.string('last_name')

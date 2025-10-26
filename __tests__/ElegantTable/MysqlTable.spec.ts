@@ -31,6 +31,11 @@ describe('MysqlTable', () => {
       const expected = 'CREATE TABLE `users` (\n  `description` LONGTEXT\n)'
       expect(sql).toEqual(expected)
     })
+    it('string foreign key', async () => {
+      table.integer('company_id').foreign()
+      const sql = await table.toStatement()
+      console.log(sql)
+    })
   })
 
   describe('numeric columns', () => {

@@ -115,10 +115,20 @@ export const log = (message:string, type:'success'|'error'|'warning' = 'success'
     case 'warning': console.error(warning(message)); break;
   }
 }
-export const toSnakeCase = (str:string)=> {
-  return str.replace(/[A-Z]/g, (letter, index) => {
-    return (index === 0 ? '' : '_') + letter.toLowerCase();
-  });
+export const toSnakeCase = (str) => {
+  return str
+    .trim()
+    // Insert underscore before uppercase letters (for camelCase/PascalCase)
+    .replace(/([A-Z])/g, '_$1')
+    // Replace spaces, hyphens, and multiple underscores with single underscore
+    .replace(/[\s-]+/g, '_')
+    // Remove any non-alphanumeric characters except underscores
+    .replace(/[^\w_]/g, '')
+    // Convert to lowercase
+    .toLowerCase()
+    // Remove leading/trailing underscores and collapse multiple underscores
+    .replace(/^_+|_+$/g, '')
+    .replace(/_+/g, '_');
 }
 
 export const lastChar = (str:string) => str[str.length - 1]
@@ -134,6 +144,18 @@ export const inferTableNameFromModelName = (name:string) => {
   return tableName
 }
 
+/**
+ * Infers a table name from a given column name by applying specific naming conventions.
+ *
+ * The function expects the column name to follow the pattern `{table_name}_id`.
+ * If the column name matches the pattern, it extracts the table name and modifies it
+ * according to the following rules:
+ * - If the table name ends with 'y', it replaces 'y' with 'ies' (e.g., 'category_id' becomes 'categories').
+ * - If the table name does not end with 's', it appends an 's' to the name (e.g., 'user_id' becomes 'users').
+ *
+ * @param {string} name - The column name from which to infer the table name.
+ * @returns {string|undefined} The inferred table name based on the column name. Returns `undefined` if the column name does not match the expected pattern.
+ */
 export const inferTableNameFromColumn = (name:string)=> {
   const pattern = /([\w_\-]+)_id$/
   const match = name.match(pattern)

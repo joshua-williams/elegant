@@ -7,7 +7,7 @@ export default class UsersMigration extends Migration {
    * @return {void} This method does not return a value.
    */
   async up() {
-    return this.schema.create('users', (table) => {
+    return this.schema.createTable('users', (table) => {
       table.id().autoIncrement().primary()
       table.char('first_name', 90)
       table.char('last_name', 90)
