@@ -28,7 +28,7 @@ export const ElegantTestSuite = (connection:SchemaDialect) => {
         table.char('country', 2)
         table.ifNotExists();
       }
-      await schema.create('users', createUserTable)
+      await schema.createTable('users', createUserTable)
     })
 
     afterAll(async () => {

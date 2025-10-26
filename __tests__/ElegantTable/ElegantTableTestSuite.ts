@@ -246,6 +246,9 @@ export const CreateTableTestSuite = (tableName:string, Table:ElegantTableConstru
 
       describe('foreign key constraint', () => {
         describe('shorthand key constraints', () => {
+          /**
+           * @deprecated this syntax should be replaced with basic inline foreign key syntax
+           */
           it('foreign key constraint shorthand inferred table name', async () => {
             table.integer('id').primary()
             table.integer('user_id')
@@ -254,7 +257,14 @@ export const CreateTableTestSuite = (tableName:string, Table:ElegantTableConstru
             const sql = await table.toStatement()
             expect(sql).toEqual(expected)
           })
-          it('foreign key constraint shorthand', async () => {
+          it.only('foreign key constraint inline shorthand', async () => {
+            table.integer('id').primary()
+            table.integer('user_id').foreign()
+            const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'id')} INT PRIMARY KEY,\n  ${enclose(tableName, 'user_id')} INT,\n  CONSTRAINT ${enclose(tableName, 'fk_user_id')}\n    FOREIGN KEY (${enclose(tableName, 'user_id')})\n    REFERENCES ${enclose(tableName, 'users')}(${enclose(tableName, 'id')})\n)`;
+            const sql = await table.toStatement()
+            expect(sql).toEqual(expected)
+          })
+          it('foreign key constraint shorthand separate declarations', async () => {
             table.integer('id').primary()
             table.integer('user_id')
             table.foreign('user_id', 'users')
@@ -273,7 +283,7 @@ export const CreateTableTestSuite = (tableName:string, Table:ElegantTableConstru
           const sql = await table.toStatement()
           expect(sql).toEqual(expected)
         })
-        it('foreign key constraint with multiple references', async () => {
+        it('composite foreign key constraint', async () => {
           table.integer('id')
           table.integer('image_id')
           table.string('image_name')
@@ -414,7 +424,7 @@ export const GetDatabaseColumnsTestSuite = (connection:string, Table:ElegantTabl
         schema = new Schema(db)
         await schema.drop('users', (table) => table.ifExists())
         table = new Table('users', 'create', db)
-        await schema.create('users', (table) => {
+        await schema.createTable('users', (table) => {
           table.id('id')
           table.string('name')
           table.string('email').unique()

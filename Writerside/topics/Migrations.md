@@ -298,41 +298,82 @@ table.primary(['user_id', 'role_id']);
 // UUID primary key
 table.uuid('id').primary();
 ```
+## Foreign Key Constraints
 
-### Foreign Keys
-Define relationships between tables:
+Elegant automatically generates foreign key constraint names using the `fk_` prefix followed by the column name.
+
+### Defining Foreign Keys
+
+Establish relationships between tables using foreign key constraints:
+
 ```typescript
 await this.schema.create('posts', (table) => {
-  table.id();
-  table.string('title');
-  table.text('content');
-  
-  // Foreign key to users table
   table.integer('user_id').unsigned();
+  
+  // Create a foreign key constraint
   table.foreign('user_id')
-    .references('id')
     .on('users')
+    .references('id')
     .onDelete('CASCADE')
     .onUpdate('CASCADE');
-  
-  table.timestamps();
 });
 ```
+### Composite Foreign Keys
 
-Shorthand for foreign keys:
+When working with composite primary keys, Elegant supports foreign key constraints that reference multiple columns. The constraint name automatically follows the fk_ prefix pattern, with each column name joined by underscores.
+
+#### Defining Composite Foreign Keys
+Create a foreign key constraint that references multiple columns in another table:
 
 ```typescript
-// Creates unsigned integer and foreign key constraint
-table.foreignId('user_id')
-  .constrained()
-  .onDelete('CASCADE');
+table.interger('user_id')
+table.foreign(['user_id', 'author_id'])
+  .on('users')
+  .references('id')
+  .onDelete('CASCADE')
+  .onUpdate('CASCADE');
 
-// Custom table name
-table.foreignId('author_id')
-  .constrained('users')
-  .onDelete('SET NULL');
 ```
 
+### Shorthand Syntax
+
+Elegant provides convenient shorthand methods for common foreign key patterns for numeric column.
+
+#### Inline Foreign Key
+Add a foreign key constraint directly to a column definition:
+````typescript
+table.integer('author_id').foreign()
+````
+#### Separate Declaration
+Alternatively, declare the foreign key constraint separately:
+```typescript
+table.integer('author_id')
+table.foreign('author_id')
+```
+Both shorthand approaches automatically infer the referenced table by converting the column name to its plural form (removing the _`id` suffix). For example, `company_id` references the `companies` table.
+
+#### Generated SQL
+```typescript
+CREATE TABLE `users` (
+  `company_id` INT,
+  CONSTRAINT `fk_company_id`
+    FOREIGN KEY (`company_id`)
+    REFERENCES `companies`(`id`)
+)
+```
+
+#### Explicit Foreign Key Configuration
+Specify the referenced table and column explicitly while maintaining inline syntax:
+
+```typescript
+// Creates an unsigned integer column with foreign key constraint
+table.integer('user_id')
+  .foreign('users', 'id')
+  .onDelete('CASCADE')
+  .onUpdate('CASCADE')
+```
+
+This approach combines column creation with explicit foreign key configuration and referential actions in a single fluent chain.
 ### Indexes
 Improve query performance with indexes:
 

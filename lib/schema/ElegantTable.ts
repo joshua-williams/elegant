@@ -81,6 +81,14 @@ export default abstract class ElegantTable extends ElegantTableCore {
     return this.columns.filter(column => column.$.primary)
   }
 
+  /**
+   * Defines a foreign key constraint for the specified column(s).
+   *
+   * @param {string|string[]} columnName - The name of the column(s) in the current table to define the foreign key constraint on.
+   * @param {string} [tableName] - The name of the table that the foreign key references. If not provided, it is inferred from the column name.
+   * @param {string|string[]} [references] - The column(s) in the referenced table that the foreign key points to. Defaults to the same name(s) as the current column(s).
+   * @return {ForeignKeyConstraintColumnDefinition} An instance of ForeignKeyConstraintColumnDefinition representing the defined foreign key constraint.
+   */
   foreign(columnName:string|string[], tableName?:string, references?:string|string[]):ForeignKeyConstraintColumnDefinition {
     if (Array.isArray(columnName)) {
       columnName.forEach(columnName => {
@@ -173,13 +181,18 @@ export default abstract class ElegantTable extends ElegantTableCore {
   protected columnToSql(column:ColumnDefinition):string { return }
 
   protected constraintsToSql(): string {
+
     return this.columns
       .filter(column => (column instanceof ConstraintColumnDefinition))
       .map(column => {
         let sql = `CONSTRAINT ${this.enclose(column.name)}`
 
         if (column instanceof ForeignKeyConstraintColumnDefinition) {
-          const columns = column.$.foreign.map(c => this.enclose(c)).join(', ')
+          if (!column.$.foreign) {
+            console.log(column)
+            throw new Error(`Column '${column.name}' does not exist in table '${this.tableName}'`)
+          }
+          const columns = (column.$.foreign as string[]).map(c => this.enclose(c)).join(', ')
           sql += `\n    FOREIGN KEY (${columns})`
           const references = column.$.references.map(c => this.enclose(c)).join(', ')
           sql+= `\n    REFERENCES ${this.enclose(column.$.table)}(${references})`
@@ -201,6 +214,12 @@ export default abstract class ElegantTable extends ElegantTableCore {
   }
 
   public async toStatement():Promise<string> {
+    if (!this.action) throw new Error('Table action must be defined before generating statement: eg table.destroy() | table.create() | table.alter()')
+    this.columns.filter(column => column.$.foreign instanceof ConstraintColumnDefinition)
+      .forEach(column => {
+        const constraint = column.$.foreign as ForeignKeyConstraintColumnDefinition
+        this.columns.push(constraint)
+      })
     let sql = ''
     switch (this.action) {
       case 'create':

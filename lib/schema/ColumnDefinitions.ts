@@ -1,5 +1,6 @@
 import ColumnDefinition from './ColumnDefinition.js';
 import {ComparisonOperator, NumericDataType, QueryCondition, ReferenceOption, Scalar} from '../../types.js';
+import {inferTableNameFromColumn} from '../util.js';
 
 export class GeneralColumnDefinition extends ColumnDefinition {
 
@@ -9,11 +10,12 @@ export class GeneralColumnDefinition extends ColumnDefinition {
     if (length) this.$.length = length;
   }
 }
+
 export class ConstraintColumnDefinition extends ColumnDefinition {
   type = 'CONSTRAINT'
 }
+
 export class ForeignKeyConstraintColumnDefinition extends ConstraintColumnDefinition {
-  type:string = 'CONSTRAINT'
   constructor(name:string) {
     super(name);
   }
@@ -90,6 +92,14 @@ export class NumberColumnDefinition extends ColumnDefinition {
 
     if (_default != undefined) this.$.default = _default;
     if (nullable != undefined) this.$.nullable = nullable
+  }
+
+  foreign(tableName?:string, columnName?:string) {
+    let fk = new ForeignKeyConstraintColumnDefinition(`fk_${this.name}`)
+    tableName = tableName ? tableName : inferTableNameFromColumn(this.name)
+    let references = columnName ? columnName : 'id'
+    fk.foreign(this.name).on(tableName).references(references||columnName)
+    this.$.foreign = fk
   }
 }
 
