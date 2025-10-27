@@ -422,9 +422,9 @@ export const GetDatabaseColumnsTestSuite = (connection:string, Table:ElegantTabl
       beforeAll(async () => {
         db = await Elegant.connection(connection)
         schema = new Schema(db)
-        await schema.drop('users', (table) => table.ifExists())
+        await schema.dropTable('users', (table) => table.ifExists())
         table = new Table('users', 'create', db)
-        await schema.createTable('users', (table) => {
+        schema.createTable('users', (table) => {
           table.id('id')
           table.string('name')
           table.string('email').unique()
@@ -435,7 +435,7 @@ export const GetDatabaseColumnsTestSuite = (connection:string, Table:ElegantTabl
       })
 
       afterAll(async () => {
-        await schema.drop('users')
+        schema.dropTable('users')
         await db.disconnect()
       })
 

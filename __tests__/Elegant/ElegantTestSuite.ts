@@ -14,7 +14,7 @@ export const ElegantTestSuite = (connection:SchemaDialect) => {
       db = await Elegant.connection(connection)
       schema = new Schema(db)
 
-      await schema.drop('users', (table) => table.ifExists())
+      await schema.dropTable('users', (table) => table.ifExists())
       const createUserTable = (table:ElegantTable) => {
         table.id()
         table.string('name')
@@ -32,7 +32,7 @@ export const ElegantTestSuite = (connection:SchemaDialect) => {
     })
 
     afterAll(async () => {
-      await schema.drop('users', (table) => table.ifExists())
+      await schema.dropTable('users', (table) => table.ifExists())
     })
 
     beforeEach(async () => {

@@ -73,7 +73,7 @@ const migrationToStatement = async (migrationName:string) => {
     const config = await getAppConfig()
     const migrationMgr = new MigrationManager(db, config)
     const filter = (file) => file.toLowerCase().includes(`${migrationName.toLowerCase()}.migration`)
-    const migrationFileMaps:MigrationFileMap[] = await migrationMgr.getMigrationFileMap(filter)
+    const migrationFileMaps:MigrationFileMap[] = await migrationMgr.migrationFileMap({filter})
     if (!migrationFileMaps.length) {
         throw Error(``)
     }
@@ -85,7 +85,7 @@ const migrationToStatement = async (migrationName:string) => {
     }
     await migration.up();
 
-    let statements:string[] = await Promise.all(migration.schema.tables.map(async (table) => (await table.toStatement())));
+    let statements:string[] = await Promise.all(migration.schema.tables.map(async (table) => (table.toStatement())));
 
     return statements.join('\n\n')
 }

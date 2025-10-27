@@ -18,6 +18,6 @@ export default class CreateElegantMigrationTable extends Migration {
     })
   }
   async down() {
-    await this.schema.drop('elegant_migrations')
+    await this.schema.dropTable('elegant_migrations')
   }
 }

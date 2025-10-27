@@ -213,7 +213,7 @@ export default abstract class ElegantTable extends ElegantTableCore {
       }).join(',  \n')
   }
 
-  public async toStatement():Promise<string> {
+  public toStatement():string {
     if (!this.action) throw new Error('Table action must be defined before generating statement: eg table.destroy() | table.create() | table.alter()')
     this.columns.filter(column => column.$.foreign instanceof ConstraintColumnDefinition)
       .forEach(column => {
@@ -240,8 +240,8 @@ export default abstract class ElegantTable extends ElegantTableCore {
         if (tableOptions) sql += `\n${tableOptions.join('\n')}`
         return sql.trim()
       case 'alter':
-        const existingColumns = await this.getDatabaseColumns()
-        const existingColumnNames = existingColumns.map(column => column.name)
+        // const existingColumns = await this.getDatabaseColumns()
+        // const existingColumnNames = existingColumns.map(column => column.name)
         sql += `ALTER TABLE ${this.enclose(this.tableName)}`
         sql += this.columns.map(column => {
           return ` ${this.columnToSql(column)}`

@@ -13,7 +13,7 @@ export default class MigrationInspector extends MigrationManager {
           status: migration.status,
         }
       })
-    const pending = this.getMigrationFiles()
+    const pending = this.migrationFiles()
       .filter(m => !m.name.includes('CreateElegantMigrationTable'))
       .filter(m1 => !migrations.find(m2 => m1.name === m2.name))
       .map(m => ({...m, status: 'pending', name: m.name.replace('.migration.', '')}))

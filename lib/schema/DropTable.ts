@@ -7,7 +7,7 @@ export class DropTable extends ElegantTable {
 
   boolean(columnName: string, defaultValue?: boolean, nullable?: boolean): ColumnDefinition { return}
 
-  async toStatement():Promise<string> {
+  toStatement():string {
     let ifExists = this._ifExists ? 'IF EXISTS ' : ''
     return `DROP TABLE ${ifExists}${this.enclose(this.tableName)}`
   }

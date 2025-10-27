@@ -100,6 +100,7 @@ export class NumberColumnDefinition extends ColumnDefinition {
     let references = columnName ? columnName : 'id'
     fk.foreign(this.name).on(tableName).references(references||columnName)
     this.$.foreign = fk
+    return fk
   }
 }
 

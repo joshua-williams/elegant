@@ -18,11 +18,11 @@ Example: Creating a Name Accessor
 
 ```TypeScript
 class User extends Model {
-  gener:string
+  gender:string
   firstName:string
   lastName:string
   name({accessor}) {
-    accessor(name => this.gener === 'm' ? 'Mr. ' + name : 'Ms. ' + name)
+    accessor(name => this.gender === 'm' ? 'Mr. ' + name : 'Ms. ' + name)
   }
 }
 ```

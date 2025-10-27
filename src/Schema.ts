@@ -14,15 +14,17 @@ type SchemaMeta = {
   db:Elegant,
   connection:string,
   tables:ElegantTable[],
-  autoExecute:boolean
+  autoExecute:boolean,
+  executePromises:Promise<any>[]
 }
 
 export default class Schema {
-  private $:SchemaMeta = {
+  $:SchemaMeta = {
     db: undefined,
     tables: [],
     connection: undefined,
-    autoExecute: true
+    autoExecute: true,
+    executePromises: []
   }
 
   constructor( db:Elegant, options?:SchemaOptions) {
@@ -51,16 +53,19 @@ export default class Schema {
    * @param {SchemaClosure} closure - A closure that defines the schema of the table.
    * @return {Promise<void>} A promise that resolves when the table creation process is completed.
    */
-  public async createTable(tableName:string, closure:SchemaClosure):Promise<any> {
+  public createTable(tableName:string, closure:SchemaClosure):void {
     let table:ElegantTable = this.makeTable(tableName, 'create')
 
     this.$.tables.push(table)
-    closure(table)
-    if (this.$.autoExecute) {
-      const statement = await table.toStatement()
-      await this.$.db.statement(statement)
+    try {
+      closure(table)
+    } catch (e) {
+      throw new Error(`Cannot create schema table: ${tableName}. ${e.message}`)
     }
-    return Promise.resolve(true)
+    if (this.$.autoExecute) {
+      const statement = table.toStatement()
+      this.$.executePromises.push(this.$.db.statement(statement))
+    }
   }
 
   public async table(tableName:string, closure:SchemaClosure) {
@@ -106,7 +111,7 @@ export default class Schema {
    * @param {SchemaDialect} [dialect='mysql'] - The SQL dialect to be used, defaulting to 'mysql'.
    * @return {Promise<void>} A Promise that resolves when the drop operation is complete.
    */
-  public async drop(tableName:string, closure?:DropSchemaClosure):Promise<void> {
+  public async dropTable(tableName:string, closure?:DropSchemaClosure):Promise<void> {
     const dropTable:DropTable = new DropTable(tableName, 'drop', this.$.db)
     if (closure) closure(dropTable)
     this.$.tables.push(dropTable)
