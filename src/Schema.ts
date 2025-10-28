@@ -46,12 +46,15 @@ export default class Schema {
     }
     return table;
   }
+
   /**
-   * Creates a new database table using the specified name and schema configuration.
+   * Creates a new table with the specified name and schema closure.
+   * The table is added to the internal tables collection and optionally executed immediately
+   * if auto-execute is enabled.
    *
    * @param {string} tableName - The name of the table to be created.
-   * @param {SchemaClosure} closure - A closure that defines the schema of the table.
-   * @return {Promise<void>} A promise that resolves when the table creation process is completed.
+   * @param {SchemaClosure} closure - A callback function defining the table schema.
+   * @return {void} Does not return a value.
    */
   public createTable(tableName:string, closure:SchemaClosure):void {
     let table:ElegantTable = this.makeTable(tableName, 'create')
@@ -68,6 +71,15 @@ export default class Schema {
     }
   }
 
+  /**
+   * Creates and manages a new table with the specified name and schema.
+   * The table is passed to the provided closure for further customization.
+   * If auto-execute is enabled, the table creation is executed immediately.
+   *
+   * @param {string} tableName The name of the table to be created.
+   * @param {SchemaClosure} closure A function that defines the schema of the table using the provided table object.
+   * @return {Promise<void>} A promise that resolves when the table creation process is complete.
+   */
   public async table(tableName:string, closure:SchemaClosure) {
     let table:ElegantTable = this.makeTable(tableName, 'create')
     this.tables.push(table)
@@ -78,6 +90,13 @@ export default class Schema {
     }
   }
 
+  /**
+   * Registers a table with a given name and function closure, then optionally executes it if auto-execute is enabled.
+   *
+   * @param {string} name - The name of the table to be created and registered.
+   * @param {ElegantFunctionClosure} closure - The function closure applied to the table for configuration or definition.
+   * @return {Promise<void>} Resolves when the table is registered and/or the query is executed, if applicable.
+   */
   public async fn(name:string, closure:ElegantFunctionClosure) {
     let table:ElegantTable = this.makeTable(name, 'create')
     table.fn(name, closure)
@@ -90,6 +109,13 @@ export default class Schema {
     }
   }
 
+  /**
+   * Executes the dropping of a table function, optionally with additional closure logic.
+   *
+   * @param {string} name - The name of the table function to be dropped.
+   * @param {ElegantFunctionClosure} [closure] - Optional closure logic to define additional behavior for the drop operation.
+   * @return {Promise<void>} A promise that resolves once the drop operation has completed.
+   */
   public async dropFn(name:string, closure?:ElegantFunctionClosure) {
     let table:ElegantTable = this.makeTable(name, 'drop')
     table.fn(name, closure)
