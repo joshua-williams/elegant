@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path, {basename} from 'node:path'
 import Elegant, {Migration, Schema} from '../../index.js';
 import {ElegantConfig, MigrationFile} from '../../types.js';
+import MigrationResult from './MigrationResult.js';
 
 type MigrationFileMapOptions = {
   filter?:(file:string)=>boolean
@@ -55,7 +56,7 @@ export class MigrationManager {
   }
 
   getMigrations() {
-    return this.db.select('select * from elegant_migrations order by created_at desc')
+    return this.db.select('select * from elegant_migrations order by created_at desc') as Promise<MigrationResult[]>
   }
 
   async migrationFileMap(options:MigrationFileMapOptions) {

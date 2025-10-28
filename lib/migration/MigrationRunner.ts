@@ -4,25 +4,44 @@ import MigrationResult from './MigrationResult.js';
 import { ConnectionConfig} from '../../types.js';
 import {getAppConfig} from '../config.js';
 
+type MigrationFinalResult = {
+  result: boolean,
+  error: Error,
+  message: string,
+  culprit:MigrationResult,
+  statement: string
+  results: Map<Migration, MigrationResult>
+  rollbackResults: Map<Migration, MigrationResult>
+}
 
 export default class MigrationRunner extends MigrationManager {
 
-  public async run():Promise<MigrationResult[]> {
-    const results:MigrationResult[] = []
+  public async run():Promise<MigrationFinalResult> {
+    const finalResult:MigrationFinalResult = {
+      result: false,
+      error: undefined,
+      message: '',
+      culprit: undefined,
+      statement: '',
+      results: new Map(),
+      rollbackResults: new Map()
+    }
     const timestamp:number = Date.now()
     const filter = await this.migrationFilter()
-
     const migrationFileMaps = (await this.migrationFileMap({filter}))
+    const migrationsRan:Migration[] = []
+
     for (const migrationFileMap of migrationFileMaps) {
       const {migration, file} = migrationFileMap
+
       migration.schema.$.autoExecute = true
 
       const migrationTimestamp = file.date.getTime()
-      const result:MigrationResult = new MigrationResult({
+      const migrationResult:MigrationResult = new MigrationResult({
         name: migration.constructor.name,
         batchId: timestamp,
         action: 'migrate',
-        status: 'success',
+        status: 'error',
         timestamp: migrationTimestamp,
         error: undefined,
         statement: undefined,
@@ -31,49 +50,82 @@ export default class MigrationRunner extends MigrationManager {
       });
 
       if (!migration.shouldRun()) {
-        result.status = 'skip'
-        results.push(result)
+        migrationResult.status = 'skip'
+        finalResult.results.set(migration, migrationResult)
         continue
       }
       // run migration.up
       try {
         await migration.up()
+        migrationsRan.push(migration)
       } catch (error) {
-        result.status = 'error'
-        result.error = error.message
         let statement:string = ''
         for (const table in migration.schema.tables) {
           statement += migration.schema.tables[table].toStatement() + '\n\n'
         }
-        result.statement = statement
-        results.push(result);
-        continue
+        finalResult.error = error
+        finalResult.culprit = migrationResult
+        finalResult.statement = statement
+        break
       }
       // resolve promises made by having schema.$.autoExecute enabled
       try {
-        const r = await Promise.all(migration.schema.$.executePromises)
+        await Promise.all(migration.schema.$.executePromises)
       } catch (error) {
-        result.status = 'error'
-        result.error = error.message
-        let statement:string = ''
-        for (const table in migration.schema.tables) {
-          statement += migration.schema.tables[table].toStatement() + '\n\n'
-        }
-        result.statement = statement
-        results.push(result);
-        continue
+        finalResult.error = error
+        finalResult.culprit = migrationResult
+        break
       }
+
+      migrationResult.status = 'success'
 
       let statement = ''
       for (const table in migration.schema.tables) {
         statement += migration.schema.tables[table].toStatement() + '\n\n'
       }
-      result.statement = statement
-      result.duration = Date.now() - timestamp
-      results.push(result)
+      migrationResult.statement = statement
+      migrationResult.duration = Date.now() - timestamp
+      finalResult.results.set(migration, migrationResult)
     }
+
+    // Rollback migrations that were run if an error occurred
+    if (finalResult.error) {
+
+      for (const migration of migrationsRan) {
+        let timestamp:number = Date.now()
+        let batchId:number = Date.now()
+        let migrationResult:MigrationResult = {
+          status: undefined,
+          action: 'rollback',
+          batchId,
+          timestamp,
+          duration: undefined,
+          name: migration.constructor.name,
+          error: undefined,
+          created_at: undefined,
+          statement: undefined,
+
+        }
+        try {
+          await migration.down()
+          migrationResult.status = 'success'
+          migrationResult.duration = Date.now() - timestamp
+          finalResult.rollbackResults.set(migration, migrationResult)
+        } catch (error) {
+          migrationResult.status = 'error'
+          migrationResult.error = error
+          finalResult.rollbackResults.set(migration, migrationResult)
+        }
+      }
+      const hasElegantMigration = finalResult.results.values()
+        .find(result => result.name === 'CreateElegantMigrationTable')
+      if (!hasElegantMigration) await this.saveResults([finalResult.culprit])
+      return finalResult
+    }
+
+    const results = Array.from(finalResult.results.values())
     await this.saveResults(results)
-    return results;
+    return finalResult
   }
 
   public async rollback():Promise<MigrationResult[]> {
@@ -158,6 +210,7 @@ export default class MigrationRunner extends MigrationManager {
       await db.insert(query, params)
     }
   }
+
   protected async getConnectionConfig():Promise<ConnectionConfig> {
     const config = await getAppConfig()
     return config.connections[config.default]

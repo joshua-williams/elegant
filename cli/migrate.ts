@@ -16,7 +16,12 @@ export const MigrateCommand = new Command('migrate')
     try {
       const result = await runner.run()
       if (options.debug) console.log(result)
-      log(`Migration completed`, 'success')
+      if (result.error) {
+        log(`${result.culprit.name} Migration failed: ${result.error.message}`, 'error')
+      } else {
+        log(`Migration completed`, 'success')
+      }
+
     } catch(err) {
       console.error(err.message)
     } finally {
@@ -41,16 +46,26 @@ export const RollbackCommand = new Command('migrate:rollback')
 
 export const StatusCommand = new Command('migrate:status')
   .description('List all migrations that have been run')
-  .action(async () => {
+  .option('-d, --debug', 'Show debug message info')
+  .action(async (opt) => {
     const db = await Elegant.singleton()
     const config = await getAppConfig()
     const inspector = new MigrationInspector(db, config);
-    const status = await inspector.getStatus()
+    let status
+    try {
+      status = await inspector.getStatus()
+    } catch(err) {
+      log(`Failed to inspect status message info`, "error")
+      if (opt.debug) console.log(err)
+      await Elegant.disconnect()
+      process.exit(1)
+    }
     await Elegant.disconnect()
     const table = new AsciiTable('Migration Status')
       .setHeading('Migration Date', 'Class Name', 'Status')
     status.forEach(m => {
-      table.addRow(m.date.toISOString(), m.name, m.status)
+
+      table.addRow(m.date, m.name, m.status)
     })
     console.log(table.toString())
   })
