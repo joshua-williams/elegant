@@ -39,7 +39,13 @@ export default class Model extends ModelCore {
 
   save() {
     const {query, params} = this.$.queryBuilder.insert(this.attributes()).toStatement()
-    return this.$.db.query(query, params)
+    this.$.queryBuilder.reset()
+    this.$.queryBuilder.table(this.tableName())
+    if (this.attributes().hasOwnProperty('id')) {
+      return this.$.db.update(query, params)
+    } else {
+      return this.$.db.insert(query, params)
+    }
   }
 
   first<T>() {

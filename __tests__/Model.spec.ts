@@ -1,4 +1,5 @@
 import Elegant, {Model, Schema} from '../index.js';
+import {randomUUID} from 'node:crypto';
 
 describe('Model', () => {
   let schema:Schema;
@@ -175,6 +176,7 @@ describe('Model', () => {
       expect(user.attributes()).toEqual(expected)
       expect(Object.keys(user.attributes())).toEqual(expectedKeys)
     })
+
     it('should not get hidden attributes', async () => {
       class UserModel extends Model {
         $hidden = ['password']
@@ -197,8 +199,10 @@ describe('Model', () => {
       $hidden = ['password']
       firstName:string
       lastName:string
-      email:string
       password:string
+      email({modifier}) {
+        modifier(email => randomUUID() +  email)
+      }
     }
     let user:UserModel
 
@@ -211,12 +215,13 @@ describe('Model', () => {
     })
 
     it('insert', async () => {
-      const user = await new UserModel().init()
+      const user:any = await new UserModel().init()
       user.firstName = 'Jack'
       user.lastName = 'Black'
       user.email = 'jack.black@example.com'
       user.password = 'secret'
-      await user.save()
+      let id = await user.save()
+      expect(id).toBeGreaterThan(0)
     })
   })
 })

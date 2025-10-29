@@ -31,9 +31,7 @@ class ModelCoreMeta {
    * @return {*} The value of the requested property, which may be transformed by modifiers, accessors, or mutators, or the original property value if no transformations apply.
    */
   getProperty(target, prop, receiver) {
-
     if (target.$.modelMethods.has(prop) && target.$.propsLoaded) {
-
       let value;
       if (target.$.changedAttributes.has(prop)) {
         value = target.$.changedAttributes.get(prop)
@@ -54,7 +52,7 @@ class ModelCoreMeta {
         mutator: mutator.bind(target, mutatorValue),
         modifier: modifier.bind(target, modifierValue)
       }
-      let func = this.model[prop]
+      let func = target.model[prop]
       if (typeof func === 'function') {
         func(mutatorFunctions)
       }
@@ -212,7 +210,11 @@ export default class ModelCore extends ModelRelationships{
         const isFirstProtocol = this.constructor.name === current.constructor.name
         if (isFirstProtocol) {
           this.$.modelMethods.add(prop)
-          this.$.attributes.set(prop, this[prop])
+          if (typeof this[prop] === 'function') {
+            this.$.attributes.set(prop, undefined)
+          } else {
+            this.$.attributes.set(prop, this[prop])
+          }
         } else {
           this.$.reservedMethods.add(prop)
         }

@@ -71,7 +71,7 @@ export default class Mysql extends Elegant {
    */
   async insert(query: string, params?: any[]): Promise<number> {
     return this.connection.query(query, params)
-      .then((results:any) => results[0].affectedRows as number)
+      .then(([result]) => result.insertId)
 
   }
 
