@@ -1,4 +1,5 @@
 import {Operator, Scalar} from '../types.js';
+import {toSnakeCase} from '../lib/util.js';
 
 class QueryCondition {
   column:string
@@ -32,16 +33,105 @@ class QueryBuilderError extends Error {
 }
 
 class QueryMeta {
+  dialect:Dialect = 'mysql'
   table:string = ''
   columns:string|string[] = '*'
   operation: 'select' | 'insert' | 'update' | 'delete' = 'select'
   specialOperator: 'scalar'| null = null
-  previousCommand: 'select' | 'insert' | 'update' | 'delete' | 'scalar' | 'table'| 'where' | 'and' | 'or' = 'select'
+  previousCommand: 'select' | 'insert' | 'update' | 'delete' | 'scalar' | 'table'| 'where' | 'and' | 'or' |'set' = 'select'
   conditions:QueryCondition[] = []
-}
 
+  constructor(options?:QueryBuilderOptions) {
+    if (options?.dialect) this.dialect = options.dialect;
+  }
+
+  validate() {
+    if (!this.table) throw new QueryBuilderError('No table specified')
+    if (!this.operation) throw new QueryBuilderError('No operation specified')
+  }
+
+  toSelectStatement():{sql:string, params:Scalar[]} {
+    let sql:string = 'select ';
+    if (Array.isArray(this.columns)) {
+      sql += this.columns.map(column =>  column.trim() ).join(', ')
+    } else if (this.columns === '*') {
+      sql += '*'
+    } else {
+      sql += this.columns.split(',').map(column => column.trim()).join(', ')
+    }
+    sql += `\nfrom ${this.table}`
+    if (!this.conditions.length) return {sql, params: []}
+    const {whereSql, params} = this.toWhereStatement()
+    sql += `\nwhere ${whereSql}`
+
+    return {sql, params}
+  }
+  toPlaceholders(values:any[]) {
+    if (this.dialect === 'postgres') {
+      return values.map((value, index) => `$${ index + 1 }`).join(',')
+    } else {
+      return values.map(value => '?').join(',')
+    }
+  }
+  quote(value:any) {
+    if (typeof value === 'string') {
+      return `'${value}'`
+    } else if(Array.isArray(value)) {
+      return value.map(value => this.quote(value)).join(',')
+    } else {
+      return value
+    }
+  }
+  enclose(value:any) {
+    let enclosure = this.dialect === 'postgres' ? '"' : '`'
+    return `${enclosure}${value}${enclosure}`
+  }
+
+  toInsertStatement():{sql:string, params:Scalar[]} {
+    let params = []
+    let sql = `INSERT INTO ${this.enclose(this.table)} `
+    let columns:string[] = []
+    this.conditions.forEach(condition => {
+      columns.push(this.enclose(toSnakeCase(condition.column)))
+      params.push(condition.value)
+    })
+    sql += `(${columns.join(', ')}) VALUES (${this.toPlaceholders(params)})`
+    return {sql, params}
+  }
+
+  toWhereStatement():{whereSql:string, params:Scalar[]} {
+    const params:Scalar[] = []
+    const conditions:string[] = [];
+    let sql:string = ''
+    for (const condition of this.conditions) {
+      if (condition.operator === 'in' || condition.operator === 'between' ) {
+        if (!Array.isArray(condition.value)) throw new QueryBuilderError('Value must be an array')
+        const placeholders = condition.value.map(() => '?').join(', ')
+        if (condition.conjunction) conditions.push(condition.conjunction)
+        conditions.push(`${condition.column} ${condition.operator} (${placeholders})`)
+        params.push(...condition.value)
+      } else {
+        if (Array.isArray(condition.value)) throw new QueryBuilderError('Value must be a scalar')
+        if (condition.conjunction) conditions.push(condition.conjunction)
+        conditions.push(`${condition.column} ${condition.operator} ?`)
+        params.push(condition.value)
+      }
+    }
+    sql += conditions.join(' ')
+    return {whereSql: sql, params: params}
+  }
+}
+type Dialect = 'mysql'|'mariadb'|'postgres'|'sqlite'
+type QueryBuilderOptions = {
+  dialect?:Dialect,
+}
 export default class QueryBuilder {
-  private $:QueryMeta = new QueryMeta()
+  private $:QueryMeta
+
+  constructor(options?:QueryBuilderOptions) {
+    this.$ = new QueryMeta(options)
+
+  }
 
   reset():QueryBuilder {
     this.$ = new QueryMeta()
@@ -62,6 +152,17 @@ export default class QueryBuilder {
     this.$.columns = columns
     this.$.operation = 'select'
     this.$.previousCommand = 'select'
+    return this
+  }
+
+  insert(values?:Record<string, Scalar>) {
+    this.$.operation = 'insert'
+    this.$.previousCommand = 'insert'
+    if (values) {
+      for (const key in values) {
+        this.set(key, values[key])
+      }
+    }
     return this
   }
 
@@ -94,65 +195,33 @@ export default class QueryBuilder {
     return this
   }
 
+  set(columnName:string, value:Scalar) {
+    this.$.previousCommand = 'set'
+    this.$.conditions.push(new QueryCondition(columnName, '=', value))
+    return this
+  }
+
   toStatement():{query:string, params:Scalar[]} {
-    this.validate()
+    this.$.validate()
 
     let query:string;
     let params:Scalar[] = []
 
     switch(this.$.operation) {
-      case 'select':
-        const parsed = this.toSelectStatement()
+      case 'select': {
+        const parsed = this.$.toSelectStatement()
         query = parsed.sql
         params = parsed.params
         break
-
-    }
-    return {query, params}
-  }
-
-  private toSelectStatement():{sql:string, params:Scalar[]} {
-    let sql:string = 'select ';
-    if (Array.isArray(this.$.columns)) {
-      sql += this.$.columns.map(column =>  column.trim() ).join(', ')
-    } else if (this.$.columns === '*') {
-        sql += '*'
-    } else {
-      sql += this.$.columns.split(',').map(column => column.trim()).join(', ')
-    }
-    sql += `\nfrom ${this.$.table}`
-    if (!this.$.conditions.length) return {sql, params: []}
-    const {whereSql, params} = this.toWhereStatement()
-    sql += `\nwhere ${whereSql}`
-
-    return {sql, params}
-  }
-
-  private toWhereStatement():{whereSql:string, params:Scalar[]} {
-    const params:Scalar[] = []
-    const conditions:string[] = [];
-    let sql:string = ''
-    for (const condition of this.$.conditions) {
-      if (condition.operator === 'in' || condition.operator === 'between' ) {
-        if (!Array.isArray(condition.value)) throw new QueryBuilderError('Value must be an array')
-        const placeholders = condition.value.map(() => '?').join(', ')
-        if (condition.conjunction) conditions.push(condition.conjunction)
-        conditions.push(`${condition.column} ${condition.operator} (${placeholders})`)
-        params.push(...condition.value)
-      } else {
-        if (Array.isArray(condition.value)) throw new QueryBuilderError('Value must be a scalar')
-        if (condition.conjunction) conditions.push(condition.conjunction)
-        conditions.push(`${condition.column} ${condition.operator} ?`)
-        params.push(condition.value)
+      }
+      case 'insert': {
+        const parsed = this.$.toInsertStatement()
+        query = parsed.sql
+        params = parsed.params
+        break
       }
     }
-    sql += conditions.join(' ')
-    return {whereSql: sql, params: params}
-  }
-
-  validate() {
-    if (!this.$.table) throw new QueryBuilderError('No table specified')
-    if (!this.$.operation) throw new QueryBuilderError('No operation specified')
+    return {query, params}
   }
 
   get meta() {

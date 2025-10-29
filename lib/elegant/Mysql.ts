@@ -2,6 +2,11 @@ import {createConnection} from 'mysql2/promise';
 import Elegant from '../../src/Elegant.js';
 import {Scalar, ConnectionConfig} from '../../types.js';
 
+/**
+ * This class extends the Elegant ORM to provide a simplified interface for interacting with a MySQL database.
+ * It includes methods for executing various SQL operations such as queries, transactions, and prepared statements.
+ * This class is designed to handle common tasks for database communication in a streamlined manner.
+ */
 export default class Mysql extends Elegant {
   /**
    * Starts a new transaction.

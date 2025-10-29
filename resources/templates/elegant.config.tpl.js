@@ -27,6 +27,7 @@ export default {
     directory: 'resources/database/seeds',
   },
   models: {
+    strictAttributes: false,
     lazyLoading: false,
     directory: 'resources/database/models',
   }

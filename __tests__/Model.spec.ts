@@ -6,16 +6,18 @@ describe('Model', () => {
     const db = await Elegant.singleton()
     schema = new Schema(db)
     await schema.dropTable('users', table => table.ifExists())
-    await schema.createTable('users', (table) => {
+    schema.createTable('users', (table) => {
       table.id()
       table.string('first_name')
       table.string('last_name')
       table.string('email').unique()
+      table.ifNotExists()
     })
+    await Promise.all(schema.$.executePromises)
   })
 
   afterAll(async () => {
-    Elegant.disconnect()
+    await Elegant.disconnect()
   })
 
   describe('create', () => {
@@ -104,7 +106,7 @@ describe('Model', () => {
     })
   })
 
-  describe('proxy', () => {
+  describe('transformers', () => {
 
     afterEach(async () => {
       Elegant.disconnect()
@@ -152,6 +154,69 @@ describe('Model', () => {
       expect(user.firstName).toEqual('Guest')
       user.firstName = 'william'
       expect(user.firstName).toEqual('WILLIAM')
+    })
+  })
+
+  describe('attributes', () => {
+    afterAll(async () => {
+      await Elegant.disconnect()
+    })
+
+    it('should get attributes', async () => {
+      class UserModel extends Model {
+        firstName:string
+        lastName:string
+      }
+      const user = await new UserModel().init()
+      user.firstName = 'John'
+      user.lastName = 'Doe'
+      const expected = {firstName: 'John', lastName: 'Doe'}
+      const expectedKeys = [ 'firstName' , 'lastName' ]
+      expect(user.attributes()).toEqual(expected)
+      expect(Object.keys(user.attributes())).toEqual(expectedKeys)
+    })
+    it('should not get hidden attributes', async () => {
+      class UserModel extends Model {
+        $hidden = ['password']
+        firstName:string
+        lastName:string
+        password:string
+      }
+      const user = await new UserModel().init()
+      user.firstName = 'John'
+      user.lastName = 'Doe'
+      user.password = 'secret'
+      const expected = {firstName: 'John', lastName: 'Doe'}
+      expect(user.attributes()).toEqual(expected)
+      expect(user.attributes()).to.not.have.property('password')
+    })
+  })
+
+  describe('insert', () => {
+    class UserModel extends Model {
+      $hidden = ['password']
+      firstName:string
+      lastName:string
+      email:string
+      password:string
+    }
+    let user:UserModel
+
+    beforeEach(async () => {
+      user = await new UserModel().init()
+    })
+
+    afterAll(async () => {
+      await Elegant.disconnect()
+    })
+
+    it('insert', async () => {
+      const user = await new UserModel().init()
+      user.firstName = 'Jack'
+      user.lastName = 'Black'
+      user.email = 'jack.black@example.com'
+      user.password = 'secret'
+      await user.save()
     })
   })
 })

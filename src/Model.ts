@@ -3,7 +3,7 @@ import ModelCore from '../lib/model/ModelCore.js';
 export default class Model extends ModelCore {
 
   fill(attributes:Record<string, any>):Model {
-    let isStrict = this.hasStrictAttributes()
+    let isStrict = this.$.hasStrictAttributes()
     if (!this.$fillable.length && isStrict) {
       throw new Error(`Model ${this.constructor.name} has no fillable attributes`)
     }
@@ -38,8 +38,10 @@ export default class Model extends ModelCore {
   }
 
   save() {
-
+    const {query, params} = this.$.queryBuilder.insert(this.attributes()).toStatement()
+    return this.$.db.query(query, params)
   }
+
   first<T>() {
     const columns = Array.from(this.$.attributes).join(', ')
     return this.$.db.select(`select ${columns} from ${this.tableName()} limit 1`)
@@ -50,5 +52,14 @@ export default class Model extends ModelCore {
     const columns = Array.from(this.$.attributes).join(', ')
     return this.$.db.select(`select ${columns} from ${this.tableName()}`)
       .then((rows:T[]) => rows)
+  }
+
+  attributes() {
+    const attributes = {}
+    for (const [key, val] of this.$.attributes) {
+      if (this.$hidden.includes(key)) continue
+      attributes[key] = val === undefined ? this.$.changedAttributes.get(key) : val
+    }
+    return attributes
   }
 }
