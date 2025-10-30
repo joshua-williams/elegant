@@ -3,6 +3,7 @@ import path from 'node:path';
 import { Scalar, ConnectionConfig} from '../types.js';
 import {getAppConfig} from '../lib/config.js';
 import { fileURLToPath } from 'url';
+import ElegantQueryBuilder from '../lib/elegant/ElegantQueryBuilder.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -143,8 +144,8 @@ export default abstract class Elegant{
    * @param tableName The name of the table to be used in the query.
    * @return The query builder instance configured with the specified table.
    */
-  table(tableName:string):QueryBuilder {
-    const qb = new QueryBuilder();
+  table(tableName:string):ElegantQueryBuilder {
+    const qb = new ElegantQueryBuilder(this);
     return qb.table(tableName)
   }
 

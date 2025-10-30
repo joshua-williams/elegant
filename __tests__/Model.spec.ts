@@ -12,6 +12,7 @@ describe('Model', () => {
       table.string('first_name')
       table.string('last_name')
       table.string('email').unique()
+      table.string('password')
       table.ifNotExists()
     })
     await Promise.all(schema.$.executePromises)
@@ -56,7 +57,9 @@ describe('Model', () => {
       it('should throw error when attempting to fill property not in attributes', async () => {
         class UserModel extends Model {
           $fillable = ['firstName', 'lastName', 'email']
+          lastName:string
         }
+
         const user:any = await new UserModel().init()
         const expected = () => user.fill({firstName:'John', lastName:'Doe'})
         expect(expected).toThrow('UserModel Model: unknown attribute "firstName"')
@@ -108,11 +111,6 @@ describe('Model', () => {
   })
 
   describe('transformers', () => {
-
-    afterEach(async () => {
-      Elegant.disconnect()
-    })
-
     it('mutator', async () => {
       class User extends Model {
         firstName({mutator}) {
@@ -159,10 +157,6 @@ describe('Model', () => {
   })
 
   describe('attributes', () => {
-    afterAll(async () => {
-      await Elegant.disconnect()
-    })
-
     it('should get attributes', async () => {
       class UserModel extends Model {
         firstName:string
@@ -194,7 +188,7 @@ describe('Model', () => {
     })
   })
 
-  describe('insert', () => {
+  describe('crud', () => {
     class UserModel extends Model {
       $hidden = ['password']
       firstName:string
@@ -222,6 +216,29 @@ describe('Model', () => {
       user.password = 'secret'
       let id = await user.save()
       expect(id).toBeGreaterThan(0)
+    })
+
+    it('find', async () => {
+      const User = await new UserModel().init()
+      const user = await User.find(1)
+      expect(user.firstName).toBe('Jack')
+      expect(user.lastName).toBe('Black')
+    })
+
+    it('get', async () => {
+
+      const User = await new UserModel().init()
+      type User = {
+        firstName:string
+        lastName:string
+        email:string
+      }
+
+      const users = await User.get<User>()
+      const user:User = users[0]
+      expect(user.firstName).toBe('Jack')
+      expect(user.lastName).toBe('Black')
+
     })
   })
 })

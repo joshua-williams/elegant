@@ -4,16 +4,17 @@ import {AttrXformers, ElegantConfig, Scalar} from '../../types.js';
 import {getAppConfig} from '../config.js';
 import ModelRelationships from './ModelRelationships.js';
 import {inferTableNameFromModelName} from '../util.js';
+import ElegantQueryBuilder from '../elegant/ElegantQueryBuilder.js';
 
 class ModelCoreMeta {
   db:Elegant
-  queryBuilder:QueryBuilder = new QueryBuilder()
+  qb:ElegantQueryBuilder
   config:ElegantConfig
   initialized:boolean = false
   reservedProperties: string[] = []
   reservedMethods: Set<string> = new Set()
   modelMethods:Set<string> = new Set()
-  modelProperties:Set<string> = new Set()
+  properties:Set<string> = new Set()
   attributes:Map<string, Scalar> = new Map()
   defaultAttributes:Record<string, any> = {}
   changedAttributes:Map<string, any> = new Map()
@@ -52,7 +53,7 @@ class ModelCoreMeta {
         mutator: mutator.bind(target, mutatorValue),
         modifier: modifier.bind(target, modifierValue)
       }
-      let func = target.model[prop]
+      let func = target[prop]
       if (typeof func === 'function') {
         func(mutatorFunctions)
       }
@@ -145,7 +146,7 @@ class ModelCoreMeta {
 export default class ModelCore extends ModelRelationships{
   protected $connection:string
   protected $table:string
-  protected $primaryKey:string
+  protected $primaryKey:string = 'id'
   protected $timestamps:boolean = true
   protected $created_at = 'created_at'
   protected $updated_at = 'updated_at'
@@ -165,7 +166,6 @@ export default class ModelCore extends ModelRelationships{
     super()
     if (db) this.$.db = db;
     if (config) this.$.config = config;
-    this.$.queryBuilder.table(this.$table||inferTableNameFromModelName(this.constructor.name))
     this.$.reservedProperties =  Object.getOwnPropertyNames(this)
     const proxy = new Proxy(this, {
       get(target, prop, receiver) {
@@ -181,7 +181,7 @@ export default class ModelCore extends ModelRelationships{
   }
 
   toInsertStatement():{query:string, params:Record<string, any>} {
-    return this.$.queryBuilder.toStatement()
+    return this.$.qb.toStatement()
   }
 
   /**
@@ -194,7 +194,7 @@ export default class ModelCore extends ModelRelationships{
     Object.keys(this)
       .filter(prop => !prop.startsWith('$'))
       .forEach(prop => {
-        this.$.modelProperties.add(prop)
+        this.$.properties.add(prop)
         this.$.attributes.set(prop, this[prop])
       })
     let current = Object.getPrototypeOf(this);
@@ -246,10 +246,12 @@ export default class ModelCore extends ModelRelationships{
    * @return {Promise<this>} A promise that resolves to the initialized instance.
    */
   async init():Promise<this> {
-    this.getAllPropertyNames()
     if (this.$.initialized) return this
+    this.getAllPropertyNames()
     this.$.config = await getAppConfig()
     this.$.db = await this.getConnection()
+    this.$.qb = new ElegantQueryBuilder(this.$.db);
+    this.$.qb.table(this.$table||inferTableNameFromModelName(this.constructor.name))
     this.$.initialized = true
     return this
   }

@@ -40,6 +40,7 @@ class QueryMeta {
   specialOperator: 'scalar'| null = null
   previousCommand: 'select' | 'insert' | 'update' | 'delete' | 'scalar' | 'table'| 'where' | 'and' | 'or' |'set' = 'select'
   conditions:QueryCondition[] = []
+  limit: number = undefined
 
   constructor(options?:QueryBuilderOptions) {
     if (options?.dialect) this.dialect = options.dialect;
@@ -63,7 +64,9 @@ class QueryMeta {
     if (!this.conditions.length) return {sql, params: []}
     const {whereSql, params} = this.toWhereStatement()
     sql += `\nwhere ${whereSql}`
-
+    if (this.limit !== undefined) {
+      sql += `\nlimit ${this.limit}`
+    }
     return {sql, params}
   }
   toPlaceholders(values:any[]) {
@@ -198,6 +201,11 @@ export default class QueryBuilder {
   set(columnName:string, value:Scalar) {
     this.$.previousCommand = 'set'
     this.$.conditions.push(new QueryCondition(columnName, '=', value))
+    return this
+  }
+
+  limit(limit:number) {
+    this.$.limit = limit
     return this
   }
 

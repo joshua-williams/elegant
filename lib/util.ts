@@ -130,6 +130,17 @@ export const toSnakeCase = (str) => {
     .replace(/^_+|_+$/g, '')
     .replace(/_+/g, '_');
 }
+export const toCamelCase = (str) => {
+  return str
+    .trim()
+    // Replace spaces, hyphens, underscores with a marker
+    .replace(/[\s_-]+(.)/g, (_, char) => char.toUpperCase())
+    // Handle PascalCase to camelCase (lowercase first letter)
+    .replace(/^[A-Z]/, char => char.toLowerCase())
+    // Remove any remaining non-alphanumeric characters
+    .replace(/[^\w]/g, '');
+
+}
 
 export const lastChar = (str:string) => str[str.length - 1]
 
