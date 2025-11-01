@@ -40,35 +40,33 @@ export default abstract class ColumnDefinition {
     this.$.column = newName
     return this
   }
-  unique():ColumnDefinition {
+  unique():this {
     this.$.unique = true
     return this
   }
-  autoIncrement():ColumnDefinition {
+  autoIncrement():this {
     this.$.autoIncrement = true
     return this
   }
-  primary():ColumnDefinition {
+  primary():this {
     this.$.primary = true
     return this
   }
-  nullable():ColumnDefinition {
+  nullable():this {
     this.$.nullable = true
     return this
   }
-  notNull():ColumnDefinition {
+  notNull():this {
     this.$.nullable = false
     return this
   }
-  unsigned():ColumnDefinition {
+  unsigned():this {
     this.$.unsigned = true
     return this
   }
 
-  default(defaultValue:Scalar) {
+  default(defaultValue:Scalar):this {
     this.$.default = defaultValue
     return this
   }
-
-
 }

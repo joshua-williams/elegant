@@ -97,7 +97,7 @@ export default abstract class ElegantTable extends ElegantTableCore {
         if (!column) throw new Error(`Column '${columnName}' does not exist in table '${this.tableName}'`)
       })
     }
-    const keyName = Array.isArray(columnName) ? `fk_${columnName.join('_')}` : `fk_${columnName}`
+    const keyName = Array.isArray(columnName) ? `fk_${this.tableName}_${columnName.join('_')}` : `fk_${this.tableName}_${columnName}`
     const column = new ForeignKeyConstraintColumnDefinition(keyName)
     if (!tableName && typeof columnName === 'string') {
       tableName = inferTableNameFromColumn(columnName)
@@ -120,7 +120,7 @@ export default abstract class ElegantTable extends ElegantTableCore {
 
 
   enum(name:string, values:Scalar[]):CheckColumnDefinition {
-    let column = new StringColumnDefinition(name, 0)
+    let column = new StringColumnDefinition(name, 255)
     this.columns.push(column)
     const constraint = new CheckColumnDefinition(`${name}_chk`, values)
     constraint.where(name, 'IN', values)
@@ -222,6 +222,8 @@ export default abstract class ElegantTable extends ElegantTableCore {
     this.columns.filter(column => column.$.foreign instanceof ConstraintColumnDefinition)
       .forEach(column => {
         const constraint = column.$.foreign as ForeignKeyConstraintColumnDefinition
+        // to ensure unique foreign key names across tables use convention fk_{left_tableName}_{right_table_name}_{column}_{column}_etc
+        constraint.name = constraint.name.replace(/^fk_/, `fk_${this.tableName}_`)
         this.constraints.push(constraint)
       })
     let sql = ''

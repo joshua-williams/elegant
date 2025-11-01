@@ -66,7 +66,7 @@ export class CreateUsersTable extends Migration {
    * Run the migration - creates schema changes
    */
   async up() {
-    await this.schema.create('users', (table) => {
+    this.schema.create('users', (table) => {
       table.id();
       table.string('name');
       table.string('email').unique();
@@ -80,7 +80,7 @@ export class CreateUsersTable extends Migration {
    * Reverse the migration - undoes schema changes
    */
   async down() {
-    await this.schema.drop('users');
+    this.schema.dropTable('users');
   }
 }
 ```
@@ -456,16 +456,14 @@ Rename columns within a table:
 ```typescript
 export class RenameUsersNameColumn extends Migration {
   async up() {
-    await this.schema.table('users', (table) => {
+    this.schema.table('users', (table) => {
       table.renameColumn('name', 'full_name');
-      table.alter()
     });
   }
   
   async down() {
-    await this.schema.table('users', (table) => {
+    this.schema.table('users', (table) => {
       table.renameColumn('full_name', 'name');
-      table.alter()
     });
   }
 }
@@ -477,21 +475,19 @@ Remove columns from tables:
 ```typescript
 export class RemovePhoneFromUsers extends Migration {
   async up() {
-    await this.schema.table('users', (table) => {
+    this.schema.table('users', (table) => {
       table.dropColumn('phone');
       // Drop multiple columns
-      table.dropColumns(['address', 'city', 'state']);
-      table.alter();
+      table.dropColumn(['address', 'city', 'state']);
     });
   }
   
   async down() {
-    await this.schema.table('users', (table) => {
+    this.schema.table('users', (table) => {
       table.string('phone', 20).nullable();
       table.string('address').nullable();
       table.string('city', 100).nullable();
       table.string('state', 2).nullable();
-      table.alter();
     });
   }
 }
@@ -502,22 +498,20 @@ Add or remove indexes:
 ```typescript
 export class AddIndexesToProducts extends Migration {
   async up() {
-    await this.schema.table('products', (table) => {
+    this.schema.table('products', (table) => {
       // Add indexes
       table.index('category');
       table.index(['category', 'status'], 'idx_category_status');
       table.unique('sku');
-      table.alter()
     });
   }
   
   async down() {
-    await this.schema.table('products', (table) => {
+    this.schema.table('products', (table) => {
       // Drop indexes
       table.dropIndex('category');
       table.dropIndex('idx_category_status');
       table.dropUnique('sku');
-      table.alter()
     });
   }
 }
@@ -542,17 +536,16 @@ export class RenameUsersToAccounts extends Migration {
 ```typescript
 export class DropUsersTable extends Migration {
   async up() {
-    await this.schema.drop('users');
+    await this.schema.dropTable('users');
   }
   
   async down() {
     // Recreate the table
-    await this.schema.table('users', (table) => {
+    this.schema.table('users', (table) => {
       table.id();
       table.string('name');
       table.string('email');
       table.timestamps();
-      table.create()
     });
   }
 }
@@ -564,8 +557,8 @@ Safely drop tables that may not exist:
 ```typescript
 export class DropOldTables extends Migration {
   async up() {
-    await this.schema.dropIfExists('old_users');
-    await this.schema.dropIfExists('deprecated_logs');
+    await this.schema.dropTableIfExists('old_users');
+    await this.schema.dropTableIfExists('deprecated_logs');
   }
   
   async down() {
@@ -798,20 +791,20 @@ elegant make:statement --migration User | mysql -u root -p database_name
 // Good
 export class CreateUsersTable extends Migration {
   async up() {
-    await this.schema.create('users', (table) => {
+    this.schema.table('users', (table) => {
       // table definition
     });
   }
   
   async down() {
-    await this.schema.drop('users');
+    this.schema.dropTable('users');
   }
 }
 
 // Bad - missing down() implementation
 export class CreateUsersTable extends Migration {
   async up() {
-    await this.schema.create('users', (table) => {
+    this.schema.table('users', (table) => {
       // table definition
     });
   }

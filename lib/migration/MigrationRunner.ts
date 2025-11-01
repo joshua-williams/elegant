@@ -6,6 +6,7 @@ import {getAppConfig} from '../config.js';
 
 type MigrationFinalResult = {
   result: boolean,
+  duration: number,
   error: Error,
   message: string,
   culprit:MigrationResult,
@@ -16,9 +17,10 @@ type MigrationFinalResult = {
 
 export default class MigrationRunner extends MigrationManager {
 
-  public async run():Promise<MigrationFinalResult> {
+  public async run() {
     const finalResult:MigrationFinalResult = {
       result: false,
+      duration: undefined,
       error: undefined,
       message: '',
       culprit: undefined,
@@ -26,106 +28,92 @@ export default class MigrationRunner extends MigrationManager {
       results: new Map(),
       rollbackResults: new Map()
     }
-    const timestamp:number = Date.now()
+    const migrationTimestamp:number = Date.now()
     const filter = await this.migrationFilter()
     const migrationFileMaps = (await this.migrationFileMap({filter}))
     const migrationsRan:Migration[] = []
-
     for (const migrationFileMap of migrationFileMaps) {
+      const timestamp = Date.now()
       const {migration, file} = migrationFileMap
-
-      migration.schema.$.autoExecute = true
-
       const migrationTimestamp = file.date.getTime()
       const migrationResult:MigrationResult = new MigrationResult({
         name: migration.constructor.name,
-        batchId: timestamp,
+        batchId: migrationTimestamp,
         action: 'migrate',
         status: 'error',
         timestamp: migrationTimestamp,
         error: undefined,
         statement: undefined,
         created_at: undefined,
-        duration: Date.now() - timestamp
+        duration: Date.now() - migrationTimestamp
       });
+      const connection = (migration as any).connection
+      const db = await Elegant.singleton(connection)
+
+      migration.schema.$.autoExecute = false
+      migration.schema.reset()
 
       if (!migration.shouldRun()) {
         migrationResult.status = 'skip'
         finalResult.results.set(migration, migrationResult)
         continue
       }
-      // run migration.up
       try {
         await migration.up()
+        migrationResult.statement = migration.schema.toStatement()
+        await db.statement(migrationResult.statement)
+        migrationResult.duration = Date.now() - timestamp
+        migrationResult.status = 'success'
         migrationsRan.push(migration)
+        finalResult.results.set(migration, migrationResult)
       } catch (error) {
-        let statement:string = ''
-        for (const table in migration.schema.tables) {
-          statement += migration.schema.tables[table].toStatement() + '\n\n'
-        }
-        finalResult.error = error
+        finalResult.error = error;
+        migrationResult.error = `${migration.constructor.name} Migration Failed: ${error.message}`
         finalResult.culprit = migrationResult
-        finalResult.statement = statement
+        await this.rollbackBatch(migrationTimestamp,migrationTimestamp, migrationsRan, finalResult)
         break
       }
-      // resolve promises made by having schema.$.autoExecute enabled
-      try {
-        await Promise.all(migration.schema.$.executePromises)
-      } catch (error) {
-        finalResult.error = error
-        finalResult.culprit = migrationResult
-        break
-      }
-
-      migrationResult.status = 'success'
-
-      let statement = ''
-      for (const table in migration.schema.tables) {
-        statement += migration.schema.tables[table].toStatement() + '\n\n'
-      }
-      migrationResult.statement = statement
-      migrationResult.duration = Date.now() - timestamp
-      finalResult.results.set(migration, migrationResult)
     }
-
-    // Rollback migrations that were run if an error occurred
-    if (finalResult.error) {
-
-      for (const migration of migrationsRan) {
-        let timestamp:number = Date.now()
-        let batchId:number = Date.now()
-        let migrationResult:MigrationResult = {
-          status: undefined,
-          action: 'rollback',
-          batchId,
-          timestamp,
-          duration: undefined,
-          name: migration.constructor.name,
-          error: undefined,
-          created_at: undefined,
-          statement: undefined,
-
-        }
-        try {
-          await migration.down()
-          migrationResult.status = 'success'
-          migrationResult.duration = Date.now() - timestamp
-          finalResult.rollbackResults.set(migration, migrationResult)
-        } catch (error) {
-          migrationResult.status = 'error'
-          migrationResult.error = error
-          finalResult.rollbackResults.set(migration, migrationResult)
-        }
-      }
-      const hasElegantMigration = finalResult.results.values()
-        .find(result => result.name === 'CreateElegantMigrationTable')
-      if (!hasElegantMigration) await this.saveResults([finalResult.culprit])
-      return finalResult
+    finalResult.duration = Date.now() - migrationTimestamp
+    try {
+      await this.saveResults(Array.from(finalResult.results.values()))
+    } catch (error) {
+      finalResult.message = 'Failed to save migration results.'
     }
-
-    const results = Array.from(finalResult.results.values())
-    await this.saveResults(results)
+    finalResult.result = !(finalResult.culprit || finalResult.error)
     return finalResult
+  }
+
+  private async rollbackBatch(batchId:number, migrationTimestamp:number,migrations:Migration[], finalResult:MigrationFinalResult ) {
+    for (const migration of migrations) {
+      migration.schema.reset()
+      const connection = (migration as any).connection
+      const db = await Elegant.singleton(connection)
+      let result:MigrationResult = {
+        status: 'error',
+        action: 'rollback',
+        batchId,
+        timestamp: migrationTimestamp,
+        duration: undefined,
+        name: migration.constructor.name,
+        error: undefined,
+        created_at: undefined,
+        statement: undefined,
+
+      }
+      try {
+        let timestamp:any = Date.now()
+        await migration.down()
+        result.statement = migration.schema.toStatement()
+        await db.statement(result.statement)
+        result.status = 'success'
+        result.duration = Date.now() - timestamp
+      } catch (error) {
+        result.error = error.toString()
+      }
+      finalResult.rollbackResults.set(migration, result)
+    }
+    return finalResult;
   }
 
   public async rollback():Promise<MigrationResult[]> {
