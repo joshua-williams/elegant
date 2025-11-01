@@ -9,20 +9,20 @@ describe('Elegant Tables', () => {
   describe('Base Elegant Table: Create', () => {
     CreateTableTestSuite('MySQL', MysqlTable)
     CreateTableTestSuite('MariaDB', MariaDBTable)
-    CreateTableTestSuite('Sqlite', SqliteTable)
     CreateTableTestSuite('Postgres', PostgresTable)
+    CreateTableTestSuite('Sqlite', SqliteTable)
   })
 
-  describe.skip('Base Elegant Table: Alter', () => {
-    // AlterTableTestSuite('MySQL', MysqlTable)
-    // AlterTableTestSuite('MariaDB', MariaDBTable)
-    // AlterTableTestSuite('Postgres', PostgresTable)
+  describe('Base Elegant Table: Alter', () => {
+    AlterTableTestSuite('MySQL', MysqlTable)
+    AlterTableTestSuite('MariaDB', MariaDBTable)
+    AlterTableTestSuite('Postgres', PostgresTable)
   })
 
   describe('Database Columns', () => {
     GetDatabaseColumnsTestSuite('MySQL', MysqlTable)
-    GetDatabaseColumnsTestSuite('MariaDB', MariaDBTable)
-    GetDatabaseColumnsTestSuite('Sqlite', SqliteTable)
     GetDatabaseColumnsTestSuite('Postgres', PostgresTable)
+    GetDatabaseColumnsTestSuite('Sqlite', SqliteTable)
+    GetDatabaseColumnsTestSuite('MariaDB', MariaDBTable)
   })
 });

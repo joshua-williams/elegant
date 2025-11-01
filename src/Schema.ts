@@ -1,9 +1,8 @@
 import ElegantTable from '../lib/schema/ElegantTable.js';
 import Elegant from '../index.js';
-import {DropTable} from '../lib/schema/DropTable.js';
 import {
-  DropSchemaClosure, ElegantFunctionClosure,
-  ElegantTableAction, SchemaClosure, SchemaOptions
+  ElegantFunctionClosure, ElegantTableAction,
+  SchemaClosure, SchemaOptions
 } from '../types.js';
 import MysqlTable from '../lib/schema/MysqlTable.js';
 import MariaDBTable from '../lib/schema/MariaDBTable.js';
@@ -80,8 +79,18 @@ export default class Schema {
    * @param {SchemaClosure} closure A function that defines the schema of the table using the provided table object.
    * @return {Promise<void>} A promise that resolves when the table creation process is complete.
    */
-  public async table(tableName:string, closure:SchemaClosure) {
+  public table(tableName:string, closure:SchemaClosure) {
     let table:ElegantTable = this.makeTable(tableName, 'create')
+    this.tables.push(table)
+    closure(table)
+    if (this.$.autoExecute) {
+      const statement = table.toStatement()
+      this.$.executePromises.push(this.$.db.statement(statement))
+    }
+  }
+
+  public async alterTable(tableName:string, closure:SchemaClosure) {
+    let table:ElegantTable = this.makeTable(tableName, 'alter')
     this.tables.push(table)
     closure(table)
     if (this.$.autoExecute) {
@@ -97,7 +106,7 @@ export default class Schema {
    * @param {ElegantFunctionClosure} closure - The function closure applied to the table for configuration or definition.
    * @return {Promise<void>} Resolves when the table is registered and/or the query is executed, if applicable.
    */
-  public async fn(name:string, closure:ElegantFunctionClosure) {
+  public async function(name:string, closure:ElegantFunctionClosure) {
     let table:ElegantTable = this.makeTable(name, 'create')
     table.fn(name, closure)
     this.$.tables.push(table)
@@ -137,12 +146,13 @@ export default class Schema {
    * @param {SchemaDialect} [dialect='mysql'] - The SQL dialect to be used, defaulting to 'mysql'.
    * @return {Promise<void>} A Promise that resolves when the drop operation is complete.
    */
-  public async dropTable(tableName:string, closure?:DropSchemaClosure):Promise<void> {
-    const dropTable:DropTable = new DropTable(tableName, 'drop', this.$.db)
-    if (closure) closure(dropTable)
-    this.$.tables.push(dropTable)
+  public dropTable(tableName:string, closure?:SchemaClosure):void {
+    const table:ElegantTable = this.makeTable(tableName, 'drop')
+    if (closure) closure(table)
+    this.$.tables.push(table)
     if(this.$.autoExecute) {
-      await this.$.db.query(await dropTable.toStatement())
+      const statement = table.toStatement()
+      this.$.executePromises.push(this.$.db.statement(statement))
     }
   }
 
@@ -196,5 +206,13 @@ export default class Schema {
 
   disconnect() {
     return this.$.db.disconnect()
+  }
+
+  toStatement():string {
+    const statements:string[] = []
+    for (const table of this.$.tables) {
+      statements.push(table.toStatement())
+    }
+    return statements.join('\n\n')
   }
 }

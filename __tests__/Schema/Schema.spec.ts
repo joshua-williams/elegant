@@ -1,6 +1,6 @@
-import {SchemaTestSuite} from './SchemaTestSuite.js';
 import Schema from '../../src/Schema.js';
 import Elegant from '../../src/Elegant.js';
+import {GeneralColumnDefinition} from '../../lib/schema/ColumnDefinitions.js';
 
 
 describe(`Schema`, () => {
@@ -25,12 +25,43 @@ describe(`Schema`, () => {
       expect((schema as any).$.db).toBeInstanceOf(Elegant)
     })
 
+    it('should alter table', async () => {
+      schema.$.autoExecute = true
+      // create products table with integer description column
+      schema.table('products', (table) => {
+        table.id()
+        table.int('description')
+        table.ifNotExists()
+      })
+      await Promise.all(schema.$.executePromises)
+
+      // change description column to text
+      schema.table('products', (table) => {
+        table.text('description').change()
+      })
+      await Promise.all(schema.$.executePromises)
+
+      // get database columns
+      let table:any = schema.$.tables[0]
+      let columns:GeneralColumnDefinition[] = await table.getDatabaseColumns()
+
+      // assert column changes
+      expect(columns).toHaveLength(2)
+      const [ , description] = columns
+      expect(description).toHaveProperty('name', 'description')
+      expect(description).toHaveProperty('type', 'text')
+      // tear down products table
+      schema.table('products', (table) => {
+        table.drop()
+      })
+      await Promise.all(schema.$.executePromises)
+    })
     describe('fn', () =>  {
       /**
        * @todo automatically render the declare block like in postgres
        */
       it('should create function', async () => {
-        return schema.fn('get_user_id', (fn) => {
+        return schema.function('get_user_id', (fn) => {
           fn.params.string('email')
           fn.returns.int('user_id_out')
           fn.body(`
@@ -66,7 +97,7 @@ describe(`Schema`, () => {
 
     describe('fn', () =>  {
       it('should create function', async () => {
-        return schema.fn('get_user_id', (fn) => {
+        return schema.function('get_user_id', (fn) => {
           fn.params.string('email_in')
           fn.returns.int('user_id_out')
           fn.body(`

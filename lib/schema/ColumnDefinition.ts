@@ -3,7 +3,7 @@ import {ColumnDefinitionProperties, Scalar, SchemaDialect} from '../../types.js'
 export default abstract class ColumnDefinition {
   type:string
   dialect:SchemaDialect
-  private action: 'drop' | 'add' | 'change' = 'add'
+  private action: 'drop' | 'add' | 'change' | 'rename' = 'add'
   $:ColumnDefinitionProperties = {
     length:0,
     column: undefined,
@@ -31,6 +31,15 @@ export default abstract class ColumnDefinition {
     this.action = 'change'
     return this
   }
+  drop() {
+    this.action = 'drop'
+    return this
+  }
+  rename(newName:string) {
+    this.action = 'rename'
+    this.$.column = newName
+    return this
+  }
   unique():ColumnDefinition {
     this.$.unique = true
     return this
@@ -43,7 +52,7 @@ export default abstract class ColumnDefinition {
     this.$.primary = true
     return this
   }
-  null():ColumnDefinition {
+  nullable():ColumnDefinition {
     this.$.nullable = true
     return this
   }

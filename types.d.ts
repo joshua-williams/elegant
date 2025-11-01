@@ -1,6 +1,5 @@
 import Elegant, {Migration} from './index.js';
 import ElegantTable from './lib/schema/ElegantTable.js';
-import {DropTable} from './lib/schema/DropTable.js';
 import ElegantFunction from './lib/schema/ElegantFunction.js';
 import ElegantTableCore from './lib/schema/ElegantTableCore.js';
 import ElegantFunctionReturn from './lib/schema/ElegantFunctionReturn.js';
@@ -39,7 +38,6 @@ type SchemaOptions = {
   connection?: string
 }
 type SchemaClosure = (table:ElegantTable) => void;
-type DropSchemaClosure = (table:DropTable) => void;
 type MigrationMeta = {
   config:ElegantConfig,
   tables:ElegantTable[],

@@ -221,12 +221,15 @@ export default abstract class Elegant{
    */
   public static async disconnect(name?:string):Promise<any> {
     if (name) {
-      if ( ! this.pool[name] ) throw new Error(`No database connection name provided for ${name}`)
-      return this.pool[name].disconnect()
+      if ( ! this.pool[name] ) throw new Error(`No database connection not found: ${name}`)
+      const connection = this.pool[name]
+      delete this.pool[name]
+      return connection.disconnect()
     } else {
       for (const db of Object.values(this.pool)) {
         await db.disconnect()
       }
+      this.pool = {}
     }
   }
 }

@@ -27,7 +27,7 @@ export const SchemaTestSuite = (connection:string) => {
 
     describe('fn', () =>  {
       it('should create function', async () => {
-        return schema.fn('get_user_id', (fn) => {
+        return schema.function('get_user_id', (fn) => {
           fn.params.string('email')
           fn.returns.int('user_id')
           fn.body(`

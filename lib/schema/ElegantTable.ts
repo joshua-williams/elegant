@@ -1,7 +1,7 @@
 import {Charset, Collation, ElegantTableAction, Scalar} from '../../types.js';
 import ColumnDefinition from './ColumnDefinition.js';
 import {
-  CheckColumnDefinition, ConstraintColumnDefinition, ForeignKeyConstraintColumnDefinition,
+  CheckColumnDefinition, ConstraintColumnDefinition, ForeignKeyConstraintColumnDefinition, GeneralColumnDefinition,
   NumberColumnDefinition, StringColumnDefinition,
 } from './ColumnDefinitions.js';
 import Elegant from '../../src/Elegant.js';
@@ -23,6 +23,7 @@ export default abstract class ElegantTable extends ElegantTableCore {
   protected enclosure = '"';
   protected action:ElegantTableAction = 'create'
   protected columns:ColumnDefinition[] = []
+  protected constraints:ConstraintColumnDefinition[] = []
   protected statements: Map<string, string[]> = new Map()
   protected tableName:string
   protected schema:string
@@ -103,7 +104,7 @@ export default abstract class ElegantTable extends ElegantTableCore {
     }
 
     column.foreign(columnName).on(tableName).references(references||columnName)
-    this.columns.push(column)
+    this.constraints.push(column)
     return column
   }
 
@@ -123,7 +124,7 @@ export default abstract class ElegantTable extends ElegantTableCore {
     this.columns.push(column)
     const constraint = new CheckColumnDefinition(`${name}_chk`, values)
     constraint.where(name, 'IN', values)
-    this.columns.push(constraint)
+    this.constraints.push(constraint)
     return constraint
   }
 
@@ -182,14 +183,12 @@ export default abstract class ElegantTable extends ElegantTableCore {
 
   protected constraintsToSql(): string {
 
-    return this.columns
-      .filter(column => (column instanceof ConstraintColumnDefinition))
+    return this.constraints
       .map(column => {
         let sql = `CONSTRAINT ${this.enclose(column.name)}`
 
         if (column instanceof ForeignKeyConstraintColumnDefinition) {
           if (!column.$.foreign) {
-            console.log(column)
             throw new Error(`Column '${column.name}' does not exist in table '${this.tableName}'`)
           }
           const columns = (column.$.foreign as string[]).map(c => this.enclose(c)).join(', ')
@@ -214,11 +213,16 @@ export default abstract class ElegantTable extends ElegantTableCore {
   }
 
   public toStatement():string {
+    this.columns.some((column:any) => {
+      if (column.action !== 'add') {
+        return this.action = 'alter'
+      }
+    })
     if (!this.action) throw new Error('Table action must be defined before generating statement: eg table.destroy() | table.create() | table.alter()')
     this.columns.filter(column => column.$.foreign instanceof ConstraintColumnDefinition)
       .forEach(column => {
         const constraint = column.$.foreign as ForeignKeyConstraintColumnDefinition
-        this.columns.push(constraint)
+        this.constraints.push(constraint)
       })
     let sql = ''
     switch (this.action) {
@@ -230,7 +234,7 @@ export default abstract class ElegantTable extends ElegantTableCore {
         if (this.schema) sql += ` ${this.enclose(this.schema)}`
         sql += `${this.enclose(this.tableName)} (\n`
         sql += this.columnsToSql()
-        if (this.hasConstraint()) sql += ',\n  ' + this.constraintsToSql()
+        if (this.constraints.length) sql += ',\n  ' + this.constraintsToSql()
         sql += '\n)'
         const tableOptions:string[] = []
         if (this.$.engine) tableOptions.push(`ENGINE=${this.$.engine}`)
@@ -240,15 +244,22 @@ export default abstract class ElegantTable extends ElegantTableCore {
         if (tableOptions) sql += `\n${tableOptions.join('\n')}`
         return sql.trim()
       case 'alter':
-        // const existingColumns = await this.getDatabaseColumns()
-        // const existingColumnNames = existingColumns.map(column => column.name)
-        sql += `ALTER TABLE ${this.enclose(this.tableName)}`
-        sql += this.columns.map(column => {
-          return ` ${this.columnToSql(column)}`
-        })
+        sql += `ALTER TABLE ${this.enclose(this.tableName)}\n`
+        for (const column of this.columns) {
+          let c:any = column
+          if (c.action === 'rename') {
+            sql += `RENAME COLUMN ${this.enclose(c.name)} TO ${this.enclose(c.$.column)}\n`
+          }else if (c.action === 'drop') {
+            sql += `DROP COLUMN ${this.enclose(c.name)}\n`
+          } else {
+            sql += `MODIFY COLUMN ${this.columnToSql(column)}\n`
+          }
+        }
         return sql.trim()
       case 'drop':
-        sql += `DROP TABLE ${this.enclose(this.tableName)}`
+        sql += `DROP TABLE `
+        if (this.$.ifExists) sql += 'IF EXISTS '
+        sql += `${this.enclose(this.tableName)}`
         return sql.trim()
 
     }
@@ -257,5 +268,28 @@ export default abstract class ElegantTable extends ElegantTableCore {
 
   public getStatements():Map<string, string[]> {
     return this.statements
+  }
+
+  public dropColumn(column:string|string[]) {
+    if (Array.isArray(column)) {
+      for (const col of column) {
+        this.columns.push(new GeneralColumnDefinition(col).drop())
+      }
+    } else {
+      this.columns.push(new GeneralColumnDefinition(column).drop())
+    }
+  }
+  public renameColumn(oldName:string, newName:string) {
+    const column = new GeneralColumnDefinition(oldName).rename(newName)
+    this.columns.push(column)
+  }
+  public create() {
+    this.action = 'create'
+  }
+  public alter() {
+    this.action = 'alter'
+  }
+  public drop() {
+    this.action = 'drop'
   }
 }

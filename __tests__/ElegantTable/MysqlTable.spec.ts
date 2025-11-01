@@ -34,7 +34,6 @@ describe('MysqlTable', () => {
     it('string foreign key', async () => {
       table.integer('company_id').foreign()
       const sql = await table.toStatement()
-      console.log(sql)
     })
   })
 

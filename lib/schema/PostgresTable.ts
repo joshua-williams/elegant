@@ -22,7 +22,7 @@ export default class PostgresTable extends ElegantTable {
     column.default(defaultValue)
     if (nullable !== undefined) {
       if (nullable) {
-        column.null()
+        column.nullable()
       } else {
         column.notNull()
       }
@@ -137,7 +137,7 @@ export default class PostgresTable extends ElegantTable {
         }
 
         const column = new GeneralColumnDefinition(name, type, Number(length)||undefined)
-        if (field.is_nullable === 'YES') column.null()
+        if (field.is_nullable === 'YES') column.nullable()
         if (field.is_identity === 'YES') column.autoIncrement()
         if (field.constraint_type == 'PRIMARY KEY') column.primary()
         if (field.constraint_type == 'UNIQUE') column.unique()

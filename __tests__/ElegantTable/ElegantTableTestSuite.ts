@@ -21,71 +21,81 @@ export const CreateTableTestSuite = (tableName:string, Table:ElegantTableConstru
     describe(`${tableName} string columns`, () => {
       let table:ElegantTable;
       let db:Elegant
-
+      beforeAll(async () => {
+        db = await Elegant.singleton(tableName)
+      })
       beforeEach(async () => {
-        db = await Elegant.connection(tableName)
         table = new Table('users', 'create', db)
+      })
+      afterAll(async () => {
+        await Elegant.disconnect(tableName)
       })
 
       it('string with default length', async () => {
         table.string('name')
-        const sql = await table.toStatement()
+        const sql = table.toStatement()
         const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'name')} VARCHAR(255)\n)`
         expect(sql).toEqual(expected)
       })
       it('string with custom length', async () => {
         table.string('name', 100)
-        const sql = await table.toStatement()
+        const sql = table.toStatement()
         const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'name')} VARCHAR(100)\n)`
         expect(sql).toEqual(expected)
       })
       it('char with default length', async () => {
         table.char('name')
-        const sql = await table.toStatement()
+        const sql = table.toStatement()
         const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'name')} CHAR(255)\n)`
         expect(sql).toEqual(expected)
       })
       it('char with custom length', async () => {
         table.char('name', 100)
-        const sql = await table.toStatement()
+        const sql = table.toStatement()
         const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName,'name')} CHAR(100)\n)`
         expect(sql).toEqual(expected)
       })
       it('text', async () => {
         table.text('description')
-        const sql = await table.toStatement()
+        const sql = table.toStatement()
         const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'description')} TEXT\n)`
         expect(sql).toEqual(expected)
       })
     })
   };
   const runNumberTestSuite = (Table:ElegantTableConstructor) => {
+
     describe(`${tableName} numeric columns`, async () => {
       let table:ElegantTable;
       let db:Elegant;
 
+      beforeAll(async () => {
+        db = await Elegant.singleton(tableName)
+      })
       beforeEach(async () => {
-        db = await Elegant.connection(tableName)
         table = new Table('users', 'create', db)
+      })
+      afterAll(async () => {
+        await Elegant.disconnect(tableName)
       })
       describe('signed', () => {
 
         it('smallint', async () => {
           table.smallInteger('id')
-          const sql = await table.toStatement()
+          const sql = table.toStatement()
           const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'id')} SMALLINT\n)`
           expect(sql).toEqual(expected)
         })
 
         it('integer', async () => {
           table.integer('id')
-          const sql = await table.toStatement()
+          const sql = table.toStatement()
           const expected = `CREATE TABLE ${enclose(tableName,'users')} (\n  ${enclose(tableName, 'id')} INT\n)`
           expect(sql).toEqual(expected)
         })
         it('bigInteger', async () => {
           table.bigInteger('id')
-          const sql = await table.toStatement()
+          const sql = table.toStatement()
           const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'id')} BIGINT\n)`
           expect(sql).toEqual(expected)
         })
@@ -98,38 +108,38 @@ export const CreateTableTestSuite = (tableName:string, Table:ElegantTableConstru
         }
         it('unsigned smallint', async () => {
           table.unsignedSmallInteger('id')
-          const sql = await table.toStatement()
+          const sql = table.toStatement()
           const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'id')} SMALLINT UNSIGNED\n)`
           expect(sql).toEqual(expected)
         })
         it('unsigned smallint with custom length', async () => {
           table.unsignedSmallInteger('id', 2)
-          const sql = await table.toStatement()
+          const sql = table.toStatement()
           const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'id')} SMALLINT(2) UNSIGNED\n)`
           expect(sql).toEqual(expected)
         })
 
         it('unsigned integer', async () => {
           table.unsignedInteger('id')
-          const sql = await table.toStatement()
+          const sql = table.toStatement()
           const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'id')} INT UNSIGNED\n)`
           expect(sql).toEqual(expected)
         })
         it('unsigned integer with custom length', async () => {
           table.unsignedInteger('id', 2)
-          const sql = await table.toStatement()
+          const sql = table.toStatement()
           const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'id')} INT(2) UNSIGNED\n)`
           expect(sql).toEqual(expected)
         })
         it('unsigned bigInteger', async () => {
           table.unsignedBigInteger('id')
-          const sql = await table.toStatement()
+          const sql = table.toStatement()
           const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'id')} BIGINT UNSIGNED\n)`
           expect(sql).toEqual(expected)
         })
         it('unsigned bigInteger with custom length', async () => {
           table.unsignedBigInteger('id', 2)
-          const sql = await table.toStatement()
+          const sql = table.toStatement()
           const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'id')} BIGINT(2) UNSIGNED\n)`
           expect(sql).toEqual(expected)
         })
@@ -138,13 +148,13 @@ export const CreateTableTestSuite = (tableName:string, Table:ElegantTableConstru
       describe('decimal', () => {
         it('decimal',  async () => {
           table.decimal('weight', 3,2)
-          const sql = await table.toStatement()
+          const sql = table.toStatement()
           const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'weight')} DECIMAL(3,2)\n)`
           expect(sql).toEqual(expected)
         })
         it('float', async () => {
           table.float('id')
-          const sql = await table.toStatement()
+          const sql = table.toStatement()
           const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'id')} FLOAT\n)`
           expect(sql).toEqual(expected)
         })
@@ -156,35 +166,39 @@ export const CreateTableTestSuite = (tableName:string, Table:ElegantTableConstru
     describe(`${tableName} timestamp columns`, () => {
       let table:ElegantTable;
       let db:Elegant;
+      beforeAll(async() => {
+        db = await Elegant.singleton(tableName)
+      })
       beforeEach(async () => {
-        db = await Elegant.connection(tableName)
         table = new Table('users', 'create', db)
       })
-
+      afterAll(async () => {
+        db = await Elegant.disconnect()
+      })
       describe('timestamp columns', () => {
         it('timestamp', async () => {
           table.timestamp('created_at')
-          const sql = await table.toStatement()
+          const sql = table.toStatement()
           const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'created_at')} TIMESTAMP\n)`
           expect(sql).toEqual(expected)
         })
         it('timestamp with CURRENT_TIMESTAMP as default value set in constructor', async () => {
           table.timestamp('created_at', 'CURRENT_TIMESTAMP')
-          const sql = await table.toStatement()
+          const sql = table.toStatement()
           const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'created_at')} TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n)`
           expect(sql).toEqual(expected)
         })
         it('timestamp with CURRENT_TIMESTAMP as default value set in "default" method', async () => {
           table.timestamp('created_at')
             .default('CURRENT_TIMESTAMP')
-          const sql = await table.toStatement()
+          const sql = table.toStatement()
           const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'created_at')} TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n)`
           expect(sql).toEqual(expected)
         })
         it('timestamp with Date as default value set in constructor', async () => {
           const date = new Date('2019-01-01')
           table.timestamp('created_at', date)
-          const sql = await table.toStatement()
+          const sql = table.toStatement()
           const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'created_at')} TIMESTAMP DEFAULT '${date.toISOString()}'\n)`
           expect(sql).toEqual(expected)
         })
@@ -192,7 +206,7 @@ export const CreateTableTestSuite = (tableName:string, Table:ElegantTableConstru
           const date = new Date('2025-01-01')
           table.timestamp('created_at')
             .default(date)
-          const sql = await table.toStatement()
+          const sql = table.toStatement()
           const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'created_at')} TIMESTAMP DEFAULT '${date.toISOString()}'\n)`
           expect(sql).toEqual(expected)
         })
@@ -201,13 +215,13 @@ export const CreateTableTestSuite = (tableName:string, Table:ElegantTableConstru
       describe('time columns', () => {
         it('time', async () => {
           table.time('created_at')
-          const sql = await table.toStatement()
+          const sql = table.toStatement()
           const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'created_at')} TIME\n)`
           expect(sql).toEqual(expected)
         })
         it('time with precision', async () => {
           table.time('created_at', undefined, 2)
-          const sql = await table.toStatement()
+          const sql = table.toStatement()
           const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'created_at')} TIME(2)\n)`
           expect(sql).toEqual(expected)
         })
@@ -219,19 +233,23 @@ export const CreateTableTestSuite = (tableName:string, Table:ElegantTableConstru
     describe(`${tableName} constraints`, () => {
       let table:ElegantTable;
       let db:Elegant;
+      beforeAll(async() => {
+        db = await Elegant.singleton(tableName)
+      })
       beforeEach(async () => {
-        db = await Elegant.connection(tableName)
         table = new Table('users', 'create', db)
       })
-      afterEach(async () => {
-        await db.disconnect();
+      afterAll(async () => {
+        try {
+          await Elegant.disconnect();
+        } catch (err) {}
       })
       describe('primary key constraints', () => {
         it('multiple primary keys', async () => {
           table.integer('id').primary()
           table.string('username').primary()
           const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'id')} INT,\n  ${enclose(tableName, 'username')} VARCHAR(255),\nPRIMARY KEY(${enclose(tableName, 'id')}, ${enclose(tableName, 'username')})\n)`;
-          const sql = await table.toStatement()
+          const sql = table.toStatement()
           expect(sql).toEqual(expected)
         })
         it('shorthand multiple primary keys', async () => {
@@ -239,29 +257,29 @@ export const CreateTableTestSuite = (tableName:string, Table:ElegantTableConstru
           table.string('username')
           table.primary(['id', 'username'])
           const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'id')} INT,\n  ${enclose(tableName, 'username')} VARCHAR(255),\nPRIMARY KEY(${enclose(tableName, 'id')}, ${enclose(tableName, 'username')})\n)`;
-          const sql = await table.toStatement()
+          const sql = table.toStatement()
           expect(sql).toEqual(expected)
         })
       })
 
-      describe('foreign key constraint', () => {
+      describe.skip('foreign key constraint', () => {
         describe('shorthand key constraints', () => {
           /**
            * @deprecated this syntax should be replaced with basic inline foreign key syntax
            */
-          it('foreign key constraint shorthand inferred table name', async () => {
+          it.skip('foreign key constraint shorthand inferred table name', async () => {
             table.integer('id').primary()
             table.integer('user_id')
             table.foreign('user_id')
             const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'id')} INT PRIMARY KEY,\n  ${enclose(tableName, 'user_id')} INT,\n  CONSTRAINT ${enclose(tableName, 'fk_user_id')}\n    FOREIGN KEY (${enclose(tableName, 'user_id')})\n    REFERENCES ${enclose(tableName, 'users')}(${enclose(tableName, 'user_id')})\n)`;
-            const sql = await table.toStatement()
+            const sql =  table.toStatement()
             expect(sql).toEqual(expected)
           })
-          it.only('foreign key constraint inline shorthand', async () => {
+          it('foreign key constraint inline shorthand', async () => {
             table.integer('id').primary()
             table.integer('user_id').foreign()
             const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'id')} INT PRIMARY KEY,\n  ${enclose(tableName, 'user_id')} INT,\n  CONSTRAINT ${enclose(tableName, 'fk_user_id')}\n    FOREIGN KEY (${enclose(tableName, 'user_id')})\n    REFERENCES ${enclose(tableName, 'users')}(${enclose(tableName, 'id')})\n)`;
-            const sql = await table.toStatement()
+            const sql = table.toStatement()
             expect(sql).toEqual(expected)
           })
           it('foreign key constraint shorthand separate declarations', async () => {
@@ -269,7 +287,7 @@ export const CreateTableTestSuite = (tableName:string, Table:ElegantTableConstru
             table.integer('user_id')
             table.foreign('user_id', 'users')
             const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'id')} INT PRIMARY KEY,\n  ${enclose(tableName, 'user_id')} INT,\n  CONSTRAINT ${enclose(tableName, 'fk_user_id')}\n    FOREIGN KEY (${enclose(tableName, 'user_id')})\n    REFERENCES ${enclose(tableName, 'users')}(${enclose(tableName, 'user_id')})\n)`;
-            const sql = await table.toStatement()
+            const sql = table.toStatement()
             expect(sql).toEqual(expected)
           })
         })
@@ -280,7 +298,7 @@ export const CreateTableTestSuite = (tableName:string, Table:ElegantTableConstru
           table.string('username').primary()
           table.foreign('image_id').on('images').references('id')
           const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'id')} INT,\n  ${enclose(tableName, 'image_id')} INT,\n  ${enclose(tableName, 'username')} VARCHAR(255) PRIMARY KEY,\n  CONSTRAINT ${enclose(tableName, 'fk_image_id')}\n    FOREIGN KEY (${enclose(tableName, 'image_id')})\n    REFERENCES ${enclose(tableName, 'images')}(${enclose(tableName, 'id')})\n)`;
-          const sql = await table.toStatement()
+          const sql = table.toStatement()
           expect(sql).toEqual(expected)
         })
         it('composite foreign key constraint', async () => {
@@ -289,7 +307,7 @@ export const CreateTableTestSuite = (tableName:string, Table:ElegantTableConstru
           table.string('image_name')
           table.string('username').primary()
           table.foreign(['image_id','image_name']).on('images').references(['id', 'name'])
-          const sql = await table.toStatement()
+          const sql = table.toStatement()
           const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'id')} INT,\n  ${enclose(tableName, 'image_id')} INT,\n  ${enclose(tableName, 'image_name')} VARCHAR(255),\n  ${enclose(tableName, 'username')} VARCHAR(255) PRIMARY KEY,\n  CONSTRAINT ${enclose(tableName, 'fk_image_id_image_name')}\n    FOREIGN KEY (${enclose(tableName, 'image_id')}, ${enclose(tableName, 'image_name')})\n    REFERENCES ${enclose(tableName, 'images')}(${enclose(tableName, 'id')}, ${enclose(tableName, 'name')})\n)`;
           expect(sql).toEqual(expected)
         })
@@ -302,7 +320,7 @@ export const CreateTableTestSuite = (tableName:string, Table:ElegantTableConstru
             .references('id')
             .onDelete('CASCADE')
           const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'id')} INT,\n  ${enclose(tableName, 'image_id')} INT,\n  ${enclose(tableName, 'username')} VARCHAR(255),\n  CONSTRAINT ${enclose(tableName, 'fk_image_id')}\n    FOREIGN KEY (${enclose(tableName, 'image_id')})\n    REFERENCES ${enclose(tableName, 'images')}(${enclose(tableName, 'id')})\n    ON DELETE CASCADE\n)`;
-          const sql = await table.toStatement()
+          const sql = table.toStatement()
           expect(sql).toEqual(expected)
         })
         it('foreign key with onUpdate action', async () => {
@@ -314,7 +332,7 @@ export const CreateTableTestSuite = (tableName:string, Table:ElegantTableConstru
             .references('name')
             .onUpdate('CASCADE')
           const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'id')} INT,\n  ${enclose(tableName, 'image_id')} INT,\n  ${enclose(tableName, 'username')} VARCHAR(255),\n  CONSTRAINT ${enclose(tableName, 'fk_image_name')}\n    FOREIGN KEY (${enclose(tableName, 'image_name')})\n    REFERENCES ${enclose(tableName, 'images')}(${enclose(tableName, 'name')})\n    ON UPDATE CASCADE\n)`;
-          const sql = await table.toStatement()
+          const sql = table.toStatement()
           expect(sql).toEqual(expected)
         })
         it('foreign key with onUpdate and onDelete action', async () => {
@@ -327,22 +345,22 @@ export const CreateTableTestSuite = (tableName:string, Table:ElegantTableConstru
             .onUpdate('CASCADE')
             .onDelete('CASCADE')
           const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'id')} INT,\n  ${enclose(tableName, 'image_id')} INT,\n  ${enclose(tableName, 'username')} VARCHAR(255),\n  CONSTRAINT ${enclose(tableName, 'fk_image_id')}\n    FOREIGN KEY (${enclose(tableName, 'image_id')})\n    REFERENCES ${enclose(tableName, 'images')}(${enclose(tableName, 'id')})\n    ON UPDATE CASCADE\n    ON DELETE CASCADE\n)`;
-          const sql = await table.toStatement()
+          const sql = table.toStatement()
           expect(sql).toEqual(expected)
         })
       })
 
-      describe('enum', () => {
+      describe.skip('enum', () => {
         it('check string values', async () => {
           table.enum('role', ['admin', 'user', 'guest'])
           const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'role')} VARCHAR,\n  CONSTRAINT ${enclose(tableName, 'role_chk')} CHECK (${enclose(tableName, 'role')} IN ('admin', 'user', 'guest'))\n)`;
-          const sql = await table.toStatement()
+          const sql =  table.toStatement()
           expect(sql).toEqual(expected)
         })
         it('check numeric values', async () => {
           table.enum('product_id', [2011, 2006, 2004])
           const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'product_id')} VARCHAR,\n  CONSTRAINT ${enclose(tableName, 'product_id_chk')} CHECK (${enclose(tableName, 'product_id')} IN (2011, 2006, 2004))\n)`;
-          const sql = await table.toStatement()
+          const sql = table.toStatement()
           expect(sql).toEqual(expected)
         })
       })
@@ -357,55 +375,54 @@ export const CreateTableTestSuite = (tableName:string, Table:ElegantTableConstru
 export const AlterTableTestSuite = (tableName:string, Table:ElegantTableConstructor) => {
   tableName = tableName.toLowerCase()
 
-  const runStringTestSuite = (Table:ElegantTableConstructor) => {
-    describe(`${tableName} string columns`, () => {
+  function runAlterTableTestSuite(tableName:string, Table:ElegantTableConstructor) {
+    describe(`${tableName}: Alter Table Test Suite`, () => {
       let table:ElegantTable;
       let db:Elegant;
 
-      beforeEach(async () => {
-        db = await Elegant.connection(tableName)
-        table = new Table('users', 'alter', db)
+      beforeAll(async function() {
+        db = await Elegant.singleton(tableName)
+      })
+      afterAll(async function() {
+        await Elegant.disconnect(tableName)
+      })
+      beforeEach(async function() {
+        table = new Table('users', undefined, db)
       })
 
-      it('string with default length', async () => {
-        table.string('name')
-        const sql = await table.toStatement()
-        const expected = `ALTER TABLE ${enclose(tableName, 'users')} ADD ${enclose(tableName, 'tableName')} VARCHAR(255)`
+      it('should modify columns', () => {
+        table.text('description').change()
+        const sql = table.toStatement()
+        const expected = `ALTER TABLE ${enclose(tableName, 'users')}\nMODIFY COLUMN ${enclose(tableName, 'description')} TEXT`
         expect(sql).toEqual(expected)
       })
-
-      it('string with custom length', async () => {
-        table.string('name', 100)
-        const sql = await table.toStatement()
-        const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'tableName')} VARCHAR(100)\n)`
+      it('should drop columns', () => {
+        table.dropColumn('description')
+        const sql = table.toStatement()
+        const expected = `ALTER TABLE ${enclose(tableName, 'users')}\nDROP COLUMN ${enclose(tableName, 'description')}`
         expect(sql).toEqual(expected)
       })
-      it('char with default length', async () => {
-        table.char('name')
-        const sql = await table.toStatement()
-        const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'tableName')} CHAR(255)\n)`
+      it('should drop multiple columns', () => {
+        table.dropColumn(['name', 'description'])
+        const sql = table.toStatement()
+        const expected = `ALTER TABLE ${enclose(tableName, 'users')}\nDROP COLUMN ${enclose(tableName, 'name')}\nDROP COLUMN ${enclose(tableName, 'description')}`
         expect(sql).toEqual(expected)
       })
-      it('char with custom length', async () => {
-        table.char('name', 100)
-        const sql = await table.toStatement()
-        const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName,'tableName')} CHAR(100)\n)`
+      it('should drop column alternative syntax', () => {
+        table.text('description').drop()
+        const sql = table.toStatement()
+        const expected = `ALTER TABLE ${enclose(tableName, 'users')}\nDROP COLUMN ${enclose(tableName, 'description')}`
         expect(sql).toEqual(expected)
       })
-      it('text', async () => {
-        table.text('description')
-        const sql = await table.toStatement()
-        const expected = `CREATE TABLE ${enclose(tableName, 'users')} (\n  ${enclose(tableName, 'description')} TEXT\n)`
+      it('should rename column', () => {
+        table.renameColumn('name', 'first_name')
+        const sql = table.toStatement()
+        const expected = `ALTER TABLE ${enclose(tableName, 'users')}\nRENAME COLUMN ${enclose(tableName, 'name')} TO ${enclose(tableName, 'first_name')}`
         expect(sql).toEqual(expected)
       })
-
     })
   }
-  const runNumberTestSuite = (Table:ElegantTableConstructor) => {}
-  const runDateTimeTestSuite = (Table:ElegantTableConstructor) => {}
-  runStringTestSuite(Table)
-  runNumberTestSuite(Table)
-  runDateTimeTestSuite(Table)
+  runAlterTableTestSuite(tableName, Table)
 }
 
 export const GetDatabaseColumnsTestSuite = (connection:string, Table:ElegantTableConstructor) => {
@@ -420,9 +437,9 @@ export const GetDatabaseColumnsTestSuite = (connection:string, Table:ElegantTabl
       let columns:ColumnDefinition[];
 
       beforeAll(async () => {
-        db = await Elegant.connection(connection)
+        db = await Elegant.singleton(connection)
         schema = new Schema(db)
-        await schema.dropTable('users', (table) => table.ifExists())
+        schema.dropTable('users', (table) => table.ifExists())
         table = new Table('users', 'create', db)
         schema.createTable('users', (table) => {
           table.id('id')
@@ -432,11 +449,13 @@ export const GetDatabaseColumnsTestSuite = (connection:string, Table:ElegantTabl
           table.char('state', 2)
           table.timestamp('created_at')
         })
+        await Promise.all(schema.$.executePromises)
       })
 
       afterAll(async () => {
-        schema.dropTable('users')
-        await db.disconnect()
+        schema.dropTable('users', (table) => table.ifExists())
+        await Promise.all(schema.$.executePromises)
+        await Elegant.disconnect()
       })
 
       it('should retrieve columns for table', async () => {

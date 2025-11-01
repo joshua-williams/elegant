@@ -117,9 +117,6 @@ export default class MysqlTable extends ElegantTable {
   }
   protected columnToSql(column: ColumnDefinition): string {
     if (column instanceof ConstraintColumnDefinition) return
-    if (column.$.foreign instanceof ForeignKeyConstraintColumnDefinition) {
-      this.columns.push(column)
-    }
     let sql = `${this.enclose(column.name)} ${column.type}`;
     if (column.$.unsigned) sql += ' UNSIGNED'
     if (column.$.nullable !== undefined) sql += column.$.nullable ? ' NULL' : ' NOT NULL'
@@ -145,7 +142,7 @@ export default class MysqlTable extends ElegantTable {
         let [_, type, , length] = match || []
         type = length ? `${type}(${length})` : type
         const column = new GeneralColumnDefinition(field.Field, type, Number(length)||undefined)
-        if (field.Null === 'YES') column.null()
+        if (field.Null === 'YES') column.nullable()
         if (field.Type.includes('unsigned')) column.unsigned()
         if (field.Extra === 'auto_increment') column.autoIncrement()
         if (field.Key === 'PRI') column.primary()
