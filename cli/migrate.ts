@@ -5,10 +5,12 @@ import MigrationInspector from '../lib/migration/MigrationInspector.js';
 import {log} from '../lib/util.js';
 import Elegant from '../src/Elegant.js';
 import {getAppConfig} from '../lib/config.js';
+import chalk from 'chalk';
 
 export const MigrateCommand = new Command('migrate')
   .description('Database migrations')
   .option('-d, --debug', 'Show debug message info')
+  .option('-v, --verbose log level', 'Verbose log level')
   .action(async (options) => {
     const db = await Elegant.singleton()
     const config = await getAppConfig()
@@ -16,14 +18,42 @@ export const MigrateCommand = new Command('migrate')
     try {
       const result = await runner.run()
       if (options.debug) console.log(result)
-      if (result.error) {
-        log(`${result.culprit.name} Migration failed: ${result.error.message}`, 'error')
-      } else {
-        log(`Migration completed`, 'success')
+      ////////////// Summary Report /////////////////////
+      let stdout = 'Status: ' + ((result.result) ? chalk.green('Success') : chalk.red('Failed'))
+      stdout += `\nDuration: ${result.duration}ms`
+      if (!result.result) {
+        if (result.culprit) stdout += `\nError: ${chalk.red(result.culprit.error)}}`
+        if (options.verbose) stdout += `\nStatement: ${result.culprit.statement}`
+      }
+      const rollback = result.rollbackResults.size ? 'Yes' : 'No'
+      const rollbackErrorResult = result.rollbackResults.values().find(result => result.error)
+      if (options.verbose && rollbackErrorResult) {
+        stdout += `\nRollback: ${rollback}`
+        stdout += `\nRollback Error: ${chalk.red(rollbackErrorResult.error)}`
+      }
+      console.log(stdout)
+
+      if (result.result) {
+        const table = new AsciiTable('Migration Results')
+          .setHeading('Migration', 'Status', 'Duration')
+        result.results.forEach(m => {
+          table.addRow( m.name, m.status, m.duration+'ms')
+        })
+        console.log(table.toString())
       }
 
+      ////////////////// MIGRATION REPORT /////////////////
+      if (result.rollbackResults.size) {
+        const table = new AsciiTable('Migration Rollback Status')
+          .setHeading('Migration', 'Status', 'Message')
+        result.rollbackResults.values().forEach(m => {
+
+          table.addRow(m.name, m.status, m.error)
+        })
+        console.log(table.toString())
+      }
     } catch(err) {
-      console.error(err.message)
+      if (options.debug) console.error(err.message)
     } finally {
       await Elegant.disconnect()
     }

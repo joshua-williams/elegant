@@ -215,4 +215,7 @@ export default class Schema {
     }
     return statements.join('\n\n')
   }
+  reset() {
+    this.$.tables = []
+  }
 }
