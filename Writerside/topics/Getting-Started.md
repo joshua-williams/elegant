@@ -97,7 +97,7 @@ To use a specific connection (other than the default):
 const db = await Elegant.singleton('postgres');
 ```
 
-Gracefully disconnect from all  Elegant database instances that were instantiated using the `connection` method:
+Gracefully disconnect from an Elegant database instance that was instantiated using the `connection` method:
 ```typescript
 const db = await Elegant.connection()
 await db.disconnect()
